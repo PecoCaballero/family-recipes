@@ -1,11 +1,11 @@
-import React from "react";
-import { Inter } from "next/font/google";
-import { ThemeProviderComponent } from "@/app/_providers/themeProvider";
-import { PpWC } from "@/app/_types/types";
+import React from 'react';
+import { Inter } from 'next/font/google';
+import { ThemeProviderComponent } from '@/app/_providers/themeProvider';
+import { PpWC } from '@/app/_types/types';
 
 const interSans = Inter({
-  variable: "--font-inter-sans",
-  subsets: ["latin"],
+  variable: '--font-inter-sans',
+  subsets: ['latin'],
 });
 
 export const metadata = {
@@ -15,17 +15,11 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: PpWC) {
+export default function RootLayout({ children }: PpWC) {
   return (
     <html lang="en">
-      <body
-        className={`${interSans.variable} antialiased`}
-      >
-        <ThemeProviderComponent>
-          {children}
-        </ThemeProviderComponent>
+      <body className={`${interSans.variable} antialiased`}>
+        <ThemeProviderComponent>{children}</ThemeProviderComponent>
       </body>
     </html>
   );

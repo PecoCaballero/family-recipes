@@ -14,30 +14,30 @@ export default function BottomNavigator() {
     {
       label: routes.groups.base.title,
       icon: <Groups />,
-      path: routes.groups.base.path
+      path: routes.groups.base.path,
     },
     {
       label: routes.recipes.base.title,
       icon: <Book />,
-      path: routes.recipes.base.path
+      path: routes.recipes.base.path,
     },
     {
       label: routes.search.base.title,
       icon: <Search />,
-      path: routes.search.base.path
+      path: routes.search.base.path,
     },
     {
       label: routes.settings.base.title,
       icon: <Settings />,
-      path: routes.settings.base.path
+      path: routes.settings.base.path,
     },
   ];
 
   const currentPath = pathname.split('/')[1];
-  const value = navigationItems.find(item => item.path === `/${currentPath}`)?.label || 'Groups';
+  const value = navigationItems.find((item) => item.path === `/${currentPath}`)?.label || 'Groups';
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    const item = navigationItems.find(item => item.label === newValue);
+    const item = navigationItems.find((item) => item.label === newValue);
     if (item) {
       router.push(item.path);
     }

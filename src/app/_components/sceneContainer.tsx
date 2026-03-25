@@ -7,12 +7,6 @@ interface SceneContainerProps {
   children?: React.ReactNode;
 }
 
-export const SceneContainer: FC<SceneContainerProps> = ({
-  children,
-}) => {
-  return (
-    <Box sx={{ maxWidth: '1200px', }}>
-      {children}
-    </Box>
-  );
+export const SceneContainer: FC<SceneContainerProps> = ({ children }) => {
+  return <Box sx={{ maxWidth: '1200px' }}>{children}</Box>;
 };
