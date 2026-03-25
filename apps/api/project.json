@@ -1,0 +1,31 @@
+{
+  "name": "api",
+  "projectType": "application",
+  "sourceRoot": "apps/api/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "main": "apps/api/src/index.ts",
+        "outputPath": "dist/apps/api",
+        "tsConfig": "apps/api/tsconfig.json"
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "api:build",
+        "watch": true,
+        "host": "0.0.0.0",
+        "port": 4001
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["apps/api/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  }
+}
+
