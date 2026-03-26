@@ -14,7 +14,10 @@
 /coverage
 
 # next.js
+/.next
 /.next/
+**/.next/**
+.next/**
 /out/
 
 # production
@@ -40,7 +43,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
+/dist/
 
 .nx/cache
 .nx/workspace-data

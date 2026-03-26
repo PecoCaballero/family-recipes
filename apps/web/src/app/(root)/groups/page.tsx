@@ -7,27 +7,22 @@ import { GroupList } from '@/app/_components/GroupList';
 import { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { useSearchFilter } from '@/app/_hooks/useSearchFilter';
+import { SearchInput } from '@/app/_components/SearchInput';
+import { Header } from '@/app/_components/Header';
 
 export default function GroupsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const filteredGroups = useSearchFilter(mockGroups, searchQuery, 'name');
+  const { filteredData, searchQuery, setSearchQuery } = useSearchFilter(mockGroups, 'name');
 
   return (
     <SceneContainer>
-      <Box sx={{ margin: 2 }}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Search groups..."
+      <Header>
+        <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          size="small"
-          slotProps={{ input: { endAdornment: <SearchIcon /> } }}
+          placeholder="Search groups..."
         />
-      </Box>
-
-      <GroupList groups={filteredGroups} />
+      </Header>
+      <GroupList groups={filteredData} />
     </SceneContainer>
   );
 }
