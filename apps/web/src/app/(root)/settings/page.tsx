@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { SceneContainer } from '@/app/_components/sceneContainer';
+import { SceneContent } from '@/app/_components/SceneComponents';
 import { routes } from '@/app/_utils/routes';
 import { fetchHealth } from '@/app/_utils/api';
 import { Typography } from '@mui/material';
@@ -31,7 +31,7 @@ export default function SettingsPage() {
   }, []);
 
   return (
-    <SceneContainer>
+    <SceneContent>
       <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
         {routes.settings.base.title}
       </Typography>
@@ -39,6 +39,6 @@ export default function SettingsPage() {
       <Typography variant="body2" sx={{ mt: 2 }}>
         API health: {apiStatus ? apiStatus : apiError ? `error: ${apiError}` : 'checking...'}
       </Typography>
-    </SceneContainer>
+    </SceneContent>
   );
 }

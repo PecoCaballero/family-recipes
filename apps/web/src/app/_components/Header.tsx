@@ -2,21 +2,22 @@ import { ArrowBack } from '@mui/icons-material';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
-import { PpWC } from '../_types/types';
+import { PpWOC } from '../_types/types';
 
 const StyledStack = styled(Stack)(() => ({
   alignItems: 'center',
   justifyContent: 'space-between',
+  position: 'fixed',
   top: 0,
   left: 0,
   right: 0,
   height: 56,
-  backgroundColor: 'background.paper',
+  backgroundColor: '#fff',
   padding: 2,
-  zIndex: 1,
+  zIndex: 999,
 }));
 
-type PpHeader = { title?: string; endSlot?: React.ReactNode; goBack?: boolean } & PpWC;
+type PpHeader = { title?: string; endSlot?: React.ReactNode; goBack?: boolean } & PpWOC;
 
 export function Header({ title, endSlot, goBack = false, children }: PpHeader): React.ReactElement {
   const router = useRouter();
@@ -46,7 +47,7 @@ export function Header({ title, endSlot, goBack = false, children }: PpHeader): 
           {title}
         </Typography>
       )}
-      {endSlot && <Box minWidth={40}>{endSlot}</Box>}
+      {!children && <Box minWidth={40}>{endSlot}</Box>}
     </StyledStack>
   );
 }
