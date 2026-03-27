@@ -10,3 +10,7 @@ export function SceneContent({ children }: PpWC): React.ReactElement {
 export function Scene({ children }: PpWC): React.ReactElement {
   return <Box>{children}</Box>;
 }
+
+export function CenteredFullPage({ children }: PpWC): React.ReactElement {
+  return <Stack sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', gap: 2 }}>{children}</Stack>
+}

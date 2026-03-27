@@ -17,7 +17,7 @@ export function RecipeList({ recipes }: PpRecipeList) {
   return (
     <>
       {recipes.map((recipe: Recipe) => (
-        <Grid container spacing={2} key={recipe.id} margin={2}>
+        <Grid container key={recipe.id} marginX={2} marginY={1}>
           <Card
             variant="outlined"
             elevation={0}
