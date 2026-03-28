@@ -6,7 +6,7 @@ import { routes } from '@/app/_utils/routes';
 import { fetchHealth } from '@/app/_utils/api';
 import { Typography } from '@mui/material';
 
-export default function SettingsPage() {
+export default function UserPage() {
   const [apiStatus, setApiStatus] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -33,7 +33,7 @@ export default function SettingsPage() {
   return (
     <SceneContent>
       <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-        {routes.settings.base.title}
+        {routes.user.base.title}
       </Typography>
       <Typography variant="body1">This is the settings page</Typography>
       <Typography variant="body2" sx={{ mt: 2 }}>

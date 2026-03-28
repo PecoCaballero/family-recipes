@@ -8,8 +8,8 @@ export const routes = {
   search: {
     base: { path: '/search', title: 'Search' },
   },
-  settings: {
-    base: { path: '/settings', title: 'Settings' },
+  user: {
+    base: { path: '/user', title: 'Account' },
   },
   recipes: {
     base: { path: '/recipes', title: 'Recipes' },

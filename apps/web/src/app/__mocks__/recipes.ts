@@ -4,6 +4,8 @@ export const mockRecipes: Recipe[] = [
   {
     id: '1',
     author: 'John Doe',
+    isSaved: true,
+    isAuthor: true,
     name: 'Recipe 1',
     image:
       'https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg',
@@ -14,6 +16,8 @@ export const mockRecipes: Recipe[] = [
     nestedRecipes: [{
       id: '2',
       author: 'John Doe',
+      isSaved: true,
+      isAuthor: true,
       name: 'Recipe 2',
       image: undefined,
       description: 'Description 2',
@@ -24,6 +28,8 @@ export const mockRecipes: Recipe[] = [
     {
       id: '3',
       author: 'John Doe',
+      isSaved: true,
+      isAuthor: true,
       name: 'Recipe 3',
       image:
         'https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg',
@@ -36,6 +42,8 @@ export const mockRecipes: Recipe[] = [
   {
     id: '2',
     author: 'John Doe',
+    isSaved: true,
+    isAuthor: false,
     name: 'Recipe 2',
     image: undefined,
     description: 'Description 2',
@@ -46,6 +54,8 @@ export const mockRecipes: Recipe[] = [
   {
     id: '3',
     author: 'John Doe',
+    isSaved: true,
+    isAuthor: false,
     name: 'Recipe 3',
     image:
       'https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg',

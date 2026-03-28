@@ -3,7 +3,7 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
-import { Groups, Search, Settings, Book } from '@mui/icons-material';
+import { Groups, Search, AccountCircle, Book } from '@mui/icons-material';
 import { routes } from '@/app/_utils/routes';
 
 export default function BottomNavigator() {
@@ -27,9 +27,9 @@ export default function BottomNavigator() {
       path: routes.search.base.path,
     },
     {
-      label: routes.settings.base.title,
-      icon: <Settings />,
-      path: routes.settings.base.path,
+      label: routes.user.base.title,
+      icon: <AccountCircle />,
+      path: routes.user.base.path,
     },
   ];
 

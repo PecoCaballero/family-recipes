@@ -1,6 +1,8 @@
 export type Recipe = {
     id: string;
     author: string;
+    isSaved: boolean;
+    isAuthor: boolean;
     name: string;
     image: string | undefined;
     description: string;
