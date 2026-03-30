@@ -1,12 +1,17 @@
 'use client';
 
-import { Typography } from '@mui/material';
-import { SceneContent } from '@/app/_components/SceneComponents';
+import { Scene } from '@/app/_components/SceneComponents';
+import { Header } from '@/app/_components/Header';
+import { SearchInput } from '@/app/_components/SearchInput';
+import { EmptyRecipeState } from '@/app/_components/EmptyState';
 
 export default function SearchPage() {
   return (
-    <SceneContent>
-      <Typography variant="body1">This is the search page</Typography>
-    </SceneContent>
+    <Scene>
+      <Header>
+        <SearchInput value={'test'} onChange={() => {}} placeholder="Search recipes..." />
+      </Header>
+      <EmptyRecipeState />
+    </Scene>
   );
 }
