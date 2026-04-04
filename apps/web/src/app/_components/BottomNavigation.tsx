@@ -4,30 +4,32 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { Groups, Search, AccountCircle, MenuBook } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { routes } from '@/app/_utils/routes';
 
 export default function BottomNavigator() {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const navigationItems = [
     {
-      label: routes.groups.base.title,
+      label: t('groups.title'),
       icon: <Groups />,
       path: routes.groups.base.path,
     },
     {
-      label: routes.recipes.base.title,
+      label: t('recipes.title'),
       icon: <MenuBook />,
       path: routes.recipes.base.path,
     },
     {
-      label: routes.search.base.title,
+      label: t('search.title'),
       icon: <Search />,
       path: routes.search.base.path,
     },
     {
-      label: routes.user.base.title,
+      label: t('account.title'),
       icon: <AccountCircle />,
       path: routes.user.base.path,
     },

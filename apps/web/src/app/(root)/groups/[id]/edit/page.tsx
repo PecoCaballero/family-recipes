@@ -1,16 +1,18 @@
 'use client';
 
 import { SceneContent } from '@/app/_components/SceneComponents';
-import { routes } from '@/app/_utils/routes';
 import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export default function EditGroupPage() {
+  const { t } = useTranslation();
+
   return (
     <SceneContent>
       <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-        {routes.groups.edit.title}
+        {t('groups.edit.title')}
       </Typography>
-      <Typography variant="body1">This is the edit group page</Typography>
+      <Typography variant="body1">{t('groups.edit.description')}</Typography>
     </SceneContent>
   );
 }

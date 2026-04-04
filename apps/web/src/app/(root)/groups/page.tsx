@@ -6,8 +6,10 @@ import { GroupList } from '@/app/_components/GroupList';
 import { useSearchFilter } from '@/app/_hooks/useSearchFilter';
 import { SearchInput } from '@/app/_components/SearchInput';
 import { Header } from '@/app/_components/Header';
+import { useTranslation } from 'react-i18next';
 
 export default function GroupsPage() {
+  const { t } = useTranslation();
   const { filteredData, searchQuery, setSearchQuery } = useSearchFilter(mockGroups, 'name');
 
   return (
@@ -16,7 +18,7 @@ export default function GroupsPage() {
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search groups..."
+          placeholder={t('groups.searchPlaceholder')}
         />
       </Header>
       <SceneContent>

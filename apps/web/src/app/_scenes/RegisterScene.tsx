@@ -3,6 +3,7 @@
 import { Box, Button, Link as MuiLink, Stack, TextField, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CenteredFullPage } from '../_components/SceneComponents';
 
 export function RegisterScene() {
@@ -15,6 +16,7 @@ export function RegisterScene() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,12 +33,12 @@ export function RegisterScene() {
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('register.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('register.passwordTooShort'));
       return;
     }
 
@@ -55,7 +57,7 @@ export function RegisterScene() {
 
       router.push('/recipes');
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      setError(t('register.registerFailed'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -66,10 +68,10 @@ export function RegisterScene() {
     <CenteredFullPage>
       <Stack>
         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Create Account
+          {t('register.title')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Join Family Recipe and start sharing
+          {t('register.subtitle')}
         </Typography>
       </Stack>
 
@@ -89,7 +91,7 @@ export function RegisterScene() {
           )}
 
           <TextField
-            label="First Name"
+            label={t('register.nameLabel')}
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
@@ -99,7 +101,7 @@ export function RegisterScene() {
           />
 
           <TextField
-            label="Last Name"
+            label={t('register.nameLabel')}
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
@@ -109,19 +111,19 @@ export function RegisterScene() {
           />
 
           <TextField
-            label="Email"
+            label={t('register.emailLabel')}
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="you@example.com"
+            placeholder={t('register.emailPlaceholder')}
             required
             fullWidth
             autoComplete="email"
           />
 
           <TextField
-            label="Password"
+            label={t('register.passwordLabel')}
             type="password"
             name="password"
             value={formData.password}
@@ -132,7 +134,7 @@ export function RegisterScene() {
           />
 
           <TextField
-            label="Confirm Password"
+            label={t('register.confirmPasswordLabel')}
             type="password"
             name="confirmPassword"
             value={formData.confirmPassword}
@@ -143,19 +145,19 @@ export function RegisterScene() {
           />
 
           <Button type="submit" variant="contained" size="large" fullWidth disabled={loading}>
-            {loading ? 'Creating Account...' : 'Sign Up'}
+            {loading ? t('register.signingUp') : t('register.signUpButton')}
           </Button>
         </Stack>
       </form>
 
       <Box sx={{ textAlign: 'center' }}>
         <Typography variant="body2" color="text.secondary">
-          Already have an account?{' '}
+          {t('register.hasAccount')}{' '}
           <MuiLink
             href="/login"
             sx={{ cursor: 'pointer', textDecoration: 'none', fontWeight: 'bold' }}
           >
-            Sign in
+            {t('register.signInLink')}
           </MuiLink>
         </Typography>
       </Box>

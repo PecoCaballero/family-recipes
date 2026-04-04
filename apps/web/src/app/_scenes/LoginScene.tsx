@@ -5,6 +5,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import { Box, Button, Divider, Link as MuiLink, Stack, TextField, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CenteredFullPage } from '../_components/SceneComponents';
 
 export function LoginScene() {
@@ -12,6 +13,7 @@ export function LoginScene() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,7 +30,7 @@ export function LoginScene() {
 
       router.push('/recipes');
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError(t('login.loginFailed'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -44,7 +46,7 @@ export function LoginScene() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       router.push('/recipes');
     } catch (err) {
-      setError('Google login failed. Please try again.');
+      setError(t('login.googleLoginFailed'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -60,7 +62,7 @@ export function LoginScene() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       router.push('/recipes');
     } catch (err) {
-      setError('Apple login failed. Please try again.');
+      setError(t('login.appleLoginFailed'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -71,10 +73,10 @@ export function LoginScene() {
     <CenteredFullPage>
       <Stack>
         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Family Recipe
+          {t('login.title')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Sign in to your Family Recipe account
+          {t('login.subtitle')}
         </Typography>
       </Stack>
 
@@ -94,18 +96,18 @@ export function LoginScene() {
           )}
 
           <TextField
-            label="Email"
+            label={t('common.email')}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder={t('login.emailPlaceholder')}
             required
             fullWidth
             autoComplete="email"
           />
 
           <TextField
-            label="Password"
+            label={t('common.password')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -115,12 +117,12 @@ export function LoginScene() {
           />
 
           <Button type="submit" variant="contained" size="large" fullWidth disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? t('login.signingIn') : t('login.signInButton')}
           </Button>
         </Stack>
       </form>
 
-      <Divider sx={{ my: 2 }}>Or</Divider>
+      <Divider sx={{ my: 2 }}>{t('login.or')}</Divider>
 
       <Stack spacing={1}>
         <Button
@@ -131,7 +133,7 @@ export function LoginScene() {
           onClick={handleGoogleLogin}
           disabled={loading}
         >
-          Sign in with Google
+          {t('login.googleSignIn')}
         </Button>
         <Button
           variant="outlined"
@@ -141,18 +143,18 @@ export function LoginScene() {
           onClick={handleAppleLogin}
           disabled={loading}
         >
-          Sign in with Apple
+          {t('login.appleSignIn')}
         </Button>
       </Stack>
 
       <Box sx={{ textAlign: 'center' }}>
         <Typography variant="body2" color="text.secondary">
-          Don&apos;t have an account?{' '}
+          {t('login.noAccount')}{' '}
           <MuiLink
             href="/register"
             sx={{ cursor: 'pointer', textDecoration: 'none', fontWeight: 'bold' }}
           >
-            Sign up
+            {t('login.signUpLink')}
           </MuiLink>
         </Typography>
       </Box>

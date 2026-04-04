@@ -4,6 +4,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { useTranslation } from 'react-i18next';
 import { Recipe } from '../_types/recipe';
 import { useAnchor } from '../_hooks/useAnchor';
 import { SendRecipeDrawer } from './SendRecipeDrawer';
@@ -16,6 +17,7 @@ type PpRecipeMenu = {
 };
 
 export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipeMenu) {
+  const { t } = useTranslation();
   const { anchor, handleClick, handleClose, open: shareGroupOpen } = useAnchor();
   return (
     <>
@@ -24,7 +26,9 @@ export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipe
           <ListItemIcon>
             {recipe.isSaved ? <Favorite fontSize="small" /> : <FavoriteBorder fontSize="small" />}
           </ListItemIcon>
-          <ListItemText> {recipe.isSaved ? 'Unsave recipe' : 'Save recipe'} </ListItemText>
+          <ListItemText>
+            {recipe.isSaved ? t('recipes.unsaveRecipe') : t('recipes.saveRecipe')}
+          </ListItemText>
         </MenuItem>
         {recipe.isAuthor && (
           <>
@@ -32,13 +36,13 @@ export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipe
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
-              <ListItemText>Edit recipe</ListItemText>
+              <ListItemText>{t('recipes.editRecipe')}</ListItemText>
             </MenuItem>
             <MenuItem>
               <ListItemIcon>
                 <Delete fontSize="small" />
               </ListItemIcon>
-              <ListItemText>Delete Recipe</ListItemText>
+              <ListItemText>{t('recipes.deleteRecipe')}</ListItemText>
             </MenuItem>
           </>
         )}
@@ -52,13 +56,13 @@ export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipe
           <ListItemIcon>
             <Send fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Send to group</ListItemText>
+          <ListItemText>{t('recipes.sendToGroup')}</ListItemText>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <Share fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Share</ListItemText>
+          <ListItemText>{t('recipes.share')}</ListItemText>
         </MenuItem>
       </Menu>
       <SendRecipeDrawer open={shareGroupOpen} onClose={handleClose} recipe={recipe} />
