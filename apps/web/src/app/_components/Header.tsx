@@ -7,11 +7,10 @@ import { PpWOC } from '../_types/types';
 const StyledStack = styled(Stack)(() => ({
   alignItems: 'center',
   justifyContent: 'space-between',
-  position: 'fixed',
+  position: 'sticky',
   top: 0,
   left: 0,
   right: 0,
-  height: 56,
   backgroundColor: '#fff',
   padding: 2,
   zIndex: 999,
@@ -30,9 +29,9 @@ export function Header({ title, endSlot, goBack = false, children }: PpHeader): 
         </IconButton>
       )}
       {children && (
-        <Box width="100%" padding={2}>
+        <Stack sx={{ width: '100%', padding: 2, paddingBottom: 1, gap: 1 }}>
           {children}
-        </Box>
+        </Stack>
       )}
       {title && (
         <Typography

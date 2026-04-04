@@ -104,7 +104,7 @@ export function AccountScene() {
   return (
     <Scene>
       <SceneContent>
-        <Stack spacing={2} sx={{ paddingX: 2 }}>
+        <Stack spacing={2} sx={{ padding: 2, paddingTop: 6 }}>
           <UserInfo name={userData.name} email={userData.email} avatar={userData.avatar} />
 
           <RecipeStats
