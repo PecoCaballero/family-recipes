@@ -1,4 +1,4 @@
-import { Avatar, Drawer, List, ListItem, Typography } from '@mui/material';
+import { Avatar, Drawer, List, ListItem, ListItemButton, Typography } from '@mui/material';
 import { Recipe } from '../_types/recipe';
 import { mockGroups } from '../__mocks__/groups';
 
@@ -25,9 +25,15 @@ export function SendRecipeDrawer({ open, onClose, recipe }: PpSendRecipeDrawer) 
     >
       <List sx={{ maxHeight: '50vh' }}>
         {mockGroups.map((group) => (
-          <ListItem sx={{ gap: 1 }}>
-            <Avatar src={group.icon} />
-            <Typography>{group.name}</Typography>
+          <ListItem key={group.id} disablePadding>
+            <ListItemButton
+              sx={{ gap: 1 }}
+              key={group.id}
+              onClick={() => console.log(`Send recipe ${recipe.name} to group ${group.name}`)}
+            >
+              <Avatar src={group.icon} />
+              <Typography>{group.name}</Typography>
+            </ListItemButton>
           </ListItem>
         ))}
       </List>

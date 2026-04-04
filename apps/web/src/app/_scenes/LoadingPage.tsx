@@ -4,7 +4,7 @@ import { CircularProgress } from '@mui/material';
 
 export function LoadingPage() {
   return (
-    <CenteredFullPage>
+    <CenteredFullPage sx={{ alignItems: 'center' }}>
       <CircularProgress />
       <Typography>Loading...</Typography>
     </CenteredFullPage>

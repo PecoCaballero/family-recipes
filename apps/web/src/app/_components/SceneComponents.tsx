@@ -8,18 +8,24 @@ export function SceneContent({ children }: PpWC): React.ReactElement {
 }
 
 export function Scene({ children }: PpWC): React.ReactElement {
-  return <Container sx={{ minHeight: "100vh", padding: 0 }}>{children}</Container>;
+  return <Container sx={{ minHeight: '100vh', padding: 0 }}>{children}</Container>;
 }
 
-export function CenteredFullPage({ children }: PpWC): React.ReactElement {
+export type PpCenteredFullPage = PpWC & {
+  sx?: React.CSSProperties;
+};
+
+export function CenteredFullPage({ children, sx }: PpCenteredFullPage): React.ReactElement {
   return (
     <Stack
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
         minHeight: '100vh',
+        width: '100%',
+        padding: 4,
         gap: 2,
+        ...sx,
       }}
     >
       {children}

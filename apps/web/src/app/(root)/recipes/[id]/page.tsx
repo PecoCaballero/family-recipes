@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { Stack, Typography, IconButton } from '@mui/material';
 import { Header } from '@/app/_components/Header';
@@ -21,10 +21,7 @@ export default function RecipePage() {
     handleClose: handleMenuClose,
   } = useAnchor();
   const params = useParams<{ id: string }>();
-  const recipe = useMemo(
-    () => mockRecipes.find((recipe) => recipe.id === params.id),
-    [mockRecipes, params],
-  );
+  const recipe = useMemo(() => mockRecipes.find((recipe) => recipe.id === params.id), [params]);
 
   if (!recipe) {
     return <LoadingPage />;
@@ -76,7 +73,13 @@ export default function RecipePage() {
           Ingredients
         </Typography>
         {recipe.ingredients.map((ingredient) => (
-          <Stack direction="row" justifyContent="space-between" paddingX={2} gap={1}>
+          <Stack
+            key={ingredient.name}
+            direction="row"
+            justifyContent="space-between"
+            paddingX={2}
+            gap={1}
+          >
             <Typography>{ingredient.name}</Typography>
             <Typography>
               {ingredient.quantity}
