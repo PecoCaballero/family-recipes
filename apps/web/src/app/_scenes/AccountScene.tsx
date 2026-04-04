@@ -9,6 +9,7 @@ import { Scene, SceneContent } from '../_components/SceneComponents';
 import { SettingOption } from '../_components/SettingOption';
 import { RecipeStats } from '../_components/RecipeStats';
 import { UserInfo } from '../_components/UserInfo';
+import { useTheme } from '../_providers/themeContext';
 
 type TpUserData = {
   name: string;
@@ -20,7 +21,6 @@ type TpUserData = {
 
 type TpAccountSettings = {
   language: string;
-  theme: string;
   privacyLevel: string;
   notifications: boolean;
 };
@@ -28,6 +28,7 @@ type TpAccountSettings = {
 export function AccountScene() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
+  const { storedMode, setMode } = useTheme();
   const [loading, setLoading] = useState(false);
 
   // Mock user data - TODO: Replace with actual API call
@@ -41,7 +42,6 @@ export function AccountScene() {
 
   const [settings, setSettings] = useState<TpAccountSettings>({
     language: i18n.language || 'en',
-    theme: 'light',
     privacyLevel: 'private',
     notifications: true,
   });
@@ -126,8 +126,8 @@ export function AccountScene() {
             label={t('account.theme')}
             description={t('account.themeDescription')}
             type="select"
-            value={settings.theme}
-            onChange={(value) => handleSettingChange('theme', value)}
+            value={storedMode}
+            onChange={setMode}
             options={themeOptions}
           />
 

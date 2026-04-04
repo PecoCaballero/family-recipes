@@ -4,14 +4,14 @@ import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 import { PpWOC } from '../_types/types';
 
-const StyledStack = styled(Stack)(() => ({
+const StyledStack = styled(Stack)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
   position: 'sticky',
   top: 0,
   left: 0,
   right: 0,
-  backgroundColor: '#fff',
+  backgroundColor: theme.palette.background.paper,
   padding: 2,
   zIndex: 999,
 }));
