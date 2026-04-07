@@ -10,6 +10,7 @@ import { SettingOption } from '../_components/SettingOption';
 import { RecipeStats } from '../_components/RecipeStats';
 import { UserInfo } from '../_components/UserInfo';
 import { useTheme } from '../_providers/themeContext';
+import type { ThemeMode } from '../_providers/themeContext';
 
 type TpUserData = {
   name: string;
@@ -127,7 +128,7 @@ export function AccountScene() {
             description={t('account.themeDescription')}
             type="select"
             value={storedMode}
-            onChange={setMode}
+            onChange={(value) => setMode(value as ThemeMode)}
             options={themeOptions}
           />
 

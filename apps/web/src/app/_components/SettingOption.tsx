@@ -9,13 +9,14 @@ import {
   Switch,
   Typography,
 } from '@mui/material';
+import { ThemeMode } from '../_providers/themeContext';
 
 type PpSettingOption = {
   label: string;
   description?: string;
   type: 'toggle' | 'select';
   value: boolean | string;
-  onChange: (value: boolean | string) => void;
+  onChange: (value: boolean | string | ThemeMode) => void;
   options?: { label: string; value: string }[];
 };
 

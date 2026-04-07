@@ -1,17 +1,16 @@
 import React from 'react';
 import { Avatar, Chip, Stack } from '@mui/material';
 
-
 export type ChipOption = {
   label: string;
   avatar?: string;
-}
+};
 
 type PpChipFilter = {
   options: ChipOption[];
   selectedOption?: ChipOption;
   onSelect: (option: ChipOption | undefined) => void;
-}
+};
 
 export function ChipFilter({ options, selectedOption, onSelect }: PpChipFilter) {
   return (

@@ -9,6 +9,7 @@ import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { SearchInput } from '@/app/_components/SearchInput';
 import { useSearchFilter } from '@/app/_hooks/useSearchFilter';
 import { useTranslation } from 'react-i18next';
+import { EmptyRecipeState } from '@/app/_components/EmptyState';
 
 export default function RecipesPage() {
   const { filteredData, searchQuery, setSearchQuery } = useSearchFilter(mockRecipes, 'name');
@@ -31,20 +32,23 @@ export default function RecipesPage() {
   return (
     <Scene>
       <Header>
-          <SearchInput
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t('search.searchPlaceholder')}
-          />
-          <ChipFilter
-            options={chipOptions}
-            selectedOption={selectedChip}
-            onSelect={setSelectedChip}
-          />
+        <SearchInput
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t('search.searchPlaceholder')}
+        />
+        <ChipFilter
+          options={chipOptions}
+          selectedOption={selectedChip}
+          onSelect={setSelectedChip}
+        />
       </Header>
-      <SceneContent>
-        <RecipeList recipes={chipFilteredData} />
-      </SceneContent>
+      {chipFilteredData && (
+        <SceneContent>
+          <RecipeList recipes={chipFilteredData} />
+        </SceneContent>
+      )}
+      {chipFilteredData.length === 0 && <EmptyRecipeState />}
     </Scene>
   );
 }

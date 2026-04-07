@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { PaletteMode, useMediaQuery } from '@mui/material';
 
-type ThemeMode = 'light' | 'dark' | 'auto';
+export type ThemeMode = 'light' | 'dark' | 'auto';
 
 type ThemeContextType = {
   mode: PaletteMode;
@@ -47,8 +47,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const mode = getMode();
 
   return (
-    <ThemeContext.Provider value={{ mode, storedMode, setMode }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={{ mode, storedMode, setMode }}>{children}</ThemeContext.Provider>
   );
 };

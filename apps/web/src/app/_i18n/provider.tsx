@@ -17,8 +17,8 @@ export function I18nProvider({ children }: I18nProviderProps) {
     const storedLanguage = sessionStorage.getItem(LANGUAGE_STORAGE_KEY);
     if (storedLanguage && storedLanguage !== i18n.language) {
       i18n.changeLanguage(storedLanguage);
-      setIsInitialized(true);
     }
+    setIsInitialized(true);
   }, []);
 
   if (!isInitialized) {

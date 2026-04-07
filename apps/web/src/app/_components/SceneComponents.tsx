@@ -8,7 +8,11 @@ export function SceneContent({ children }: PpWC): React.ReactElement {
 }
 
 export function Scene({ children }: PpWC): React.ReactElement {
-  return <Container sx={{ minHeight: '100vh', padding: 0 }}>{children}</Container>;
+  return (
+    <Container sx={{ minHeight: '100vh', padding: 0, display: 'flex', flexDirection: 'column' }}>
+      {children}
+    </Container>
+  );
 }
 
 export type PpCenteredFullPage = PpWC & {

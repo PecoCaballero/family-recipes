@@ -29,9 +29,7 @@ export function Header({ title, endSlot, goBack = false, children }: PpHeader): 
         </IconButton>
       )}
       {children && (
-        <Stack sx={{ width: '100%', padding: 2, paddingBottom: 1, gap: 1 }}>
-          {children}
-        </Stack>
+        <Stack sx={{ width: '100%', padding: 2, paddingBottom: 1, gap: 1 }}>{children}</Stack>
       )}
       {title && (
         <Typography
