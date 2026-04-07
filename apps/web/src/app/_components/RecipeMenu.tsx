@@ -5,7 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useTranslation } from 'react-i18next';
-import { Recipe } from '../_types/recipe';
+import { Recipe } from '@family-recipe/shared';
 import { useAnchor } from '../_hooks/useAnchor';
 import { SendRecipeDrawer } from './SendRecipeDrawer';
 

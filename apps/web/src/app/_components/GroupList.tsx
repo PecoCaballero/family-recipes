@@ -1,6 +1,6 @@
 'use client';
 
-import { Group } from '../_types/group';
+import { Group } from '@family-recipe/shared';
 import { Grid, Card, CardContent, Avatar, CardActionArea, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';

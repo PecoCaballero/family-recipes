@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { apiRouter } from './routes';
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.use(
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
 });
+
+app.use('/v1', apiRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'not_found' });

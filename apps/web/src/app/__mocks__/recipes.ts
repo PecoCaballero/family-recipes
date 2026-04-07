@@ -1,4 +1,4 @@
-import { Recipe } from '../_types/recipe';
+import { Recipe } from '@family-recipe/shared';
 
 export const mockRecipes: Recipe[] = [
   {

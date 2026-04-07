@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "dependencies": {
+    "@family-recipe/shared": "workspace:*",
     "cors": "^2.8.6",
     "express": "^4.22.1"
   },

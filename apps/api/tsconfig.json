@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2019",
     "lib": ["ES2019"],
@@ -10,7 +11,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": ["node"],
-    "rootDir": "src",
+    "rootDir": "../../",
     "outDir": "../../dist/apps/api",
     "sourceMap": true,
     "noEmit": false

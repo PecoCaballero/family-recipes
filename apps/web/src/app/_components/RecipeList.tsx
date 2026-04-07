@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { Recipe } from '../_types/recipe';
+import { Recipe } from '@family-recipe/shared';
 
 export type PpRecipeList = { recipes: Recipe[] };
 

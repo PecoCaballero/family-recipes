@@ -1,4 +1,4 @@
-import { Group } from '@/app/_types/group';
+import { Group } from '@family-recipe/shared';
 
 export const mockGroups: Group[] = [
   {

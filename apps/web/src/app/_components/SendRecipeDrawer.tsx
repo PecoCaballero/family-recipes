@@ -1,5 +1,5 @@
 import { Avatar, Drawer, List, ListItem, ListItemButton, Typography } from '@mui/material';
-import { Recipe } from '../_types/recipe';
+import { Recipe } from '@family-recipe/shared';
 import { mockGroups } from '../__mocks__/groups';
 
 type PpSendRecipeDrawer = {
