@@ -17,6 +17,9 @@ export type Recipe = {
   nestedRecipeIds?: string[];
   groupIds: string[];
   savedByIds: string[];
+  // Computed properties
+  isAuthor?: boolean;
+  isSaved?: boolean;
 };
 
 export type Group = {

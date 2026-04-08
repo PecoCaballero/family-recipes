@@ -11,7 +11,9 @@ recipeRouter.get('/', (req, res) => {
         (recipe) =>
           recipe.name.toLowerCase().includes(query.toLowerCase()) ||
           recipe.description.toLowerCase().includes(query.toLowerCase()) ||
-          recipe.ingredients.some((ingredient) => ingredient.name.toLowerCase().includes(query.toLowerCase())),
+          recipe.ingredients.some((ingredient) =>
+            ingredient.name.toLowerCase().includes(query.toLowerCase()),
+          ),
       )
     : recipes;
 
@@ -31,7 +33,9 @@ recipeRouter.get('/:id', (req, res) => {
 recipeRouter.post('/', (req, res) => {
   const { name, description, image, ingredients, instructions, groupIds } = req.body;
   if (!name || !description || !ingredients || !instructions) {
-    return res.status(400).json({ error: 'name_description_ingredients_and_instructions_required' });
+    return res
+      .status(400)
+      .json({ error: 'name_description_ingredients_and_instructions_required' });
   }
 
   const newRecipe = {

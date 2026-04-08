@@ -96,7 +96,13 @@
     "imageAlt": "{{name}}: {{description}}",
     "filter": "Filter",
     "sort": "Sort",
-    "deleteConfirm": "Are you sure you want to delete this recipe?"
+    "deleteConfirm": "Are you sure you want to delete this recipe?",
+    "description": "Description",
+    "imageUrl": "Image URL",
+    "ingredientName": "Ingredient Name",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "addIngredient": "Add Ingredient"
   },
   "groups": {
     "title": "Groups",

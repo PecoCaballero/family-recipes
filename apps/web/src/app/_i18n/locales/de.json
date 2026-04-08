@@ -96,7 +96,13 @@
     "imageAlt": "{{name}}: {{description}}",
     "filter": "Filtern",
     "sort": "Sortieren",
-    "deleteConfirm": "Möchten Sie dieses Rezept wirklich löschen?"
+    "deleteConfirm": "Möchten Sie dieses Rezept wirklich löschen?",
+    "description": "Beschreibung",
+    "imageUrl": "Bild-URL",
+    "ingredientName": "Zutatennamen",
+    "quantity": "Menge",
+    "unit": "Einheit",
+    "addIngredient": "Zutat hinzufügen"
   },
   "groups": {
     "title": "Gruppen",

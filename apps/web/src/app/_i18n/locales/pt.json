@@ -96,7 +96,13 @@
     "imageAlt": "{{name}}: {{description}}",
     "filter": "Filtro",
     "sort": "Ordenar",
-    "deleteConfirm": "Tem certeza que deseja excluir esta receita?"
+    "deleteConfirm": "Tem certeza que deseja excluir esta receita?",
+    "description": "Descrição",
+    "imageUrl": "URL da imagem",
+    "ingredientName": "Nome do ingrediente",
+    "quantity": "Quantidade",
+    "unit": "Unidade",
+    "addIngredient": "Adicionar ingrediente"
   },
   "groups": {
     "title": "Grupos",

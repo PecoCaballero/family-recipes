@@ -25,6 +25,11 @@ export default function RecipePage() {
   const params = useParams<{ id: string }>();
   const recipe = useMemo(() => mockRecipes.find((recipe) => recipe.id === params.id), [params]);
 
+  const nestedRecipes = useMemo(() => {
+    if (!recipe?.nestedRecipeIds) return [];
+    return mockRecipes.filter((r) => recipe.nestedRecipeIds?.includes(r.id));
+  }, [recipe]);
+
   if (!recipe) {
     return <LoadingPage />;
   }
@@ -63,12 +68,12 @@ export default function RecipePage() {
           />
         )}
 
-        {recipe.nestedRecipes && (
+        {nestedRecipes && nestedRecipes.length > 0 && (
           <>
             <Typography variant="h4" textAlign="center" paddingTop={3} paddingBottom={1}>
               {t('recipes.readySubtitle')}
             </Typography>
-            <RecipeList recipes={recipe.nestedRecipes} />
+            <RecipeList recipes={nestedRecipes} />
           </>
         )}
 

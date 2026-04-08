@@ -1,11 +1,12 @@
+import { Recipe } from '@family-recipe/shared';
 import { Delete, Edit, Favorite, FavoriteBorder, Send, Share } from '@mui/icons-material';
 import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { Recipe } from '@family-recipe/shared';
 import { useAnchor } from '../_hooks/useAnchor';
 import { SendRecipeDrawer } from './SendRecipeDrawer';
 
@@ -18,7 +19,8 @@ type PpRecipeMenu = {
 
 export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipeMenu) {
   const { t } = useTranslation();
-  const { anchor, handleClick, handleClose, open: shareGroupOpen } = useAnchor();
+  const { handleClick, handleClose, open: shareGroupOpen } = useAnchor();
+  const router = useRouter();
   return (
     <>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
@@ -32,7 +34,7 @@ export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipe
         </MenuItem>
         {recipe.isAuthor && (
           <>
-            <MenuItem>
+            <MenuItem onClick={() => router.push(`/recipes/${recipe.id}/edit`)}>
               <ListItemIcon>
                 <Edit fontSize="small" />
               </ListItemIcon>
