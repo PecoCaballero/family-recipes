@@ -48,3 +48,7 @@ next-env.d.ts
 
 .nx/cache
 .nx/workspace-data
+
+# AI tooling (personal/local configs)
+.claude/
+.cursor/

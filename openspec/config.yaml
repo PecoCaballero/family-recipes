@@ -1,0 +1,19 @@
+schema: spec-driven
+
+context: |
+  Tech stack: TypeScript, React 19, Next.js (App Router), Express.js
+  Monorepo: Nx with /apps (web, api) and /libs (shared)
+  Styling: CSS Modules, dark theme support
+  Package manager: Yarn (yarn.lock + .yarnrc.yml)
+  Linting: ESLint flat config (eslint.config.mjs)
+  Formatting: Prettier
+  Domain: Family recipe management app
+  i18n: Translations support
+
+rules:
+  proposal:
+    - Keep proposals focused on one feature or change
+    - Always note which app(s) are affected (web, api, shared)
+  tasks:
+    - Break tasks into chunks of max 2 hours
+    - Mark affected app(s) per task where relevant
