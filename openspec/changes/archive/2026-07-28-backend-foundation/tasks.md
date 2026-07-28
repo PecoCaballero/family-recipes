@@ -21,7 +21,7 @@
 - [x] 3.4 Add POST `/v1/auth/refresh` — validate refresh token against DB, rotate tokens, return new pair (api)
 - [x] 3.5 Rewrite POST `/v1/auth/logout` — require auth, delete refresh token from DB (api)
 - [x] 3.6 Wire auth middleware into `apps/api/src/index.ts` — protect all `/v1/*` routes except `/v1/auth/*` and `/health` (api)
-- [ ] 3.7 Test auth flow manually: register → login → access protected route → refresh token → logout → verify token revoked (api)
+- [x] 3.7 Test auth flow manually: register → login → access protected route → refresh token → logout → verify token revoked (api)
 
 ## 4. Recipe CRUD with Database
 
