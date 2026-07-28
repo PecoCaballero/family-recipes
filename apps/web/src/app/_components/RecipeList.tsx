@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { Recipe } from '../_types/recipe';
+import { Recipe } from '@family-recipe/shared';
 
 export type PpRecipeList = { recipes: Recipe[] };
 
@@ -17,7 +17,7 @@ export function RecipeList({ recipes }: PpRecipeList) {
   return (
     <>
       {recipes.map((recipe: Recipe) => (
-        <Grid container spacing={2} key={recipe.id} margin={2}>
+        <Grid container key={recipe.id} marginX={2} marginY={1}>
           <Card
             variant="outlined"
             elevation={0}

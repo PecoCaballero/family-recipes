@@ -1,33 +1,51 @@
 'use client';
 
-import { TextField, Box } from '@mui/material';
-import { SceneContainer } from '@/app/_components/sceneContainer';
-import { mockGroups } from '@/app/__mocks__/groups';
+import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { GroupList } from '@/app/_components/GroupList';
-import { useState } from 'react';
-import SearchIcon from '@mui/icons-material/Search';
-import { useSearchFilter } from '@/app/_hooks/useSearchFilter';
+import { SearchInput } from '@/app/_components/SearchInput';
+import { Header } from '@/app/_components/Header';
+import { LoadingPage } from '@/app/_scenes/LoadingPage';
+import { EmptyGroupState } from '@/app/_components/EmptyState';
+import { useTranslation } from 'react-i18next';
+import { useSearch } from '@/app/_hooks/useSearch';
+import { useGroupsQuery } from '@/app/_hooks/groups';
 
 export default function GroupsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const { t } = useTranslation();
+  const { searchQuery, handleSearchChange } = useSearch();
+  const { data: groups = [], isLoading } = useGroupsQuery(searchQuery || undefined);
 
-  const filteredGroups = useSearchFilter(mockGroups, searchQuery, 'name');
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  if (groups.length === 0) {
+    return (
+      <Scene>
+        <Header>
+          <SearchInput
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder={t('groups.searchPlaceholder')}
+          />
+        </Header>
+        <EmptyGroupState message={t('groups.noGroupsYet')} />
+      </Scene>
+    );
+  }
 
   return (
-    <SceneContainer>
-      <Box sx={{ margin: 2 }}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Search groups..."
+    <Scene>
+      <Header>
+        <SearchInput
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          size="small"
-          slotProps={{ input: { endAdornment: <SearchIcon /> } }}
+          onChange={handleSearchChange}
+          placeholder={t('groups.searchPlaceholder')}
         />
-      </Box>
-
-      <GroupList groups={filteredGroups} />
-    </SceneContainer>
+      </Header>
+      <SceneContent>
+        <GroupList groups={groups} />
+      </SceneContent>
+    </Scene>
   );
 }

@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Family Recipes
+
+A monorepo application for managing family recipes, built with Nx, Next.js, and Express.js.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (version 18 or higher)
+- npm, yarn, or pnpm
+
+### Installation
+
+Install dependencies:
 
 ```bash
-npm run dev
+npm install
 # or
-yarn dev
+yarn install
 # or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Running the Applications
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Development Servers
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Start the web application (Next.js):
+
+```bash
+npx nx run web:serve
+```
+
+This will start the web app on [http://localhost:3000](http://localhost:3000).
+
+Start the API server (Express.js):
+
+```bash
+npx nx run api:serve
+```
+
+This will start the API on [http://localhost:4001](http://localhost:4001).
+
+To run both applications simultaneously:
+
+```bash
+npx nx run-many -t serve
+```
+
+## Building
+
+Build the web application:
+
+```bash
+npx nx build web
+```
+
+Build the API:
+
+```bash
+npx nx build api
+```
+
+Build all applications:
+
+```bash
+npx nx run-many -t build
+```
+
+## Linting and Formatting
+
+Lint the code:
+
+```bash
+npx nx run-many -t lint
+```
+
+Format the code:
+
+```bash
+npm run format
+```
+
+Check formatting:
+
+```bash
+npm run format:check
+```
+
+## Project Structure
+
+This is an Nx monorepo with the following apps:
+
+- `apps/web`: Next.js frontend application
+- `apps/api`: Express.js backend API
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Nx Documentation](https://nx.dev) - Learn about Nx monorepos and build tools
+- [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features
+- [Express.js Documentation](https://expressjs.com/) - Learn about Express.js
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The web application can be deployed on Vercel. Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

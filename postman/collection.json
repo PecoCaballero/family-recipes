@@ -1,0 +1,807 @@
+{
+  "info": {
+    "name": "Family Recipes API",
+    "description": "REST API for Family Recipes app. Auth via JWT Bearer token.\n\nBase URL: `{{base_url}}`\n\n**Flow**:\n1. `POST /auth/register` or `POST /auth/login` → get `accessToken` + `refreshToken`\n2. Use `accessToken` in requests (collection pre-request script auto-attaches it)\n3. `POST /auth/refresh` rotates tokens when access expires (15min)\n\nEnvironment variables needed: `base_url`, `access_token`, `refresh_token`, `test_email`, `test_password`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set auth header from environment variable",
+          "const token = pm.environment.get('access_token');",
+          "if (token) {",
+          "    pm.request.headers.add({ key: 'Authorization', value: `Bearer ${token}` });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4001",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Body: status ok', () => pm.expect(pm.response.json().status).to.eql('ok'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints. No Bearer token needed (except logout).\n\nOn register/login, access_token and refresh_token are auto-saved to environment.",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has accessToken', () => pm.expect(json.accessToken).to.be.a('string'));",
+                  "pm.test('Has refreshToken', () => pm.expect(json.refreshToken).to.be.a('string'));",
+                  "pm.test('Has user object', () => pm.expect(json.user).to.be.an('object'));",
+                  "// Auto-save tokens for subsequent requests",
+                  "pm.environment.set('access_token', json.accessToken);",
+                  "pm.environment.set('refresh_token', json.refreshToken);",
+                  "pm.environment.set('user_id', json.user.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has accessToken', () => pm.expect(json.accessToken).to.be.a('string'));",
+                  "pm.test('Has refreshToken', () => pm.expect(json.refreshToken).to.be.a('string'));",
+                  "pm.test('Has user object', () => pm.expect(json.user).to.be.an('object'));",
+                  "pm.environment.set('access_token', json.accessToken);",
+                  "pm.environment.set('refresh_token', json.refreshToken);",
+                  "pm.environment.set('user_id', json.user.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has accessToken', () => pm.expect(json.accessToken).to.be.a('string'));",
+                  "pm.test('Has refreshToken', () => pm.expect(json.refreshToken).to.be.a('string'));",
+                  "pm.environment.set('access_token', json.accessToken);",
+                  "pm.environment.set('refresh_token', json.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Body: status success', () => pm.expect(pm.response.json().status).to.eql('success'));",
+                  "// Clear tokens after successful logout",
+                  "pm.environment.unset('access_token');",
+                  "pm.environment.unset('refresh_token');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "OAuth Google (501 — not implemented)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 501', () => pm.response.to.have.status(501));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/oauth/google",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "oauth", "google"]
+            }
+          }
+        },
+        {
+          "name": "OAuth Apple (501 — not implemented)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 501', () => pm.response.to.have.status(501));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/oauth/apple",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "oauth", "apple"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "User profile and settings. All require Bearer token.",
+      "item": [
+        {
+          "name": "Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has id', () => pm.expect(json.id).to.be.a('string'));",
+                  "pm.test('Has email', () => pm.expect(json.email).to.be.a('string'));",
+                  "pm.test('Has settings', () => pm.expect(json.settings).to.be.an('object'));",
+                  "pm.environment.set('user_id', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Settings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Settings updated', () => pm.expect(json.settings).to.be.an('object'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"language\": \"en\",\n  \"privacyLevel\": \"family\",\n  \"notifications\": true,\n  \"theme\": \"auto\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/users/me/settings",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "me", "settings"]
+            }
+          }
+        },
+        {
+          "name": "Logout (users endpoint)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Body: status success', () => pm.expect(pm.response.json().status).to.eql('success'));",
+                  "pm.environment.unset('access_token');",
+                  "pm.environment.unset('refresh_token');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/users/me/logout",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "me", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Groups",
+      "description": "Group CRUD and recipe associations. All require Bearer token.",
+      "item": [
+        {
+          "name": "List Groups",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has groups array', () => pm.expect(pm.response.json().groups).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/groups",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "groups"]
+            }
+          }
+        },
+        {
+          "name": "List Groups (search)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has groups array', () => pm.expect(pm.response.json().groups).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/groups?search={{search_term}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "groups"],
+              "query": [
+                { "key": "search", "value": "{{search_term}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Group",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has id', () => pm.expect(json.id).to.be.a('string'));",
+                  "pm.test('Has name', () => pm.expect(json.name).to.be.a('string'));",
+                  "pm.environment.set('group_id', json.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Family Dinners\",\n  \"description\": \"Recipes for family dinner gatherings\",\n  \"icon\": \"🍽️\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/groups",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "groups"]
+            }
+          }
+        },
+        {
+          "name": "Get Group by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has group', () => pm.expect(json.group).to.be.an('object'));",
+                  "pm.test('Has recipes array', () => pm.expect(json.recipes).to.be.an('array'));",
+                  "pm.test('Has isOwner bool', () => pm.expect(json.isOwner).to.be.a('boolean'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/groups/{{group_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "groups", "{{group_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Group",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Family Dinners Updated\",\n  \"description\": \"Updated description\",\n  \"icon\": \"🍕\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/groups/{{group_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "groups", "{{group_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Add Recipe to Group",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has group', () => pm.expect(json.group).to.be.an('object'));",
+                  "pm.test('Has recipe', () => pm.expect(json.recipe).to.be.an('object'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipeId\": \"{{recipe_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/groups/{{group_id}}/recipes",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "groups", "{{group_id}}", "recipes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "description": "Recipe CRUD, save/unsave, group associations. All require Bearer token (except list/get — those need auth too per API).",
+      "item": [
+        {
+          "name": "List Recipes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has recipes array', () => pm.expect(pm.response.json().recipes).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/recipes",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes"]
+            }
+          }
+        },
+        {
+          "name": "List Recipes (search)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has recipes array', () => pm.expect(pm.response.json().recipes).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/recipes?search={{search_term}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes"],
+              "query": [
+                { "key": "search", "value": "{{search_term}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Recipe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has recipe object', () => pm.expect(json.recipe).to.be.an('object'));",
+                  "pm.environment.set('recipe_id', json.recipe.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grandma's Chocolate Cake\",\n  \"description\": \"A rich, moist chocolate cake passed down for generations\",\n  \"image\": \"https://example.com/cake.jpg\",\n  \"ingredients\": [\n    { \"name\": \"flour\", \"unit\": \"cups\", \"quantity\": \"2\" },\n    { \"name\": \"cocoa powder\", \"unit\": \"cups\", \"quantity\": \"0.75\" },\n    { \"name\": \"sugar\", \"unit\": \"cups\", \"quantity\": \"1.5\" },\n    { \"name\": \"eggs\", \"unit\": \"\", \"quantity\": \"3\" },\n    { \"name\": \"butter\", \"unit\": \"cups\", \"quantity\": \"0.5\" }\n  ],\n  \"instructions\": \"1. Preheat oven to 350°F\\n2. Mix dry ingredients\\n3. Add wet ingredients\\n4. Bake for 30 minutes\\n5. Let cool before frosting\",\n  \"parentRecipeId\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/recipes",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes"]
+            }
+          }
+        },
+        {
+          "name": "Get Recipe by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has recipe object', () => pm.expect(json.recipe).to.be.an('object'));",
+                  "pm.test('Has ingredients', () => pm.expect(json.recipe.ingredients).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/recipes/{{recipe_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes", "{{recipe_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Recipe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grandma's Chocolate Cake (Updated)\",\n  \"description\": \"Now with extra chocolate chips\",\n  \"ingredients\": [\n    { \"name\": \"flour\", \"unit\": \"cups\", \"quantity\": \"2\" },\n    { \"name\": \"cocoa powder\", \"unit\": \"cups\", \"quantity\": \"1\" },\n    { \"name\": \"chocolate chips\", \"unit\": \"cups\", \"quantity\": \"0.5\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/recipes/{{recipe_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes", "{{recipe_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Save Recipe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Body: status saved', () => pm.expect(pm.response.json().status).to.eql('saved'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{base_url}}/v1/recipes/{{recipe_id}}/save",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes", "{{recipe_id}}", "save"]
+            }
+          }
+        },
+        {
+          "name": "Unsave Recipe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Body: status unsaved', () => pm.expect(pm.response.json().status).to.eql('unsaved'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{base_url}}/v1/recipes/{{recipe_id}}/unsave",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes", "{{recipe_id}}", "unsave"]
+            }
+          }
+        },
+        {
+          "name": "Add Recipe to Group (via recipes)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Has groupId', () => pm.expect(json.groupId).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"groupId\": \"{{group_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/recipes/{{recipe_id}}/groups",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes", "{{recipe_id}}", "groups"]
+            }
+          }
+        },
+        {
+          "name": "Delete Recipe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/recipes/{{recipe_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "recipes", "{{recipe_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,16 +1,18 @@
 'use client';
 
-import { SceneContainer } from '@/app/_components/sceneContainer';
-import { routes } from '@/app/_utils/routes';
+import { SceneContent } from '@/app/_components/SceneComponents';
 import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export default function CreateGroupPage() {
+  const { t } = useTranslation();
+
   return (
-    <SceneContainer>
+    <SceneContent>
       <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-        {routes.groups.create.title}
+        {t('groups.create.title')}
       </Typography>
-      <Typography variant="body1">This is the create group page</Typography>
-    </SceneContainer>
+      <Typography variant="body1">{t('groups.create.description')}</Typography>
+    </SceneContent>
   );
 }

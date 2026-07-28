@@ -1,4 +1,4 @@
-import { Group } from '@/app/_types/group';
+import { Group } from '@family-recipe/shared';
 
 export const mockGroups: Group[] = [
   {
@@ -7,6 +7,8 @@ export const mockGroups: Group[] = [
     description: 'Our favorite family recipes passed down through generations',
     lastUpdated: new Date('2025-05-20').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['1'],
   },
   {
     id: '2',
@@ -14,6 +16,8 @@ export const mockGroups: Group[] = [
     description: 'Recipes for special occasions and holidays',
     lastUpdated: new Date('2025-05-15').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['1', '3'],
   },
   {
     id: '3',
@@ -21,6 +25,8 @@ export const mockGroups: Group[] = [
     description: 'Quick and easy recipes for busy weeknights',
     lastUpdated: new Date('2025-05-22').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['2'],
   },
   {
     id: '4',
@@ -28,5 +34,79 @@ export const mockGroups: Group[] = [
     description: 'Delicious breakfast recipes to start your day',
     lastUpdated: new Date('2025-05-18').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: [],
+  },
+  {
+    id: '5',
+    name: 'Family Recipes',
+    description: 'Our favorite family recipes passed down through generations',
+    lastUpdated: new Date('2025-05-20').toISOString(),
+    icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['1'],
+  },
+  {
+    id: '6',
+    name: 'Holiday Specials',
+    description: 'Recipes for special occasions and holidays',
+    lastUpdated: new Date('2025-05-15').toISOString(),
+    icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['1', '3'],
+  },
+  {
+    id: '7',
+    name: 'Weeknight Dinners',
+    description: 'Quick and easy recipes for busy weeknights',
+    lastUpdated: new Date('2025-05-22').toISOString(),
+    icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['2'],
+  },
+  {
+    id: '8',
+    name: 'Breakfast Favorites',
+    description: 'Delicious breakfast recipes to start your day',
+    lastUpdated: new Date('2025-05-18').toISOString(),
+    icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: [],
+  },
+  {
+    id: '9',
+    name: 'Family Recipes',
+    description: 'Our favorite family recipes passed down through generations',
+    lastUpdated: new Date('2025-05-20').toISOString(),
+    icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['1'],
+  },
+  {
+    id: '10',
+    name: 'Holiday Specials',
+    description: 'Recipes for special occasions and holidays',
+    lastUpdated: new Date('2025-05-15').toISOString(),
+    icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['1', '3'],
+  },
+  {
+    id: '11',
+    name: 'Weeknight Dinners',
+    description: 'Quick and easy recipes for busy weeknights',
+    lastUpdated: new Date('2025-05-22').toISOString(),
+    icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: ['2'],
+  },
+  {
+    id: '12',
+    name: 'Breakfast Favorites',
+    description: 'Delicious breakfast recipes to start your day',
+    lastUpdated: new Date('2025-05-18').toISOString(),
+    icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
+    ownerId: 'user-1',
+    recipeIds: [],
   },
 ];

@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  avatar        String?
+  language      String    @default("en")
+  privacyLevel  String    @default("private")
+  notifications Boolean   @default(true)
+  theme         String    @default("auto")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  recipes       Recipe[]
+  savedRecipes  SavedRecipe[]
+  refreshTokens RefreshToken[]
+  groupMemberships GroupMember[]
+  ownedGroups   Group[]
+}
+
+model Recipe {
+  id              String    @id @default(uuid())
+  authorId        String
+  author          String
+  name            String
+  image           String?
+  description     String
+  instructions    String
+  visibility      String    @default("private")
+  lastUpdated     DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  authorUser      User      @relation(fields: [authorId], references: [id])
+
+  parentRecipeId  String?
+  parentRecipe    Recipe?   @relation("RecipeNesting", fields: [parentRecipeId], references: [id])
+  childRecipes    Recipe[]  @relation("RecipeNesting")
+
+  ingredients     Ingredient[]
+  savedBy         SavedRecipe[]
+  recipeGroups    RecipeGroup[]
+
+  @@index([authorId])
+  @@index([parentRecipeId])
+}
+
+model Ingredient {
+  id       String  @id @default(uuid())
+  recipeId String
+  name     String
+  unit     String?
+  quantity String
+
+  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+}
+
+model SavedRecipe {
+  userId   String
+  recipeId String
+
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@id([userId, recipeId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  lastUpdated DateTime @default(now())
+  icon        String
+  ownerId     String
+
+  owner       User          @relation(fields: [ownerId], references: [id])
+  members     GroupMember[]
+  recipes     RecipeGroup[]
+}
+
+model GroupMember {
+  groupId  String
+  userId   String
+
+  group    Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user     User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+}
+
+model RecipeGroup {
+  recipeId String
+  groupId  String
+
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  group    Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, groupId])
+}

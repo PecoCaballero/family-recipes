@@ -1,6 +1,15 @@
 {
   "name": "family-recipes-web",
   "private": true,
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "dependencies": {
+    "@family-recipe/shared": "workspace:*",
+    "@tanstack/react-query": "^5.101.4",
+    "axios": "^1.18.1"
+  },
+  "devDependencies": {
+    "@types/node": "25.6.0",
+    "@types/react": "19.2.14",
+    "typescript": "6.0.3"
+  }
 }
-

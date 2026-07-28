@@ -2,22 +2,23 @@ import { ArrowBack } from '@mui/icons-material';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
+import { PpWOC } from '../_types/types';
 
-const StyledStack = styled(Stack)(() => ({
+const StyledStack = styled(Stack)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
+  position: 'sticky',
   top: 0,
   left: 0,
   right: 0,
-  height: 56,
-  backgroundColor: 'background.paper',
+  backgroundColor: theme.palette.background.paper,
   padding: 2,
-  zIndex: 1,
+  zIndex: 999,
 }));
 
-type PpHeader = { title: string; endSlot?: React.ReactNode; goBack?: boolean };
+type PpHeader = { title?: string; endSlot?: React.ReactNode; goBack?: boolean } & PpWOC;
 
-export function Header({ title, endSlot, goBack = false }: PpHeader): React.ReactElement {
+export function Header({ title, endSlot, goBack = false, children }: PpHeader): React.ReactElement {
   const router = useRouter();
 
   return (
@@ -27,18 +28,23 @@ export function Header({ title, endSlot, goBack = false }: PpHeader): React.Reac
           <ArrowBack />
         </IconButton>
       )}
-      <Typography
-        variant="h6"
-        component="h1"
-        sx={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-      >
-        {title}
-      </Typography>
-      <Box minWidth={40}>{endSlot}</Box>
+      {children && (
+        <Stack sx={{ width: '100%', padding: 2, paddingBottom: 1, gap: 1 }}>{children}</Stack>
+      )}
+      {title && (
+        <Typography
+          variant="h6"
+          component="h1"
+          sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {title}
+        </Typography>
+      )}
+      {!children && <Box minWidth={40}>{endSlot}</Box>}
     </StyledStack>
   );
 }
