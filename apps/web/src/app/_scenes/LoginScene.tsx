@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CenteredFullPage } from '../_components/SceneComponents';
+import { useAuth } from '../_providers/AuthContext';
 
 export function LoginScene() {
   const [email, setEmail] = useState('');
@@ -15,6 +16,7 @@ export function LoginScene() {
   const [error, setError] = useState('');
   const { t } = useTranslation();
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,16 +24,11 @@ export function LoginScene() {
     setError('');
 
     try {
-      // TODO: Replace with actual authentication logic
-      console.log('Login attempt:', { email, password });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      await login(email, password);
       router.push('/recipes');
     } catch (err) {
-      setError(t('login.loginFailed'));
-      console.error(err);
+      const message = err instanceof Error ? err.message : t('login.loginFailed');
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -39,12 +36,10 @@ export function LoginScene() {
 
   const handleGoogleLogin = async () => {
     try {
-      // TODO: Replace with actual Google OAuth logic
-      console.log('Google login initiated');
-      // window.location.href = '/api/auth/google';
+      // TODO: Replace with actual Google OAuth logic when backend implements OAuth
       setLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.push('/recipes');
+      setError('Google Sign In is not yet available');
     } catch (err) {
       setError(t('login.googleLoginFailed'));
       console.error(err);
@@ -55,12 +50,10 @@ export function LoginScene() {
 
   const handleAppleLogin = async () => {
     try {
-      // TODO: Replace with actual Apple OAuth logic
-      console.log('Apple login initiated');
-      // window.location.href = '/api/auth/apple';
+      // TODO: Replace with actual Apple OAuth logic when backend implements OAuth
       setLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.push('/recipes');
+      setError('Apple Sign In is not yet available');
     } catch (err) {
       setError(t('login.appleLoginFailed'));
       console.error(err);

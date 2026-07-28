@@ -7,6 +7,7 @@ This change replaces the in-memory layer with PostgreSQL + Prisma, implements re
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Replace in-memory data with PostgreSQL via Prisma ORM
 - Implement JWT-based authentication (register, login, refresh, logout)
 - Add auth middleware that protects all `/v1/*` routes except auth and health
@@ -15,6 +16,7 @@ This change replaces the in-memory layer with PostgreSQL + Prisma, implements re
 - Keep existing API response shapes compatible with frontend types
 
 **Non-Goals:**
+
 - OAuth (Google/Apple) — deferred to Phase 2+
 - Group CRUD with membership — deferred to Phase 2
 - Recipe visibility/privacy enforcement — deferred to Phase 2
@@ -40,6 +42,7 @@ This change replaces the in-memory layer with PostgreSQL + Prisma, implements re
 **Rationale:** Access tokens are stateless JWT (no DB lookup per request). Refresh tokens enable long sessions without re-login. Token rotation on each refresh limits exposure window of a stolen refresh token. Storing refresh tokens in DB enables server-side revocation (logout, password change).
 
 **Token structure:**
+
 ```
 Access token payload:  { sub: userId, iat, exp }
 Refresh token:         crypto.randomBytes(48).toString('hex')
@@ -58,11 +61,12 @@ Refresh token:         crypto.randomBytes(48).toString('hex')
 **Choice:** A single `authMiddleware` function exported from `apps/api/src/middleware/auth.ts`. Applied via `router.use(authMiddleware)` on `/v1` after mounting auth and health routes.
 
 **Pattern:**
+
 ```typescript
-app.use('/health', healthRouter);      // no auth
-app.use('/v1/auth', authRouter);       // no auth
-app.use('/v1', authMiddleware);        // guard
-app.use('/v1', apiRouter);             // protected routes
+app.use('/health', healthRouter); // no auth
+app.use('/v1/auth', authRouter); // no auth
+app.use('/v1', authMiddleware); // guard
+app.use('/v1', apiRouter); // protected routes
 ```
 
 **Rationale:** Simple, explicit. Routes that need to be public are mounted before the middleware. No per-route opt-out annotations needed.
@@ -80,6 +84,7 @@ app.use('/v1', apiRouter);             // protected routes
 **Rationale:** Minimal change to existing component tree. The context provides `isAuthenticated` boolean for route guards. Token refresh happens transparently — if a 401 is received and a refresh token exists, attempt refresh then retry the original request.
 
 **Auth flow:**
+
 ```mermaid
 flowchart TD
     Login["Login Page"] --> Store["Store Tokens (memory)"]

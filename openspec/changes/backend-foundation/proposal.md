@@ -4,12 +4,12 @@ The backend currently uses in-memory arrays that reset on restart and has no rea
 
 This is Phase 1 of the build-out:
 
-| Phase | Scope | Status |
-|-------|-------|--------|
-| **Phase 1: Backend Foundation** | PostgreSQL + Prisma, JWT auth, recipe CRUD, frontend integration | **← this change** |
-| Phase 2: Groups & Sharing | Group CRUD, membership, recipe visibility, send-to-group | planned |
-| Phase 3: User Profile & Settings | Avatar upload, settings persistence, account deletion | planned |
-| Phase 4: Search & Discovery | Full-text search, public recipe discovery, filters | planned |
+| Phase                            | Scope                                                            | Status            |
+| -------------------------------- | ---------------------------------------------------------------- | ----------------- |
+| **Phase 1: Backend Foundation**  | PostgreSQL + Prisma, JWT auth, recipe CRUD, frontend integration | **← this change** |
+| Phase 2: Groups & Sharing        | Group CRUD, membership, recipe visibility, send-to-group         | planned           |
+| Phase 3: User Profile & Settings | Avatar upload, settings persistence, account deletion            | planned           |
+| Phase 4: Search & Discovery      | Full-text search, public recipe discovery, filters               | planned           |
 
 ## What Changes
 
@@ -25,11 +25,13 @@ This is Phase 1 of the build-out:
 ## Capabilities
 
 ### New Capabilities
+
 - `database`: PostgreSQL schema via Prisma — users, recipes, ingredients, groups, refresh_tokens, and junction tables for saved recipes and group membership
 - `auth`: User registration with password hashing, login with JWT access/refresh token pair, token refresh endpoint, logout with token revocation, auth middleware guarding all `/v1/*` routes except health and auth endpoints
 - `recipe-crud`: Recipe create/read/update/delete with database persistence, author-only edit/delete enforcement, save/unsave toggle, compute `isAuthor`/`isSaved` from authenticated user context
 
 ### Modified Capabilities
+
 <!-- No existing specs to modify. All are new capabilities. -->
 
 ## Impact

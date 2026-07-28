@@ -1,85 +1,159 @@
 import { Router } from 'express';
-import { currentUserId, getGroupById, getRecipeById, groups } from '../data';
+import { prisma } from '../lib/prisma';
+import { createGroupInputSchema, updateGroupInputSchema } from '@family-recipe/shared';
 
 export const groupRouter = Router();
 
-groupRouter.get('/', (req, res) => {
-  const query = String(req.query.search || '').trim();
-  const filtered = query
-    ? groups.filter((group) => group.name.toLowerCase().includes(query.toLowerCase()))
-    : groups;
+groupRouter.get('/', async (req, res) => {
+  try {
+    const query = String(req.query.search || '').trim();
 
-  return res.status(200).json({ groups: filtered });
+    const where: Record<string, unknown> = {};
+    if (query) {
+      where['name'] = { contains: query, mode: 'insensitive' };
+    }
+
+    const groups = await prisma.group.findMany({
+      where,
+      orderBy: { lastUpdated: 'desc' },
+    });
+
+    return res.status(200).json({ groups });
+  } catch (error) {
+    console.error('List groups error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
 });
 
-groupRouter.get('/:id', (req, res) => {
-  const group = getGroupById(req.params.id);
-  if (!group) {
-    return res.status(404).json({ error: 'group_not_found' });
-  }
+groupRouter.get('/:id', async (req, res) => {
+  try {
+    const group = await prisma.group.findUnique({
+      where: { id: req.params.id },
+      include: {
+        recipes: {
+          include: {
+            recipe: {
+              include: { ingredients: true },
+            },
+          },
+        },
+      },
+    });
 
-  const recipes = group.recipeIds.map((recipeId) => getRecipeById(recipeId)).filter(Boolean);
-  return res.status(200).json({ group, recipes, isOwner: group.ownerId === currentUserId });
+    if (!group) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const recipes = group.recipes.map((rg: { recipe: Record<string, unknown> }) => rg.recipe);
+    const isOwner = group.ownerId === req.userId;
+
+    return res.status(200).json({ group, recipes, isOwner });
+  } catch (error) {
+    console.error('Get group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
 });
 
-groupRouter.post('/', (req, res) => {
-  const { name, description, icon } = req.body;
-  if (!name || !description) {
-    return res.status(400).json({ error: 'name_and_description_required' });
+groupRouter.post('/', async (req, res) => {
+  try {
+    const parsed = createGroupInputSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { name, description, icon } = parsed.data;
+
+    const group = await prisma.group.create({
+      data: {
+        name,
+        description,
+        icon: icon ?? '',
+        ownerId: req.userId!,
+        lastUpdated: new Date(),
+        members: {
+          create: {
+            userId: req.userId!,
+          },
+        },
+      },
+    });
+
+    return res.status(201).json(group);
+  } catch (error) {
+    console.error('Create group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
   }
-
-  const newGroup = {
-    id: `group-${groups.length + 1}`,
-    name,
-    description,
-    icon: icon || 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    lastUpdated: new Date().toISOString(),
-    ownerId: currentUserId,
-    recipeIds: [],
-  };
-
-  groups.push(newGroup);
-  return res.status(201).json(newGroup);
 });
 
-groupRouter.patch('/:id', (req, res) => {
-  const group = getGroupById(req.params.id);
-  if (!group) {
-    return res.status(404).json({ error: 'group_not_found' });
+groupRouter.patch('/:id', async (req, res) => {
+  try {
+    const existing = await prisma.group.findUnique({ where: { id: req.params.id } });
+    if (!existing) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const parsed = updateGroupInputSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { name, description, icon } = parsed.data;
+
+    const group = await prisma.group.update({
+      where: { id: req.params.id },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
+        ...(icon != null && { icon }),
+        lastUpdated: new Date(),
+      },
+    });
+
+    return res.status(200).json(group);
+  } catch (error) {
+    console.error('Update group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
   }
-
-  const { name, description, icon } = req.body;
-  group.name = name ?? group.name;
-  group.description = description ?? group.description;
-  group.icon = icon ?? group.icon;
-  group.lastUpdated = new Date().toISOString();
-
-  return res.status(200).json(group);
 });
 
-groupRouter.post('/:id/recipes', (req, res) => {
-  const group = getGroupById(req.params.id);
-  const { recipeId } = req.body;
-  if (!group) {
-    return res.status(404).json({ error: 'group_not_found' });
-  }
-  if (!recipeId) {
-    return res.status(400).json({ error: 'recipe_id_required' });
-  }
+groupRouter.post('/:id/recipes', async (req, res) => {
+  try {
+    const { recipeId } = req.body;
+    if (!recipeId) {
+      return res.status(400).json({ error: 'recipe_id_required' });
+    }
 
-  const recipe = getRecipeById(recipeId);
-  if (!recipe) {
-    return res.status(404).json({ error: 'recipe_not_found' });
-  }
+    const group = await prisma.group.findUnique({ where: { id: req.params.id } });
+    if (!group) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
 
-  if (!group.recipeIds.includes(recipeId)) {
-    group.recipeIds.push(recipeId);
-    group.lastUpdated = new Date().toISOString();
-  }
+    const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } });
+    if (!recipe) {
+      return res.status(404).json({ error: 'recipe_not_found' });
+    }
 
-  if (!recipe.groupIds.includes(group.id)) {
-    recipe.groupIds.push(group.id);
-  }
+    await prisma.recipeGroup.upsert({
+      where: {
+        recipeId_groupId: {
+          recipeId,
+          groupId: req.params.id,
+        },
+      },
+      create: {
+        recipeId,
+        groupId: req.params.id,
+      },
+      update: {},
+    });
 
-  return res.status(200).json({ group, recipe });
+    return res.status(200).json({ group, recipe });
+  } catch (error) {
+    console.error('Add recipe to group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
 });

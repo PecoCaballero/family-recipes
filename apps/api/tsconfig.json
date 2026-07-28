@@ -16,5 +16,5 @@
     "sourceMap": true,
     "noEmit": false
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "../../libs/shared/src/**/*"]
 }

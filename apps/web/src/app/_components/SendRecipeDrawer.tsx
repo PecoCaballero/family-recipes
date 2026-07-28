@@ -31,7 +31,7 @@ export function SendRecipeDrawer({ open, onClose, recipe }: PpSendRecipeDrawer) 
               key={group.id}
               onClick={() => console.log(`Send recipe ${recipe.name} to group ${group.name}`)}
             >
-              <Avatar src={group.icon} />
+              <Avatar src={group.icon ?? undefined} />
               <Typography>{group.name}</Typography>
             </ListItemButton>
           </ListItem>

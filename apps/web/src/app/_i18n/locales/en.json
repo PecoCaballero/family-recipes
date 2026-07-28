@@ -129,6 +129,7 @@
     "leaveGroup": "Leave Group",
     "deleteGroup": "Delete Group",
     "noGroups": "No groups found",
+    "noGroupsYet": "You don’t have any groups yet. Start by creating one!",
     "createdBy": "Created by",
     "leaveConfirm": "Are you sure you want to leave this group?",
     "deleteConfirm": "Are you sure you want to delete this group?"

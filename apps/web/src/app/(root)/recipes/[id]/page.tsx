@@ -1,18 +1,17 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { Stack, Typography, IconButton } from '@mui/material';
 import { Header } from '@/app/_components/Header';
-import { mockRecipes } from '@/app/__mocks__/recipes';
 import { useParams } from 'next/navigation';
 import { LoadingPage } from '@/app/_scenes/LoadingPage';
 import Image from 'next/image';
-import { RecipeList } from '@/app/_components/RecipeList';
 import RecipeMenu from '@/app/_components/RecipeMenu';
 import { MoreVert } from '@mui/icons-material';
 import { useAnchor } from '@/app/_hooks/useAnchor';
+import { useRecipeQuery } from '@/app/_hooks/recipes';
+import { EmptyRecipeState } from '@/app/_components/EmptyState';
 
 export default function RecipePage() {
   const { t } = useTranslation();
@@ -23,15 +22,21 @@ export default function RecipePage() {
     handleClose: handleMenuClose,
   } = useAnchor();
   const params = useParams<{ id: string }>();
-  const recipe = useMemo(() => mockRecipes.find((recipe) => recipe.id === params.id), [params]);
+  const { data: recipe, isLoading } = useRecipeQuery(params.id);
 
-  const nestedRecipes = useMemo(() => {
-    if (!recipe?.nestedRecipeIds) return [];
-    return mockRecipes.filter((r) => recipe.nestedRecipeIds?.includes(r.id));
-  }, [recipe]);
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
   if (!recipe) {
-    return <LoadingPage />;
+    return (
+      <Scene>
+        <Header goBack title={t('recipes.notFound')} />
+        <SceneContent>
+          <EmptyRecipeState message={t('recipes.notFound')} />
+        </SceneContent>
+      </Scene>
+    );
   }
 
   return (
@@ -66,15 +71,6 @@ export default function RecipePage() {
             sizes="100vw"
             style={{ width: '100%', height: 'auto' }}
           />
-        )}
-
-        {nestedRecipes && nestedRecipes.length > 0 && (
-          <>
-            <Typography variant="h4" textAlign="center" paddingTop={3} paddingBottom={1}>
-              {t('recipes.readySubtitle')}
-            </Typography>
-            <RecipeList recipes={nestedRecipes} />
-          </>
         )}
 
         <Typography variant="h4" textAlign="center" paddingTop={3} paddingBottom={1}>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CenteredFullPage } from '../_components/SceneComponents';
+import { useAuth } from '../_providers/AuthContext';
 
 export function RegisterScene() {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ export function RegisterScene() {
   const [error, setError] = useState('');
   const { t } = useTranslation();
   const router = useRouter();
+  const { register } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,20 +47,12 @@ export function RegisterScene() {
     setLoading(true);
 
     try {
-      // TODO: Replace with actual registration logic
-      console.log('Register attempt:', {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-      });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      await register(fullName, formData.email, formData.password);
       router.push('/recipes');
     } catch (err) {
-      setError(t('register.registerFailed'));
-      console.error(err);
+      const message = err instanceof Error ? err.message : t('register.registerFailed');
+      setError(message);
     } finally {
       setLoading(false);
     }

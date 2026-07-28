@@ -1,19 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { mockRecipes } from '@/app/__mocks__/recipes';
-import { ChipFilter, ChipOption } from '@/app/_components/ChipFilter';
+import { ChipFilter, type ChipOption } from '@/app/_components/ChipFilter';
 import { Header } from '@/app/_components/Header';
 import { RecipeList } from '@/app/_components/RecipeList';
 import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { SearchInput } from '@/app/_components/SearchInput';
-import { useSearchFilter } from '@/app/_hooks/useSearchFilter';
-import { useTranslation } from 'react-i18next';
+import { LoadingPage } from '@/app/_scenes/LoadingPage';
 import { EmptyRecipeState } from '@/app/_components/EmptyState';
+import { useTranslation } from 'react-i18next';
+import { useSearch } from '@/app/_hooks/useSearch';
+import { useRecipesQuery } from '@/app/_hooks/recipes';
 
 export default function RecipesPage() {
-  const { filteredData, searchQuery, setSearchQuery } = useSearchFilter(mockRecipes, 'name');
   const { t } = useTranslation();
+  const { searchQuery, handleSearchChange } = useSearch();
+  const { data: recipes = [], isLoading } = useRecipesQuery(searchQuery || undefined);
   const [selectedChip, setSelectedChip] = useState<ChipOption | undefined>();
 
   const chipOptions: ChipOption[] = [
@@ -22,19 +24,23 @@ export default function RecipesPage() {
   ];
 
   const chipFilteredData = selectedChip
-    ? filteredData.filter((recipe) => {
+    ? recipes.filter((recipe) => {
         if (selectedChip.label === t('recipes.myRecipes')) return recipe.isAuthor;
-        if (selectedChip.label === t('recipes.savedRecipes')) return !recipe.isAuthor;
+        if (selectedChip.label === t('recipes.savedRecipes')) return recipe.isSaved;
         return true;
       })
-    : filteredData;
+    : recipes;
+
+  if (isLoading && recipes.length === 0) {
+    return <LoadingPage />;
+  }
 
   return (
     <Scene>
       <Header>
         <SearchInput
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
           placeholder={t('search.searchPlaceholder')}
         />
         <ChipFilter
@@ -43,7 +49,7 @@ export default function RecipesPage() {
           onSelect={setSelectedChip}
         />
       </Header>
-      {chipFilteredData && (
+      {chipFilteredData.length > 0 && (
         <SceneContent>
           <RecipeList recipes={chipFilteredData} />
         </SceneContent>

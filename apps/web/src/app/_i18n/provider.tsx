@@ -1,17 +1,14 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './config';
 import { LoadingPage } from '../_scenes/LoadingPage';
+import { PpWC } from '@/app/_types/types';
 
 const LANGUAGE_STORAGE_KEY = 'language';
 
-interface I18nProviderProps {
-  children: ReactNode;
-}
-
-export function I18nProvider({ children }: I18nProviderProps) {
+export function I18nProvider({ children }: PpWC) {
   const [isInitialized, setIsInitialized] = useState(false);
   useEffect(() => {
     const storedLanguage = sessionStorage.getItem(LANGUAGE_STORAGE_KEY);

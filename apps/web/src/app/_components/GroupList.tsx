@@ -35,7 +35,7 @@ export function GroupList({ groups }: PpGroupList) {
             <CardActionArea onClick={() => router.push(`/groups/${group.id}`)} sx={{ flexGrow: 1 }}>
               <CardContent sx={{ flexGrow: 1 }}>
                 <Stack direction="row" alignItems="center" spacing={2}>
-                  <Avatar src={group.icon} />
+                  <Avatar src={group.icon ?? undefined} />
                   <Stack>
                     <Typography>{group.name}</Typography>
 

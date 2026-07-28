@@ -9,39 +9,20 @@ import { Scene, SceneContent } from '../_components/SceneComponents';
 import { SettingOption } from '../_components/SettingOption';
 import { RecipeStats } from '../_components/RecipeStats';
 import { UserInfo } from '../_components/UserInfo';
+import { useAuth } from '../_providers/AuthContext';
 import { useTheme } from '../_providers/themeContext';
 import type { ThemeMode } from '../_providers/themeContext';
-
-type TpUserData = {
-  name: string;
-  email: string;
-  avatar?: string;
-  recipesSaved: number;
-  recipesSharedByOthers: number;
-};
-
-type TpAccountSettings = {
-  language: string;
-  privacyLevel: string;
-  notifications: boolean;
-};
+import { useUserSettingsUpdate } from '../_hooks/user';
 
 export function AccountScene() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { storedMode, setMode } = useTheme();
-  const [loading, setLoading] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const { user, logout } = useAuth();
+  const { mutateAsync: updateSetting, isPending: savingSetting } = useUserSettingsUpdate();
 
-  // Mock user data - TODO: Replace with actual API call
-  const [userData] = useState<TpUserData>({
-    name: 'John Doe',
-    email: 'john@example.com',
-    avatar: undefined,
-    recipesSaved: 24,
-    recipesSharedByOthers: 12,
-  });
-
-  const [settings, setSettings] = useState<TpAccountSettings>({
+  const [settings, setSettings] = useState({
     language: i18n.language || 'en',
     privacyLevel: 'private',
     notifications: true,
@@ -57,30 +38,28 @@ export function AccountScene() {
   }, [i18n, settings.language]);
 
   const handleLogout = async () => {
-    setLoading(true);
+    setLogoutLoading(true);
     try {
-      // TODO: Replace with actual logout logic
-      console.log('Logging out');
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await logout();
       router.push('/login');
     } catch (err) {
       console.error('Logout failed:', err);
     } finally {
-      setLoading(false);
+      setLogoutLoading(false);
     }
   };
 
-  const handleSettingChange = (key: keyof TpAccountSettings, value: boolean | string) => {
+  const handleSettingChange = async (key: string, value: boolean | string) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
-    console.log(`Setting ${key} changed to:`, value);
 
-    // Handle language change
     if (key === 'language' && typeof value === 'string') {
       i18n.changeLanguage(value);
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('language', value);
       }
     }
+
+    await updateSetting({ key, value });
   };
 
   const languageOptions = [
@@ -106,11 +85,11 @@ export function AccountScene() {
     <Scene>
       <SceneContent>
         <Stack spacing={2} sx={{ padding: 2, paddingTop: 6 }}>
-          <UserInfo name={userData.name} email={userData.email} avatar={userData.avatar} />
+          <UserInfo name={user?.name ?? 'User'} email={user?.email ?? ''} avatar={user?.avatar} />
 
           <RecipeStats
-            recipesSaved={userData.recipesSaved}
-            recipesShared={userData.recipesSharedByOthers}
+            recipesSaved={user?.recipesSaved.length ?? 0}
+            recipesShared={user?.recipesSharedByOthers ?? 0}
           />
 
           <SettingOption
@@ -158,10 +137,10 @@ export function AccountScene() {
             fullWidth
             startIcon={<LogoutIcon />}
             onClick={handleLogout}
-            disabled={loading}
+            disabled={logoutLoading}
             sx={{ fontWeight: 'bold' }}
           >
-            {loading ? t('common.loading') : t('account.logoutButton')}
+            {logoutLoading ? t('common.loading') : t('account.logoutButton')}
           </Button>
         </Stack>
       </SceneContent>

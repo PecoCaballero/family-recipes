@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@family-recipe/shared": [
+        "/Users/peco/Projects/family-recipes/libs/shared/src/index.ts"
+      ]
+    }
+  },
+  "extends": "../../../../apps/api/tsconfig.json"
+}
