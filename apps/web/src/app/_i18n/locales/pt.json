@@ -108,11 +108,17 @@
     "title": "Grupos",
     "create": {
       "title": "Criar grupo",
-      "description": "Adicione detalhes e convide membros para começar a colaborar."
+      "description": "Adicione detalhes e convide membros para começar a colaborar.",
+      "button": "Criar grupo",
+      "validationRequired": "Nome e descrição são obrigatórios.",
+      "error": "Falha ao criar o grupo. Tente novamente."
     },
     "edit": {
       "title": "Editar grupo",
-      "description": "Atualize as informações do grupo e os membros."
+      "description": "Atualize as informações do grupo e os membros.",
+      "button": "Salvar alterações",
+      "validationRequired": "Nome e descrição são obrigatórios.",
+      "error": "Falha ao atualizar o grupo. Tente novamente."
     },
     "view": {
       "title": "Detalhes do grupo"
@@ -128,10 +134,16 @@
     "removeMember": "Remover membro",
     "leaveGroup": "Sair do grupo",
     "deleteGroup": "Excluir grupo",
+    "nameLabel": "Nome do grupo",
+    "descriptionLabel": "Descrição",
+    "iconLabel": "Ícone (emoji ou URL)",
+    "iconPlaceholder": "ex. 🍕 ou https://...",
     "noGroups": "Nenhum grupo encontrado",
+    "noGroupsYet": "Você ainda não tem grupos. Comece criando um!",
     "createdBy": "Criado por",
     "leaveConfirm": "Tem certeza que deseja sair deste grupo?",
-    "deleteConfirm": "Tem certeza que deseja excluir este grupo?"
+    "deleteConfirm": "Tem certeza que deseja excluir este grupo?",
+    "deleteConfirmMessage": "Esta ação não pode ser desfeita. Todos os dados do grupo e associações de membros serão removidos permanentemente."
   },
   "search": {
     "title": "Pesquisar",

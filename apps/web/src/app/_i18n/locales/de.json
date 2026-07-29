@@ -108,11 +108,17 @@
     "title": "Gruppen",
     "create": {
       "title": "Gruppe erstellen",
-      "description": "Füge Details hinzu und lade Mitglieder ein, um mit der Zusammenarbeit zu beginnen."
+      "description": "Füge Details hinzu und lade Mitglieder ein, um mit der Zusammenarbeit zu beginnen.",
+      "button": "Gruppe erstellen",
+      "validationRequired": "Name und Beschreibung sind erforderlich.",
+      "error": "Fehler beim Erstellen der Gruppe. Bitte versuche es erneut."
     },
     "edit": {
       "title": "Gruppe bearbeiten",
-      "description": "Aktualisiere deine Gruppeninformationen und Mitglieder."
+      "description": "Aktualisiere deine Gruppeninformationen und Mitglieder.",
+      "button": "Änderungen speichern",
+      "validationRequired": "Name und Beschreibung sind erforderlich.",
+      "error": "Fehler beim Aktualisieren der Gruppe. Bitte versuche es erneut."
     },
     "view": {
       "title": "Gruppendetails"
@@ -128,10 +134,16 @@
     "removeMember": "Mitglied entfernen",
     "leaveGroup": "Gruppe verlassen",
     "deleteGroup": "Gruppe löschen",
+    "nameLabel": "Gruppenname",
+    "descriptionLabel": "Beschreibung",
+    "iconLabel": "Symbol (Emoji oder URL)",
+    "iconPlaceholder": "z.B. 🍕 oder https://...",
     "noGroups": "Keine Gruppen gefunden",
+    "noGroupsYet": "Du hast noch keine Gruppen. Erstelle eine, um loszulegen!",
     "createdBy": "Erstellt von",
     "leaveConfirm": "Möchten Sie diese Gruppe wirklich verlassen?",
-    "deleteConfirm": "Möchten Sie diese Gruppe wirklich löschen?"
+    "deleteConfirm": "Möchten Sie diese Gruppe wirklich löschen?",
+    "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Gruppendaten und Mitgliedszuordnungen werden dauerhaft entfernt."
   },
   "search": {
     "title": "Suche",

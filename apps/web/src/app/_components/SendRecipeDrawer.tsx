@@ -1,6 +1,8 @@
 import { Avatar, Drawer, List, ListItem, ListItemButton, Typography } from '@mui/material';
 import { Recipe } from '@family-recipe/shared';
-import { mockGroups } from '../__mocks__/groups';
+import { useGroupsQuery, useAddRecipeToGroup } from '../_hooks/groups';
+import { ContentSkeleton } from '../_components/ContentSkeleton';
+import { useTranslation } from 'react-i18next';
 
 type PpSendRecipeDrawer = {
   open: boolean;
@@ -9,33 +11,55 @@ type PpSendRecipeDrawer = {
 };
 
 export function SendRecipeDrawer({ open, onClose, recipe }: PpSendRecipeDrawer) {
+  const { t } = useTranslation();
+  const { data: groups = [], isLoading } = useGroupsQuery();
+  const addRecipeToGroup = useAddRecipeToGroup();
+
+  const handleSend = (groupId: string) => {
+    addRecipeToGroup.mutate(
+      { groupId, recipeId: recipe.id },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      },
+    );
+  };
+
   return (
     <Drawer
       anchor="bottom"
       open={open}
       onClose={onClose}
-      sx={{ borderRadius: 2 }}
       slotProps={{
         paper: {
-          sx: {
-            borderRadius: 2,
-          },
+          sx: { borderRadius: 2 },
         },
       }}
     >
       <List sx={{ maxHeight: '50vh' }}>
-        {mockGroups.map((group) => (
-          <ListItem key={group.id} disablePadding>
-            <ListItemButton
-              sx={{ gap: 1 }}
-              key={group.id}
-              onClick={() => console.log(`Send recipe ${recipe.name} to group ${group.name}`)}
-            >
-              <Avatar src={group.icon ?? undefined} />
-              <Typography>{group.name}</Typography>
-            </ListItemButton>
+        {isLoading ? (
+          <ContentSkeleton variant="list" />
+        ) : groups.length === 0 ? (
+          <ListItem>
+            <Typography sx={{ py: 2, textAlign: 'center', width: '100%' }}>
+              {t('groups.noGroupsYet')}
+            </Typography>
           </ListItem>
-        ))}
+        ) : (
+          groups.map((group) => (
+            <ListItem key={group.id} disablePadding>
+              <ListItemButton
+                sx={{ gap: 1 }}
+                onClick={() => handleSend(group.id)}
+                disabled={addRecipeToGroup.isPending}
+              >
+                <Avatar src={group.icon ?? undefined} />
+                <Typography>{group.name}</Typography>
+              </ListItemButton>
+            </ListItem>
+          ))
+        )}
       </List>
     </Drawer>
   );

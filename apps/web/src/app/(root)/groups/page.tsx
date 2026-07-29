@@ -4,7 +4,7 @@ import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { GroupList } from '@/app/_components/GroupList';
 import { SearchInput } from '@/app/_components/SearchInput';
 import { Header } from '@/app/_components/Header';
-import { LoadingPage } from '@/app/_scenes/LoadingPage';
+import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { EmptyGroupState } from '@/app/_components/EmptyState';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from '@/app/_hooks/useSearch';
@@ -16,7 +16,20 @@ export default function GroupsPage() {
   const { data: groups = [], isLoading } = useGroupsQuery(searchQuery || undefined);
 
   if (isLoading) {
-    return <LoadingPage />;
+    return (
+      <Scene>
+        <Header>
+          <SearchInput
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder={t('groups.searchPlaceholder')}
+          />
+        </Header>
+        <SceneContent>
+          <ContentSkeleton variant="list" />
+        </SceneContent>
+      </Scene>
+    );
   }
 
   if (groups.length === 0) {

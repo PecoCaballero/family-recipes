@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import {
-  ingredientSchema,
   prismaIngredientSchema,
   createRecipeInputSchema,
   updateRecipeInputSchema,
@@ -36,6 +35,11 @@ async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
     where: { parentRecipeId: dbRecipe.id },
   });
 
+  const recipeGroups = await prisma.recipeGroup.findMany({
+    where: { recipeId: dbRecipe.id },
+    select: { groupId: true },
+  });
+
   const ingredients: Ingredient[] = dbRecipe.ingredients.map((ing) => ({
     name: ing.name,
     unit: ing.unit ?? undefined,
@@ -53,7 +57,7 @@ async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
     instructions: dbRecipe.instructions,
     lastUpdated: dbRecipe.lastUpdated.toISOString(),
     nestedRecipeIds: children.map((c: { id: string }) => c.id),
-    groupIds: [],
+    groupIds: recipeGroups.map((rg: { groupId: string }) => rg.groupId),
     savedByIds: [],
     isAuthor,
     isSaved: savedCount > 0,
@@ -64,15 +68,37 @@ recipeRouter.get('/', async (req, res) => {
   try {
     const query = String(req.query.search || '').trim();
 
-    const where: Record<string, unknown> = {};
+    const userGroups = await prisma.groupMember.findMany({
+      where: { userId: req.userId },
+      select: { groupId: true },
+    });
+    const groupIds = userGroups.map((g) => g.groupId);
+
+    const visibilityConditions: Record<string, unknown>[] = [
+      { authorId: req.userId },
+      { visibility: 'public' },
+    ];
+    if (groupIds.length > 0) {
+      visibilityConditions.push({
+        recipeGroups: { some: { groupId: { in: groupIds } } },
+      });
+    }
+
+    const where: Record<string, unknown> = {
+      OR: visibilityConditions,
+    };
     if (query) {
-      where['OR'] = [
-        { name: { contains: query, mode: 'insensitive' } },
-        { description: { contains: query, mode: 'insensitive' } },
+      where['AND'] = [
         {
-          ingredients: {
-            some: { name: { contains: query, mode: 'insensitive' } },
-          },
+          OR: [
+            { name: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+            {
+              ingredients: {
+                some: { name: { contains: query, mode: 'insensitive' } },
+              },
+            },
+          ],
         },
       ];
     }

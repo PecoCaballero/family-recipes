@@ -108,11 +108,17 @@
     "title": "Groupes",
     "create": {
       "title": "Créer un groupe",
-      "description": "Ajoutez des détails et invitez des membres pour commencer à collaborer."
+      "description": "Ajoutez des détails et invitez des membres pour commencer à collaborer.",
+      "button": "Créer le groupe",
+      "validationRequired": "Le nom et la description sont obligatoires.",
+      "error": "Échec de la création du groupe. Veuillez réessayer."
     },
     "edit": {
       "title": "Modifier le groupe",
-      "description": "Mettez à jour les informations du groupe et les membres."
+      "description": "Mettez à jour les informations du groupe et les membres.",
+      "button": "Enregistrer les modifications",
+      "validationRequired": "Le nom et la description sont obligatoires.",
+      "error": "Échec de la mise à jour du groupe. Veuillez réessayer."
     },
     "view": {
       "title": "Détails du groupe"
@@ -128,10 +134,16 @@
     "removeMember": "Supprimer un membre",
     "leaveGroup": "Quitter le groupe",
     "deleteGroup": "Supprimer le groupe",
+    "nameLabel": "Nom du groupe",
+    "descriptionLabel": "Description",
+    "iconLabel": "Icône (emoji ou URL)",
+    "iconPlaceholder": "ex. 🍕 ou https://...",
     "noGroups": "Aucun groupe trouvé",
+    "noGroupsYet": "Vous n'avez pas encore de groupes. Commencez par en créer un !",
     "createdBy": "Créé par",
     "leaveConfirm": "Êtes-vous sûr de vouloir quitter ce groupe?",
-    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce groupe?"
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce groupe?",
+    "deleteConfirmMessage": "Cette action est irréversible. Toutes les données du groupe et les associations de membres seront définitivement supprimées."
   },
   "search": {
     "title": "Rechercher",
