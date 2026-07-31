@@ -102,7 +102,8 @@
     "ingredientName": "Ingredient Name",
     "quantity": "Quantity",
     "unit": "Unit",
-    "addIngredient": "Add Ingredient"
+    "addIngredient": "Add Ingredient",
+    "fabCreateTooltip": "Create Recipe"
   },
   "groups": {
     "title": "Groups",
@@ -121,8 +122,28 @@
       "error": "Failed to update group. Please try again."
     },
     "view": {
-      "title": "Group Details"
+      "title": "Group Details",
+      "allRecipes": "All"
     },
+    "settings": {
+      "title": "Group Settings",
+      "memberList": "Members",
+      "recipeCount": "{{count}} recipes",
+      "kickMember": "Remove member",
+      "leaveGroup": "Leave Group",
+      "editGroup": "Edit Group",
+      "deleteGroup": "Delete Group",
+      "leaveConfirm": "Leave Group",
+      "leaveConfirmMessage": "Are you sure you want to leave this group? You will lose access to all shared recipes.",
+      "deleteConfirm": "Delete Group",
+      "deleteConfirmMessage": "This action cannot be undone. All group data and member associations will be permanently removed.",
+      "ownerCannotLeave": "You are the group owner. Transfer ownership or remove all members before leaving.",
+      "cannotDeleteWithMembers": "Cannot delete group while other members remain. Remove all members first.",
+      "leaveAndDelete": "Leave and Delete Group",
+      "leaveAndDeleteConfirm": "Leave and Delete Group",
+      "leaveAndDeleteMessage": "You are the last member. Leaving will permanently delete this group and all its data. This action cannot be undone."
+    },
+    "fabCreateTooltip": "Create Group",
     "searchPlaceholder": "Search groups...",
     "lastUpdated": "Last updated",
     "myGroups": "My Groups",

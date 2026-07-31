@@ -44,7 +44,13 @@ groupRouter.get('/:id', async (req, res) => {
     const group = await prisma.group.findUnique({
       where: { id: req.params.id },
       include: {
-        members: true,
+        members: {
+          include: {
+            user: {
+              select: { id: true, name: true, email: true, avatar: true },
+            },
+          },
+        },
         recipes: {
           include: {
             recipe: {
@@ -55,12 +61,7 @@ groupRouter.get('/:id', async (req, res) => {
       },
     });
 
-    if (!group) {
-      return res.status(404).json({ error: 'group_not_found' });
-    }
-
-    const isMember = group.members?.some((m: { userId: string }) => m.userId === req.userId);
-    if (!isMember) {
+    if (!group || !group.members?.some((m: { userId: string }) => m.userId === req.userId)) {
       return res.status(404).json({ error: 'group_not_found' });
     }
 
@@ -68,10 +69,26 @@ groupRouter.get('/:id', async (req, res) => {
     const isOwner = group.ownerId === req.userId;
     const recipeIds = group.recipes.map((rg: { recipeId: string }) => rg.recipeId);
 
+    const members = group.members.map(
+      (m: { userId: string; user: { id: string; name: string; email: string; avatar: string | null } }) => {
+        const recipeCount = recipes.filter(
+          (r: Record<string, unknown>) => r.authorId === m.userId,
+        ).length;
+        return {
+          id: m.user.id,
+          name: m.user.name,
+          email: m.user.email,
+          avatar: m.user.avatar,
+          recipeCount,
+        };
+      },
+    );
+
     return res.status(200).json({
       group: { ...group, recipeIds },
       recipes,
       isOwner,
+      members,
     });
   } catch (error) {
     console.error('Get group error:', error);
@@ -151,13 +168,20 @@ groupRouter.patch('/:id', async (req, res) => {
 
 groupRouter.delete('/:id', async (req, res) => {
   try {
-    const group = await prisma.group.findUnique({ where: { id: req.params.id } });
+    const group = await prisma.group.findUnique({
+      where: { id: req.params.id },
+      include: { members: true },
+    });
     if (!group) {
       return res.status(404).json({ error: 'group_not_found' });
     }
 
     if (group.ownerId !== req.userId) {
       return res.status(403).json({ error: 'forbidden' });
+    }
+
+    if (group.members.length > 1) {
+      return res.status(400).json({ error: 'group_has_other_members' });
     }
 
     await prisma.group.delete({ where: { id: req.params.id } });
@@ -297,6 +321,46 @@ groupRouter.delete('/:id/members/:userId', async (req, res) => {
     return res.status(200).json({ status: 'removed' });
   } catch (error) {
     console.error('Remove member error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+groupRouter.post('/:id/quit', async (req, res) => {
+  try {
+    const group = await prisma.group.findUnique({
+      where: { id: req.params.id },
+      include: { members: true },
+    });
+    if (!group) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const isMember = group.members.some((m: { userId: string }) => m.userId === req.userId);
+    if (!isMember) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const memberCount = group.members.length;
+
+    if (group.ownerId === req.userId && memberCount > 1) {
+      return res.status(400).json({ error: 'owner_must_transfer_or_delete' });
+    }
+
+    await prisma.groupMember.deleteMany({
+      where: {
+        groupId: req.params.id,
+        userId: req.userId!,
+      },
+    });
+
+    const groupDeleted = group.ownerId === req.userId && memberCount === 1;
+    if (groupDeleted) {
+      await prisma.group.delete({ where: { id: req.params.id } });
+    }
+
+    return res.status(200).json({ status: 'left', groupDeleted });
+  } catch (error) {
+    console.error('Quit group error:', error);
     return res.status(500).json({ error: 'internal_error' });
   }
 });

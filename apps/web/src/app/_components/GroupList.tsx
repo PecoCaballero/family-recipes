@@ -1,8 +1,9 @@
 'use client';
 
 import { Group } from '@family-recipe/shared';
-import { Grid, Card, CardContent, Avatar, CardActionArea, Stack, Typography } from '@mui/material';
+import { Grid, Card, CardContent, CardActionArea, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { SafeAvatar } from './SafeAvatar';
 import { useTranslation } from 'react-i18next';
 
 export type PpGroupList = { groups: Group[] };
@@ -35,7 +36,7 @@ export function GroupList({ groups }: PpGroupList) {
             <CardActionArea onClick={() => router.push(`/groups/${group.id}`)} sx={{ flexGrow: 1 }}>
               <CardContent sx={{ flexGrow: 1 }}>
                 <Stack direction="row" alignItems="center" spacing={2}>
-                  <Avatar src={group.icon ?? undefined} />
+                  <SafeAvatar src={group.icon} />
                   <Stack>
                     <Typography>{group.name}</Typography>
 

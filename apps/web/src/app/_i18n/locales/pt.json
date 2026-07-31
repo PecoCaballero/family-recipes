@@ -102,7 +102,8 @@
     "ingredientName": "Nome do ingrediente",
     "quantity": "Quantidade",
     "unit": "Unidade",
-    "addIngredient": "Adicionar ingrediente"
+    "addIngredient": "Adicionar ingrediente",
+    "fabCreateTooltip": "Criar receita"
   },
   "groups": {
     "title": "Grupos",
@@ -121,8 +122,28 @@
       "error": "Falha ao atualizar o grupo. Tente novamente."
     },
     "view": {
-      "title": "Detalhes do grupo"
+      "title": "Detalhes do grupo",
+      "allRecipes": "Todas"
     },
+    "settings": {
+      "title": "Configurações do grupo",
+      "memberList": "Membros",
+      "recipeCount": "{{count}} receitas",
+      "kickMember": "Remover membro",
+      "leaveGroup": "Sair do grupo",
+      "editGroup": "Editar grupo",
+      "deleteGroup": "Excluir grupo",
+      "leaveConfirm": "Sair do grupo",
+      "leaveConfirmMessage": "Tem certeza que deseja sair deste grupo? Você perderá acesso a todas as receitas compartilhadas.",
+      "deleteConfirm": "Excluir grupo",
+      "deleteConfirmMessage": "Esta ação não pode ser desfeita. Todos os dados do grupo serão removidos permanentemente.",
+      "ownerCannotLeave": "Você é o proprietário. Transfira a propriedade ou remova todos os membros antes de sair.",
+      "cannotDeleteWithMembers": "Não é possível excluir o grupo enquanto outros membros estiverem presentes. Remova todos os membros primeiro.",
+      "leaveAndDelete": "Sair e excluir grupo",
+      "leaveAndDeleteConfirm": "Sair e excluir grupo",
+      "leaveAndDeleteMessage": "Você é o último membro. Sair excluirá permanentemente este grupo e todos os seus dados. Esta ação não pode ser desfeita."
+    },
+    "fabCreateTooltip": "Criar grupo",
     "searchPlaceholder": "Pesquisar grupos...",
     "lastUpdated": "Última atualização",
     "myGroups": "Meus grupos",

@@ -131,3 +131,26 @@ export const tokenPairSchema = z.object({
   refreshToken: z.string(),
 });
 export type TokenPair = z.infer<typeof tokenPairSchema>;
+
+export const memberWithCountSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  avatar: z.string().optional(),
+  recipeCount: z.number(),
+});
+export type MemberWithCount = z.infer<typeof memberWithCountSchema>;
+
+export const groupDetailResponseSchema = z.object({
+  group: groupSchema,
+  recipes: z.array(recipeSchema),
+  isOwner: z.boolean(),
+  members: z.array(memberWithCountSchema),
+});
+export type GroupDetailResponse = z.infer<typeof groupDetailResponseSchema>;
+
+export const quitGroupResponseSchema = z.object({
+  status: z.literal('left'),
+  groupDeleted: z.boolean().optional(),
+});
+export type QuitGroupResponse = z.infer<typeof quitGroupResponseSchema>;

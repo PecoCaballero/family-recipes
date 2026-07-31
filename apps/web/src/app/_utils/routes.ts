@@ -1,9 +1,20 @@
+export function generatePath(pattern: string, params: Record<string, string>): string {
+  return pattern.replace(/:(\w+)/g, (_, key) => {
+    const value = params[key];
+    if (value === undefined) {
+      throw new Error(`Missing param "${key}" for path "${pattern}"`);
+    }
+    return value;
+  });
+}
+
 export const routes = {
   groups: {
     base: { path: '/groups', title: 'Groups' },
     create: { path: '/groups/create', title: 'Create Group' },
     edit: { path: '/groups/:id/edit', title: 'Edit Group' },
     view: { path: '/groups/:id', title: 'Group' },
+    settings: { path: '/groups/:id/settings', title: 'Group Settings' },
   },
   search: {
     base: { path: '/search', title: 'Search' },

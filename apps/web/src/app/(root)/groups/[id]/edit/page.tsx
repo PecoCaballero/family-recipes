@@ -3,8 +3,9 @@
 import { useState, FormEvent, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { TextField, Button, Box, Alert, CircularProgress } from '@mui/material';
+import { TextField, Box, Alert, CircularProgress } from '@mui/material';
 import { Header } from '@/app/_components/Header';
+import { LoadingButton } from '@/app/_components/LoadingButton';
 import { useGroupQuery, useUpdateGroup } from '@/app/_hooks/groups';
 
 export default function EditGroupPage() {
@@ -99,19 +100,16 @@ export default function EditGroupPage() {
           margin="normal"
           placeholder={t('groups.iconPlaceholder')}
         />
-        <Button
+        <LoadingButton
           type="submit"
           variant="contained"
           fullWidth
-          disabled={updateGroup.isPending}
+          loading={updateGroup.isPending}
+          spinnerSize={24}
           sx={{ mt: 3 }}
         >
-          {updateGroup.isPending ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : (
-            t('groups.edit.button')
-          )}
-        </Button>
+          {t('groups.edit.button')}
+        </LoadingButton>
       </Box>
     </>
   );

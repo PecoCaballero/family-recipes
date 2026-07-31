@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/app/_utils/apiClient';
-import type { Group, Recipe } from '@family-recipe/shared';
+import type { Group, Recipe, MemberWithCount } from '@family-recipe/shared';
 
 export function useGroupsQuery(search?: string) {
   return useQuery({
@@ -23,6 +23,7 @@ export function useGroupQuery(id: string) {
         group: Group;
         recipes: Recipe[];
         isOwner: boolean;
+        members: MemberWithCount[];
       }>(`/v1/groups/${id}`);
       return res.data;
     },
@@ -96,6 +97,38 @@ export function useRemoveRecipeFromGroup() {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['groups', variables.groupId] });
+    },
+  });
+}
+
+export function useQuitGroup(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await apiClient.post<{ status: string; groupDeleted?: boolean }>(
+        `/v1/groups/${groupId}/quit`,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+    },
+  });
+}
+
+export function useRemoveMember(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await apiClient.delete<{ status: string }>(
+        `/v1/groups/${groupId}/members/${userId}`,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups', groupId] });
     },
   });
 }

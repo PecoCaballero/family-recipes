@@ -1,7 +1,8 @@
-import { Avatar, Drawer, List, ListItem, ListItemButton, Typography } from '@mui/material';
+import { Drawer, List, ListItem, ListItemButton, Typography } from '@mui/material';
 import { Recipe } from '@family-recipe/shared';
 import { useGroupsQuery, useAddRecipeToGroup } from '../_hooks/groups';
 import { ContentSkeleton } from '../_components/ContentSkeleton';
+import { SafeAvatar } from './SafeAvatar';
 import { useTranslation } from 'react-i18next';
 
 type PpSendRecipeDrawer = {
@@ -54,7 +55,7 @@ export function SendRecipeDrawer({ open, onClose, recipe }: PpSendRecipeDrawer) 
                 onClick={() => handleSend(group.id)}
                 disabled={addRecipeToGroup.isPending}
               >
-                <Avatar src={group.icon ?? undefined} />
+                <SafeAvatar src={group.icon} />
                 <Typography>{group.name}</Typography>
               </ListItemButton>
             </ListItem>

@@ -1,34 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { SceneContent } from '@/app/_components/SceneComponents';
 import { Header } from '@/app/_components/Header';
 import { RecipeList } from '@/app/_components/RecipeList';
 import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
+import { ChipFilter, type ChipOption } from '@/app/_components/ChipFilter';
+import { isHttpUrl } from '@/app/_components/SafeAvatar';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
-import { useGroupQuery, useDeleteGroup } from '@/app/_hooks/groups';
-import {
-  Button,
-  Box,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  CircularProgress,
-} from '@mui/material';
+import { useGroupQuery } from '@/app/_hooks/groups';
+import { routes, generatePath } from '@/app/_utils/routes';
+import { Settings } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import type { MemberWithCount, Recipe } from '@family-recipe/shared';
 
 export default function GroupPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const { data, isLoading } = useGroupQuery(params.id);
-  const deleteGroup = useDeleteGroup(params.id);
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedChip, setSelectedChip] = useState<ChipOption | undefined>();
 
-  if (isLoading) {
+  const members = data?.members ?? [];
+  const recipes = data?.recipes ?? [];
+  const group = data?.group;
+
+  const chipOptions: ChipOption[] = useMemo(() => {
+    return [
+      { label: t('groups.view.allRecipes') },
+      ...members.map((m: MemberWithCount) => ({
+        label: m.name,
+        avatar: isHttpUrl(m.avatar) ? m.avatar : undefined,
+      })),
+    ];
+  }, [members, t]);
+
+  const filteredRecipes = useMemo(() => {
+    if (!selectedChip || selectedChip.label === t('groups.view.allRecipes')) {
+      return recipes;
+    }
+    const selectedMember = members.find((m: MemberWithCount) => m.name === selectedChip.label);
+    if (!selectedMember) return recipes;
+    return recipes.filter((r: Recipe) => r.authorId === selectedMember.id);
+  }, [recipes, selectedChip, members, t]);
+
+  if (isLoading || !data) {
     return (
       <SceneContent>
         <Header goBack title={t('groups.view.title')} />
@@ -37,49 +55,30 @@ export default function GroupPage() {
     );
   }
 
-  const group = data?.group;
-  const recipes = data?.recipes ?? [];
-  const isOwner = data?.isOwner ?? false;
-
-  const handleDelete = () => {
-    deleteGroup.mutate(undefined, {
-      onSuccess: () => {
-        router.push('/groups');
-      },
-    });
-  };
+  const settingsPath = generatePath(routes.groups.settings.path, { id: params.id });
 
   return (
     <SceneContent>
-      <Header goBack title={group?.name ?? t('groups.view.title')} />
-      {isOwner && (
-        <Box sx={{ display: 'flex', gap: 1, px: 2, pt: 1 }}>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => router.push(`/groups/${params.id}/edit`)}
+      <Header
+        goBack
+        title={group?.name ?? t('groups.view.title')}
+        endSlot={
+          <IconButton
+            aria-label={t('groups.settings.title')}
+            onClick={() => router.push(settingsPath)}
           >
-            {t('common.edit')}
-          </Button>
-          <Button variant="outlined" color="error" size="small" onClick={() => setDeleteOpen(true)}>
-            {t('common.delete')}
-          </Button>
-        </Box>
+            <Settings />
+          </IconButton>
+        }
+      />
+      {members.length > 1 && (
+        <ChipFilter
+          options={chipOptions}
+          selectedOption={selectedChip}
+          onSelect={setSelectedChip}
+        />
       )}
-      <RecipeList recipes={recipes} />
-
-      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-        <DialogTitle>{t('groups.deleteConfirm')}</DialogTitle>
-        <DialogContent>
-          <Typography>{t('groups.deleteConfirmMessage')}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteOpen(false)}>{t('common.cancel')}</Button>
-          <Button onClick={handleDelete} color="error" disabled={deleteGroup.isPending}>
-            {deleteGroup.isPending ? <CircularProgress size={20} /> : t('common.delete')}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <RecipeList recipes={filteredRecipes} />
     </SceneContent>
   );
 }

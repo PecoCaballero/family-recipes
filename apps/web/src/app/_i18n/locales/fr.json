@@ -102,7 +102,8 @@
     "ingredientName": "Nom de l'ingrédient",
     "quantity": "Quantité",
     "unit": "Unité",
-    "addIngredient": "Ajouter un ingrédient"
+    "addIngredient": "Ajouter un ingrédient",
+    "fabCreateTooltip": "Créer une recette"
   },
   "groups": {
     "title": "Groupes",
@@ -121,8 +122,28 @@
       "error": "Échec de la mise à jour du groupe. Veuillez réessayer."
     },
     "view": {
-      "title": "Détails du groupe"
+      "title": "Détails du groupe",
+      "allRecipes": "Toutes"
     },
+    "settings": {
+      "title": "Paramètres du groupe",
+      "memberList": "Membres",
+      "recipeCount": "{{count}} recettes",
+      "kickMember": "Retirer le membre",
+      "leaveGroup": "Quitter le groupe",
+      "editGroup": "Modifier le groupe",
+      "deleteGroup": "Supprimer le groupe",
+      "leaveConfirm": "Quitter le groupe",
+      "leaveConfirmMessage": "Êtes-vous sûr de vouloir quitter ce groupe? Vous perdrez l'accès à toutes les recettes partagées.",
+      "deleteConfirm": "Supprimer le groupe",
+      "deleteConfirmMessage": "Cette action est irréversible. Toutes les données du groupe seront définitivement supprimées.",
+      "ownerCannotLeave": "Vous êtes le propriétaire. Transférez la propriété ou retirez tous les membres avant de quitter.",
+      "cannotDeleteWithMembers": "Impossible de supprimer le groupe tant que d'autres membres sont présents. Retirez tous les membres d'abord.",
+      "leaveAndDelete": "Quitter et supprimer le groupe",
+      "leaveAndDeleteConfirm": "Quitter et supprimer le groupe",
+      "leaveAndDeleteMessage": "Vous êtes le dernier membre. Quitter supprimera définitivement ce groupe et toutes ses données. Cette action est irréversible."
+    },
+    "fabCreateTooltip": "Créer un groupe",
     "searchPlaceholder": "Rechercher des groupes...",
     "lastUpdated": "Dernière mise à jour",
     "myGroups": "Mes groupes",

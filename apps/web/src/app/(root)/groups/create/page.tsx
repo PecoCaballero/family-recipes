@@ -3,8 +3,9 @@
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { TextField, Button, Box, Typography, Alert, CircularProgress } from '@mui/material';
+import { TextField, Box, Typography, Alert } from '@mui/material';
 import { Header } from '@/app/_components/Header';
+import { LoadingButton } from '@/app/_components/LoadingButton';
 import { useCreateGroup } from '@/app/_hooks/groups';
 
 export default function CreateGroupPage() {
@@ -78,19 +79,16 @@ export default function CreateGroupPage() {
           margin="normal"
           placeholder={t('groups.iconPlaceholder')}
         />
-        <Button
+        <LoadingButton
           type="submit"
           variant="contained"
           fullWidth
-          disabled={createGroup.isPending}
+          loading={createGroup.isPending}
+          spinnerSize={24}
           sx={{ mt: 3 }}
         >
-          {createGroup.isPending ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : (
-            t('groups.create.button')
-          )}
-        </Button>
+          {t('groups.create.button')}
+        </LoadingButton>
       </Box>
     </>
   );

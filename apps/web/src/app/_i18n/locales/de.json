@@ -102,7 +102,8 @@
     "ingredientName": "Zutatennamen",
     "quantity": "Menge",
     "unit": "Einheit",
-    "addIngredient": "Zutat hinzufügen"
+    "addIngredient": "Zutat hinzufügen",
+    "fabCreateTooltip": "Rezept erstellen"
   },
   "groups": {
     "title": "Gruppen",
@@ -121,8 +122,28 @@
       "error": "Fehler beim Aktualisieren der Gruppe. Bitte versuche es erneut."
     },
     "view": {
-      "title": "Gruppendetails"
+      "title": "Gruppendetails",
+      "allRecipes": "Alle"
     },
+    "settings": {
+      "title": "Gruppeneinstellungen",
+      "memberList": "Mitglieder",
+      "recipeCount": "{{count}} Rezepte",
+      "kickMember": "Mitglied entfernen",
+      "leaveGroup": "Gruppe verlassen",
+      "editGroup": "Gruppe bearbeiten",
+      "deleteGroup": "Gruppe löschen",
+      "leaveConfirm": "Gruppe verlassen",
+      "leaveConfirmMessage": "Möchten Sie diese Gruppe wirklich verlassen? Sie verlieren den Zugriff auf alle geteilten Rezepte.",
+      "deleteConfirm": "Gruppe löschen",
+      "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Gruppendaten werden dauerhaft entfernt.",
+      "ownerCannotLeave": "Sie sind der Eigentümer. Übertragen Sie die Eigentümerschaft oder entfernen Sie alle Mitglieder, bevor Sie die Gruppe verlassen.",
+      "cannotDeleteWithMembers": "Gruppe kann nicht gelöscht werden, solange andere Mitglieder vorhanden sind. Entfernen Sie zuerst alle Mitglieder.",
+      "leaveAndDelete": "Verlassen und Gruppe löschen",
+      "leaveAndDeleteConfirm": "Verlassen und Gruppe löschen",
+      "leaveAndDeleteMessage": "Sie sind das letzte Mitglied. Das Verlassen löscht diese Gruppe und alle ihre Daten dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "fabCreateTooltip": "Gruppe erstellen",
     "searchPlaceholder": "Gruppen suchen...",
     "lastUpdated": "Zuletzt aktualisiert",
     "myGroups": "Meine Gruppen",
