@@ -6,14 +6,15 @@ TBD — Group lifecycle management including create, read, update, delete, recip
 
 ### Requirement: Authenticated user can create a group
 
-The system SHALL allow any authenticated user to create a group by providing `name`, `description`, and optional `icon`. The creating user SHALL be set as the group owner and automatically added as a member via GroupMember row.
+The system SHALL allow any authenticated user to create a group by providing `name`, `description`, and optional `icon`. The creating user SHALL be added as a group admin via a `GroupAdmin` row and automatically added as a member via a `GroupMember` row.
 
 #### Scenario: Create group with valid data
 
 - **WHEN** an authenticated user submits `{ name, description }` with optional `icon`
-- **THEN** the system inserts a Group row with `ownerId` set to the user's ID
-- **THEN** the system inserts a GroupMember row for the owner
-- **THEN** the system returns a 201 response with the created group
+- **THEN** the system inserts a Group row
+- **THEN** the system inserts a GroupAdmin row (groupId, userId)
+- **THEN** the system inserts a GroupMember row for the creator
+- **THEN** the system returns a 201 response with the created group including `adminIds: [userId]`
 
 #### Scenario: Create group missing required fields
 
@@ -22,11 +23,12 @@ The system SHALL allow any authenticated user to create a group by providing `na
 
 ### Requirement: Group admins can update their group
 
-The system SHALL allow group admins (owner or co-owner) to update group fields (name, description, icon). Non-admins SHALL receive a 403 error.
+The system SHALL allow group admins (any user with a GroupAdmin row for the group) to update group fields (name, description, icon). Non-admins SHALL receive a 403 error.
 
 #### Scenario: Admin updates their group
 
 - **WHEN** a group admin sends `PATCH /v1/groups/:id` with valid fields
+- **THEN** the system checks GroupAdmin table and verifies the user is an admin
 - **THEN** the system updates the group row and returns a 200 response with the updated group
 
 #### Scenario: Non-admin cannot update group
@@ -36,12 +38,12 @@ The system SHALL allow group admins (owner or co-owner) to update group fields (
 
 ### Requirement: Group admins can delete their group
 
-The system SHALL allow group admins (owner or co-owner) to delete a group. Deletion SHALL cascade: all GroupMember rows, RecipeGroup rows, and the Group row itself are removed. Non-admins SHALL receive a 403 error. The endpoint SHALL require a valid access token.
+The system SHALL allow group admins (any user with a GroupAdmin row for the group) to delete a group. Deletion SHALL cascade: all GroupAdmin rows, GroupMember rows, RecipeGroup rows, and the Group row itself are removed. Non-admins SHALL receive a 403 error. The endpoint SHALL require a valid access token.
 
 #### Scenario: Admin deletes their group
 
 - **WHEN** a group admin sends `DELETE /v1/groups/:id`
-- **THEN** the system deletes the group and all related GroupMember and RecipeGroup rows in a transaction
+- **THEN** the system deletes the group and all related GroupAdmin, GroupMember, and RecipeGroup rows in a transaction
 - **THEN** the system returns a 204 response with no body
 
 #### Scenario: Non-admin cannot delete group
@@ -54,30 +56,24 @@ The system SHALL allow group admins (owner or co-owner) to delete a group. Delet
 - **WHEN** an unauthenticated client sends `DELETE /v1/groups/:id`
 - **THEN** the system returns a 401 error
 
-### Requirement: Group members can add recipes to a group
+### Requirement: Group admins can add recipes to a group
 
-The system SHALL allow any group member to add a recipe to a group via `POST /v1/groups/:id/recipes` with `{ recipeId }`. The operation SHALL be idempotent (upsert). Non-members SHALL receive a 403 error.
+The system SHALL allow group admins (any user with a GroupAdmin row) to add a recipe to a group via `POST /v1/groups/:id/recipes` with `{ recipeId }`. The operation SHALL be idempotent (upsert). Non-admins SHALL receive a 403 error.
 
-#### Scenario: Member adds recipe to group
+#### Scenario: Admin adds recipe to group
 
-- **WHEN** a group member sends `POST /v1/groups/:id/recipes` with `{ recipeId }`
+- **WHEN** a group admin sends `POST /v1/groups/:id/recipes` with `{ recipeId }`
 - **THEN** the system upserts a RecipeGroup row linking the group and recipe
-- **THEN** the system returns a 200 response with `{ status: 'added' }`
+- **THEN** the system returns a 200 response with `{ group, recipe }`
 
-#### Scenario: Non-member cannot add recipe to group
+#### Scenario: Non-admin cannot add recipe to group
 
-- **WHEN** a non-member authenticated user sends `POST /v1/groups/:id/recipes`
+- **WHEN** a non-admin authenticated user sends `POST /v1/groups/:id/recipes`
 - **THEN** the system returns a 403 error with `{ error: 'forbidden' }`
 
-### Requirement: Members can remove their recipes from a group; admins can remove any
+### Requirement: Admins can remove any recipe from a group
 
-The system SHALL allow any group member to remove their own recipe from a group via `POST /v1/groups/:id/remove-recipe` with `{ recipeId }`. Group admins (owner or co-owner) SHALL be allowed to remove any recipe from the group. The operation SHALL be idempotent (no error if not in group). Non-members SHALL receive a 403 error. Non-admin members attempting to remove another user's recipe SHALL receive a 403 error.
-
-#### Scenario: Member removes their own recipe from group
-
-- **WHEN** a group member sends `POST /v1/groups/:id/remove-recipe` with `{ recipeId }` for a recipe they authored
-- **THEN** the system deletes the corresponding RecipeGroup row
-- **THEN** the system returns a 200 response with `{ status: 'removed' }`
+The system SHALL allow group admins (any user with a GroupAdmin row) to remove any recipe from a group via `POST /v1/groups/:id/remove-recipe` with `{ recipeId }`. Non-admin group members SHALL NOT be able to remove recipes. The operation SHALL be idempotent (no error if not in group). Non-members SHALL receive a 403 error.
 
 #### Scenario: Admin removes any recipe from group
 
@@ -85,14 +81,19 @@ The system SHALL allow any group member to remove their own recipe from a group 
 - **THEN** the system deletes the corresponding RecipeGroup row
 - **THEN** the system returns a 200 response with `{ status: 'removed' }`
 
-#### Scenario: Non-admin member cannot remove another user's recipe
+#### Scenario: Non-admin member cannot remove recipes
 
-- **WHEN** a non-admin group member sends `POST /v1/groups/:id/remove-recipe` with `{ recipeId }` for a recipe they did NOT author
+- **WHEN** a non-admin group member sends `POST /v1/groups/:id/remove-recipe`
+- **THEN** the system returns a 403 error with `{ error: 'forbidden' }`
+
+#### Scenario: Non-member cannot remove recipes
+
+- **WHEN** a non-member authenticated user sends `POST /v1/groups/:id/remove-recipe`
 - **THEN** the system returns a 403 error with `{ error: 'forbidden' }`
 
 #### Scenario: Removing a recipe not in the group is idempotent
 
-- **WHEN** an authorized user sends `POST /v1/groups/:id/remove-recipe` for a recipe not in the group
+- **WHEN** an admin sends `POST /v1/groups/:id/remove-recipe` for a recipe not in the group
 - **THEN** the system returns a 200 response with `{ status: 'removed' }` (no error)
 
 ### Requirement: List groups returns groups where user is a member
@@ -115,28 +116,30 @@ The system SHALL return all groups where the authenticated user is a member (via
 - **WHEN** an authenticated user with no group memberships requests `GET /v1/groups`
 - **THEN** the system returns a 200 response with `{ groups: [] }`
 
-### Requirement: Get group detail returns recipes and isAdmin flag
+### Requirement: Get group detail returns recipes, isAdmin flag, and adminIds
 
-The system SHALL return a single group by ID with its recipes (including ingredients) and an `isAdmin` boolean (true when the user is the owner or a co-owner). The user SHALL be a member of the group to view it; non-members SHALL receive 404 (do not leak group existence).
+The system SHALL return a single group by ID with its recipes (including ingredients), an `isAdmin` boolean (true when the user has a GroupAdmin row), and `adminIds` array (populated from GroupAdmin rows). The `ownerId` field SHALL be removed from the response. The user SHALL be a member of the group to view it; non-members SHALL receive 404 (do not leak group existence).
 
 #### Scenario: Member views group detail
 
 - **WHEN** a group member requests `GET /v1/groups/:id`
-- **THEN** the system returns `{ group, recipes, isAdmin }`
-- **THEN** `isAdmin` is true when the user is the group owner or has a co-owner role on their GroupMember row
-- **THEN** the `group` object includes `recipeIds` populated from RecipeGroup rows
+- **THEN** the system returns `{ group: { ...group, recipeIds, adminIds }, recipes, isAdmin, members }`
+- **THEN** `isAdmin` is true when the user has a GroupAdmin row for the group
+- **THEN** `adminIds` is derived from GroupAdmin rows for the group
+- **THEN** `ownerId` is NOT present in the response
 
 #### Scenario: Non-member cannot view group
 
 - **WHEN** a non-member authenticated user requests `GET /v1/groups/:id`
 - **THEN** the system returns a 404 error (does not reveal group exists)
 
-### Requirement: Group responses include recipeIds
+### Requirement: Group responses include recipeIds and adminIds
 
-The system SHALL include a `recipeIds` field (array of recipe UUID strings) in every group API response. The field SHALL be populated from the RecipeGroup join table. The shared `Group` type SHALL reflect that `recipeIds` is populated from the database rather than being always empty.
+The system SHALL include `recipeIds` and `adminIds` fields in every group API response. `recipeIds` SHALL be populated from the RecipeGroup join table. `adminIds` SHALL be populated from the GroupAdmin join table. The `ownerId` field SHALL be removed from all responses. The shared `Group` type SHALL reflect `adminIds: string[]` instead of `ownerId: string`.
 
-#### Scenario: Group list includes recipeIds
+#### Scenario: Group list includes recipeIds and adminIds
 
 - **WHEN** a client requests `GET /v1/groups` or `GET /v1/groups/:id`
 - **THEN** each group object includes `recipeIds` with actual recipe IDs from RecipeGroup
-- **THEN** `recipeIds` is `[]` if the group has no recipes
+- **THEN** each group object includes `adminIds` with actual admin user IDs from GroupAdmin
+- **THEN** `ownerId` is NOT present in the response
