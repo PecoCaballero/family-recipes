@@ -211,17 +211,30 @@ usersRouter.delete('/me/avatar', async (req, res) => {
 
 usersRouter.delete('/me', async (req, res) => {
   try {
-    // Guard: check if user owns any groups
-    const ownedGroups = await prisma.group.findMany({
-      where: { ownerId: req.userId },
-      select: { id: true, name: true },
+    // Guard: check if user is sole admin of any group
+    const adminGroups = await prisma.groupAdmin.findMany({
+      where: { userId: req.userId },
+      include: {
+        group: {
+          include: {
+            admins: { select: { userId: true } },
+          },
+        },
+      },
     });
 
-    if (ownedGroups.length > 0) {
+    const soleAdminGroups = adminGroups.filter(
+      (ag) => ag.group.admins.length === 1,
+    );
+
+    if (soleAdminGroups.length > 0) {
       return res.status(409).json({
-        error: 'group_owner',
-        detail: `You own ${ownedGroups.length} group(s). Transfer ownership or delete them before deleting your account.`,
-        groups: ownedGroups,
+        error: 'sole_admin',
+        detail: `You are the sole admin of ${soleAdminGroups.length} group(s). Promote another admin or delete the group(s) before deleting your account.`,
+        groups: soleAdminGroups.map((ag) => ({
+          id: ag.group.id,
+          name: ag.group.name ?? 'Unknown',
+        })),
       });
     }
 
@@ -259,8 +272,8 @@ usersRouter.delete('/me', async (req, res) => {
         await tx.recipe.deleteMany({ where: { id: { in: recipeIds } } });
       }
 
-      // Groups owned by user
-      await tx.group.deleteMany({ where: { ownerId: req.userId } });
+      // Groups owned by user — delete GroupAdmin rows (group continues if other admins exist)
+      await tx.groupAdmin.deleteMany({ where: { userId: req.userId } });
 
       // User row
       await tx.user.delete({ where: { id: req.userId } });

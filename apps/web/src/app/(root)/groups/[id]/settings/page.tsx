@@ -24,11 +24,11 @@ import {
 } from '@mui/material';
 import { Delete, Edit, PersonRemove } from '@mui/icons-material';
 
-function EditGroupButton({ isOwner, groupId }: { isOwner: boolean; groupId: string }) {
+function EditGroupButton({ isAdmin, groupId }: { isAdmin: boolean; groupId: string }) {
   const { t } = useTranslation();
   const router = useRouter();
 
-  if (!isOwner) return null;
+  if (!isAdmin) return null;
 
   return (
     <IconButton
@@ -53,18 +53,18 @@ function KickMemberButton({ canKick, onKick }: { canKick: boolean; onKick: () =>
 }
 
 function GroupActionButtons({
-  isOwner,
+  isAdmin,
   isLastMember,
   onDelete,
   onLeave,
 }: {
-  isOwner: boolean;
+  isAdmin: boolean;
   isLastMember: boolean;
   onDelete: () => void;
   onLeave: () => void;
 }) {
   const { t } = useTranslation();
-  const leaveColor = isOwner ? 'primary' : 'error';
+  const leaveColor = isAdmin ? 'primary' : 'error';
 
   if (isLastMember) {
     return (
@@ -78,7 +78,7 @@ function GroupActionButtons({
 
   return (
     <Stack spacing={2} sx={{ mt: 3 }}>
-      {isOwner && (
+      {isAdmin && (
         <Button variant="outlined" color="error" startIcon={<Delete />} onClick={onDelete}>
           {t('groups.settings.deleteGroup')}
         </Button>
@@ -114,9 +114,9 @@ export default function GroupSettingsPage() {
   }
 
   const group = data.group;
-  const isOwner = data.isOwner;
+  const isAdmin = data.isAdmin;
   const members = data.members ?? [];
-  const isLastMember = isOwner && members.length === 1;
+  const isLastMember = isAdmin && members.length === 1;
 
   const handleDelete = () => {
     setDeleteError(null);
@@ -143,7 +143,7 @@ export default function GroupSettingsPage() {
       },
       onError: (err) => {
         const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
-        if (errorMsg === 'owner_must_transfer_or_delete') {
+        if (errorMsg === 'sole_admin_must_promote_or_delete') {
           setLeaveError(t('groups.settings.ownerCannotLeave'));
         } else {
           setLeaveError(t('common.error'));
@@ -171,7 +171,7 @@ export default function GroupSettingsPage() {
       <Header
         goBack
         title={t('groups.settings.title')}
-        endSlot={<EditGroupButton isOwner={isOwner} groupId={params.id} />}
+        endSlot={<EditGroupButton isAdmin={isAdmin} groupId={params.id} />}
       />
 
       <Box sx={{ px: 2, pt: 1 }}>
@@ -201,7 +201,7 @@ export default function GroupSettingsPage() {
               key={member.id}
               secondaryAction={
                 <KickMemberButton
-                  canKick={isOwner && member.id !== group.ownerId}
+                  canKick={isAdmin && !group.adminIds.includes(member.id)}
                   onKick={() => handleKick(member.id)}
                 />
               }
@@ -218,7 +218,7 @@ export default function GroupSettingsPage() {
         </List>
 
         <GroupActionButtons
-          isOwner={isOwner}
+          isAdmin={isAdmin}
           isLastMember={isLastMember}
           onDelete={() => setDeleteOpen(true)}
           onLeave={() => setLeaveOpen(true)}

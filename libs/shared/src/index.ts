@@ -74,7 +74,7 @@ export const groupSchema = z.object({
   description: z.string(),
   lastUpdated: z.string(),
   icon: z.string().nullable(),
-  ownerId: z.string(),
+  adminIds: z.array(z.string()),
   recipeIds: z.array(z.string()),
 });
 export type Group = z.infer<typeof groupSchema>;
@@ -144,7 +144,7 @@ export type MemberWithCount = z.infer<typeof memberWithCountSchema>;
 export const groupDetailResponseSchema = z.object({
   group: groupSchema,
   recipes: z.array(recipeSchema),
-  isOwner: z.boolean(),
+  isAdmin: z.boolean(),
   members: z.array(memberWithCountSchema),
 });
 export type GroupDetailResponse = z.infer<typeof groupDetailResponseSchema>;
@@ -170,3 +170,8 @@ export const changePasswordSchema = z.object({
   newPassword: z.string().min(6),
 });
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+
+export const addAdminSchema = z.object({
+  userId: z.string(),
+});
+export type AddAdminInput = z.infer<typeof addAdminSchema>;

@@ -22,7 +22,7 @@ export function useGroupQuery(id: string) {
       const res = await apiClient.get<{
         group: Group;
         recipes: Recipe[];
-        isOwner: boolean;
+        isAdmin: boolean;
         members: MemberWithCount[];
       }>(`/v1/groups/${id}`);
       return res.data;
