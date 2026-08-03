@@ -2,10 +2,27 @@
 
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { BottomNavigation, BottomNavigationAction } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Avatar } from '@mui/material';
 import { Groups, Search, AccountCircle, MenuBook } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { routes } from '@/app/_utils/routes';
+import { useAuth } from '@/app/_providers/AuthContext';
+import { resolveAvatarUrl } from '@/app/_utils/avatarUrl';
+
+function AccountAvatar() {
+  const { user } = useAuth();
+  const avatarUrl = resolveAvatarUrl(user?.avatar);
+
+  if (avatarUrl) {
+    return (
+      <Avatar src={avatarUrl} sx={{ width: 24, height: 24, fontSize: 12 }}>
+        {user?.name?.charAt(0)?.toUpperCase()}
+      </Avatar>
+    );
+  }
+
+  return <AccountCircle />;
+}
 
 export default function BottomNavigator() {
   const pathname = usePathname();
@@ -30,7 +47,7 @@ export default function BottomNavigator() {
     },
     {
       label: t('account.title'),
-      icon: <AccountCircle />,
+      icon: <AccountAvatar />,
       path: routes.user.base.path,
     },
   ];

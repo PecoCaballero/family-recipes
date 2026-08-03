@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { PaletteMode, useMediaQuery } from '@mui/material';
 
 export type ThemeMode = 'light' | 'dark' | 'auto';
@@ -21,16 +21,16 @@ export const useTheme = () => {
   return context;
 };
 
+function readStoredTheme(): ThemeMode {
+  if (typeof window === 'undefined') return 'auto';
+  const stored = sessionStorage.getItem('theme');
+  if (stored === 'light' || stored === 'dark' || stored === 'auto') return stored;
+  return 'auto';
+}
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [storedMode, setStoredMode] = useState<ThemeMode>('light');
-
-  useEffect(() => {
-    const stored = sessionStorage.getItem('theme') as ThemeMode | null;
-    if (stored) {
-      setStoredMode(stored);
-    }
-  }, []);
+  const [storedMode, setStoredMode] = useState<ThemeMode>(readStoredTheme);
 
   const getMode = (): PaletteMode => {
     if (storedMode === 'auto') {

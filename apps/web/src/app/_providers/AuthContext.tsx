@@ -1,55 +1,57 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import type { User, TokenPair } from '@family-recipe/shared';
 import { PpWC } from '@/app/_types/types';
 import { useLoginMutation, useRegisterMutation, useLogoutMutation } from '@/app/_hooks/auth';
+import i18n from '@/app/_i18n/config';
 
 type AuthContextType = {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   setTokens: (tokens: TokenPair) => void;
+  setUser: (user: User) => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function readSessionJSON<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw !== null ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function readSessionString(key: string): string | null {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(key);
+}
+
 export function AuthProvider({ children }: PpWC) {
-  const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(() => readSessionJSON<User | null>('user', null));
+  const [accessToken, setAccessToken] = useState<string | null>(() => readSessionString('accessToken'));
+  const [refreshToken, setRefreshToken] = useState<string | null>(() => readSessionString('refreshToken'));
 
   const loginMutation = useLoginMutation();
   const registerMutation = useRegisterMutation();
   const logoutMutation = useLogoutMutation();
 
-  useEffect(() => {
-    const storedAccess = sessionStorage.getItem('accessToken');
-    const storedRefresh = sessionStorage.getItem('refreshToken');
-    const storedUser = sessionStorage.getItem('user');
-
-    if (storedAccess && storedRefresh && storedUser) {
-      setAccessToken(storedAccess);
-      setRefreshToken(storedRefresh);
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch {
-        sessionStorage.removeItem('user');
-      }
-    }
-    setIsLoading(false);
-  }, []);
-
   const persistTokens = useCallback((tokens: TokenPair, userData: User) => {
     sessionStorage.setItem('accessToken', tokens.accessToken);
     sessionStorage.setItem('refreshToken', tokens.refreshToken);
     sessionStorage.setItem('user', JSON.stringify(userData));
+    sessionStorage.setItem('language', userData.settings.language);
+    if (userData.settings.language !== i18n.language) {
+      i18n.changeLanguage(userData.settings.language);
+    }
     setAccessToken(tokens.accessToken);
     setRefreshToken(tokens.refreshToken);
     setUser(userData);
@@ -93,6 +95,11 @@ export function AuthProvider({ children }: PpWC) {
     setRefreshToken(tokens.refreshToken);
   }, []);
 
+  const setUserValue = useCallback((userData: User) => {
+    setUser(userData);
+    sessionStorage.setItem('user', JSON.stringify(userData));
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -100,11 +107,11 @@ export function AuthProvider({ children }: PpWC) {
         accessToken,
         refreshToken,
         isAuthenticated: !!user && !!accessToken,
-        isLoading,
         login,
         register,
         logout,
         setTokens: setTokensValue,
+        setUser: setUserValue,
       }}
     >
       {children}

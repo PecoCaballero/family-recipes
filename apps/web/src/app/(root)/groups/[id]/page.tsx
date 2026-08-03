@@ -7,7 +7,6 @@ import { Header } from '@/app/_components/Header';
 import { RecipeList } from '@/app/_components/RecipeList';
 import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { ChipFilter, type ChipOption } from '@/app/_components/ChipFilter';
-import { isHttpUrl } from '@/app/_components/SafeAvatar';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
 import { useGroupQuery } from '@/app/_hooks/groups';
@@ -15,6 +14,7 @@ import { routes, generatePath } from '@/app/_utils/routes';
 import { Settings } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import type { MemberWithCount, Recipe } from '@family-recipe/shared';
+import { resolveAvatarUrl } from '@/app/_utils/avatarUrl';
 
 export default function GroupPage() {
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ export default function GroupPage() {
       { label: t('groups.view.allRecipes') },
       ...members.map((m: MemberWithCount) => ({
         label: m.name,
-        avatar: isHttpUrl(m.avatar) ? m.avatar : undefined,
+        avatar: resolveAvatarUrl(m.avatar),
       })),
     ];
   }, [members, t]);

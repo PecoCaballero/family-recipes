@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'node:path';
 import cors from 'cors';
 import { authRouter } from './routes/auth';
 import { apiRouter } from './routes';
@@ -17,6 +18,9 @@ app.use(
     credentials: false,
   }),
 );
+
+// Serve uploaded avatar files
+app.use('/uploads/avatars', express.static(path.resolve(process.cwd(), 'uploads/avatars')));
 
 // Public routes (no auth required)
 app.get('/health', (_req, res) => {

@@ -9,6 +9,7 @@
     "cors": "^2.8.6",
     "express": "^4.22.1",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
@@ -16,6 +17,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.25",
     "@types/jsonwebtoken": "^9",
+    "@types/multer": "^2.2.0",
     "prisma": "^7.9.1"
   }
 }

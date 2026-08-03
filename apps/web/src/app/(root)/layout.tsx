@@ -6,24 +6,20 @@ import BottomNavigation from '../_components/BottomNavigation';
 import { PpWC } from '../_types/types';
 import { Box } from '@mui/material';
 import { useAuth } from '../_providers/AuthContext';
+import { LoadingPage } from '../_scenes/LoadingPage';
 
 export default function RootLayout({ children }: PpWC) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isAuthenticated) {
       router.replace('/login');
     }
-  }, [isLoading, isAuthenticated, router]);
-
-  // Don't render children until auth check is complete
-  if (isLoading) {
-    return null;
-  }
+  }, [isAuthenticated, router]);
 
   if (!isAuthenticated) {
-    return null;
+    return <LoadingPage />;
   }
 
   return (
