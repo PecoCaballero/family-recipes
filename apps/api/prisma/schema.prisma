@@ -25,6 +25,8 @@ model User {
   refreshTokens RefreshToken[]
   groupMemberships GroupMember[]
   adminGroups      GroupAdmin[]
+  sentInvitations     Invitation[] @relation("InvitationInviter")
+  receivedInvitations Invitation[] @relation("InvitationInvitee")
 }
 
 model Recipe {
@@ -98,6 +100,7 @@ model Group {
   admins      GroupAdmin[]
   members     GroupMember[]
   recipes     RecipeGroup[]
+  invitations Invitation[]
 }
 
 model GroupMember {
@@ -128,4 +131,30 @@ model RecipeGroup {
   group    Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@id([recipeId, groupId])
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  rejected
+  expired
+}
+
+model Invitation {
+  id            String           @id @default(uuid())
+  token         String           @unique @default(uuid())
+  groupId       String
+  inviterId     String
+  inviteeUserId String
+  status        InvitationStatus @default(pending)
+  expiresAt     DateTime
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  group   Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  inviter User  @relation("InvitationInviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  invitee User  @relation("InvitationInvitee", fields: [inviteeUserId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([inviteeUserId])
 }

@@ -8,7 +8,9 @@ import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { SafeAvatar } from '@/app/_components/SafeAvatar';
 import { ConfirmDialog } from '@/app/_components/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
-import { useGroupQuery, useDeleteGroup, useQuitGroup, useRemoveMember } from '@/app/_hooks/groups';
+import { useGroupQuery, useDeleteGroup, useQuitGroup, useRemoveMember, useAddAdmin, useRemoveAdmin } from '@/app/_hooks/groups';
+import { useAuth } from '@/app/_providers/AuthContext';
+import { AddMemberDialog } from '@/app/_components/AddMemberDialog';
 import { routes, generatePath } from '@/app/_utils/routes';
 import type { MemberWithCount } from '@family-recipe/shared';
 import {
@@ -22,7 +24,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Delete, Edit, PersonRemove } from '@mui/icons-material';
+import { Delete, Edit, PersonRemove, PersonAdd, WorkspacePremium, WorkspacePremiumOutlined } from '@mui/icons-material';
 
 function EditGroupButton({ isAdmin, groupId }: { isAdmin: boolean; groupId: string }) {
   const { t } = useTranslation();
@@ -94,13 +96,17 @@ export default function GroupSettingsPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const { user } = useAuth();
   const { data, isLoading } = useGroupQuery(params.id);
   const deleteGroup = useDeleteGroup(params.id);
   const quitGroup = useQuitGroup(params.id);
   const removeMember = useRemoveMember(params.id);
+  const addAdmin = useAddAdmin(params.id);
+  const removeAdmin = useRemoveAdmin(params.id);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState<string | null>(null);
 
@@ -156,6 +162,14 @@ export default function GroupSettingsPage() {
     removeMember.mutate(userId);
   };
 
+  const handlePromote = (userId: string) => {
+    addAdmin.mutate(userId);
+  };
+
+  const handleDemote = (userId: string) => {
+    removeAdmin.mutate(userId);
+  };
+
   const leaveTitle = isLastMember
     ? t('groups.settings.leaveAndDeleteConfirm')
     : t('groups.settings.leaveConfirm');
@@ -171,7 +185,19 @@ export default function GroupSettingsPage() {
       <Header
         goBack
         title={t('groups.settings.title')}
-        endSlot={<EditGroupButton isAdmin={isAdmin} groupId={params.id} />}
+        endSlot={
+          <Stack direction="row" alignItems="center">
+            <EditGroupButton isAdmin={isAdmin} groupId={params.id} />
+            {isAdmin && (
+              <IconButton
+                aria-label={t('groups.addMember')}
+                onClick={() => setAddMemberOpen(true)}
+              >
+                <PersonAdd />
+              </IconButton>
+            )}
+          </Stack>
+        }
       />
 
       <Box sx={{ px: 2, pt: 1 }}>
@@ -196,25 +222,50 @@ export default function GroupSettingsPage() {
         </Typography>
 
         <List>
-          {members.map((member: MemberWithCount) => (
-            <ListItem
-              key={member.id}
-              secondaryAction={
-                <KickMemberButton
-                  canKick={isAdmin && !group.adminIds.includes(member.id)}
-                  onKick={() => handleKick(member.id)}
+          {members.map((member: MemberWithCount) => {
+            const isMemberAdmin = group.adminIds.includes(member.id);
+            const isSelf = user?.id === member.id;
+
+            return (
+              <ListItem
+                key={member.id}
+                secondaryAction={
+                  <Box display="flex">
+                    {isAdmin && !isMemberAdmin && (
+                      <IconButton
+                        edge="end"
+                        aria-label={t('groups.promoteAdmin')}
+                        onClick={() => handlePromote(member.id)}
+                      >
+                        <WorkspacePremium />
+                      </IconButton>
+                    )}
+                    {isAdmin && isMemberAdmin && !isSelf && (
+                      <IconButton
+                        edge="end"
+                        aria-label={t('groups.demoteAdmin')}
+                        onClick={() => handleDemote(member.id)}
+                      >
+                        <WorkspacePremiumOutlined />
+                      </IconButton>
+                    )}
+                    <KickMemberButton
+                      canKick={isAdmin && !isMemberAdmin}
+                      onKick={() => handleKick(member.id)}
+                    />
+                  </Box>
+                }
+              >
+                <ListItemAvatar>
+                  <SafeAvatar src={member.avatar} fallback={member.name.charAt(0)} />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={member.name}
+                  secondary={t('groups.settings.recipeCount', { count: member.recipeCount })}
                 />
-              }
-            >
-              <ListItemAvatar>
-                <SafeAvatar src={member.avatar} fallback={member.name.charAt(0)} />
-              </ListItemAvatar>
-              <ListItemText
-                primary={member.name}
-                secondary={t('groups.settings.recipeCount', { count: member.recipeCount })}
-              />
-            </ListItem>
-          ))}
+              </ListItem>
+            );
+          })}
         </List>
 
         <GroupActionButtons
@@ -245,6 +296,12 @@ export default function GroupSettingsPage() {
         onConfirm={handleLeave}
         loading={quitGroup.isPending}
         confirmLabel={leaveConfirmLabel}
+      />
+
+      <AddMemberDialog
+        open={addMemberOpen}
+        onClose={() => setAddMemberOpen(false)}
+        groupId={params.id}
       />
     </SceneContent>
   );

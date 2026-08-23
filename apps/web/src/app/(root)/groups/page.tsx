@@ -8,6 +8,7 @@ import { Header } from '@/app/_components/Header';
 import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { FloatingActionButton } from '@/app/_components/FloatingActionButton';
 import { EmptyGroupState } from '@/app/_components/EmptyState';
+import { InvitationBanner } from '@/app/_components/InvitationBanner';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from '@/app/_hooks/useSearch';
 import { useGroupsQuery } from '@/app/_hooks/groups';
@@ -16,7 +17,9 @@ import { routes } from '@/app/_utils/routes';
 export default function GroupsPage() {
   const { t } = useTranslation();
   const { searchQuery, handleSearchChange } = useSearch();
-  const { data: groups = [], isLoading } = useGroupsQuery(searchQuery || undefined);
+  const { data, isLoading } = useGroupsQuery(searchQuery || undefined);
+  const groups = data?.groups ?? [];
+  const pendingInvitations = data?.pendingInvitations ?? [];
 
   if (isLoading) {
     return (
@@ -51,6 +54,9 @@ export default function GroupsPage() {
           />
         </Header>
         <EmptyGroupState message={t('groups.noGroupsYet')} />
+        {pendingInvitations.map((invitation) => (
+          <InvitationBanner key={invitation.id} invitation={invitation} />
+        ))}
         <FloatingActionButton
           icon={<Add />}
           href={routes.groups.create.path}
@@ -70,6 +76,9 @@ export default function GroupsPage() {
         />
       </Header>
       <SceneContent>
+        {pendingInvitations.map((invitation) => (
+          <InvitationBanner key={invitation.id} invitation={invitation} />
+        ))}
         <GroupList groups={groups} />
       </SceneContent>
       <FloatingActionButton

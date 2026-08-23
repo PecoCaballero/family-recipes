@@ -84,3 +84,8 @@ export type GroupAdmin = Prisma.GroupAdminModel
  * 
  */
 export type RecipeGroup = Prisma.RecipeGroupModel
+/**
+ * Model Invitation
+ * 
+ */
+export type Invitation = Prisma.InvitationModel

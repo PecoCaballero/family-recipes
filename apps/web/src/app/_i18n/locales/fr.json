@@ -164,7 +164,20 @@
     "createdBy": "Créé par",
     "leaveConfirm": "Êtes-vous sûr de vouloir quitter ce groupe?",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce groupe?",
-    "deleteConfirmMessage": "Cette action est irréversible. Toutes les données du groupe et les associations de membres seront définitivement supprimées."
+    "deleteConfirmMessage": "Cette action est irréversible. Toutes les données du groupe et les associations de membres seront définitivement supprimées.",
+    "addMemberTitle": "Ajouter un membre",
+    "emailSearchPlaceholder": "Rechercher des utilisateurs par e-mail...",
+    "noUsersFound": "Aucun utilisateur trouvé",
+    "promoteAdmin": "Promouvoir administrateur",
+    "demoteAdmin": "Retirer l'administrateur",
+    "fabShareTooltip": "Partager des recettes",
+    "bulkShareTitle": "Partager des recettes",
+    "bulkShareConfirm": "Partager",
+    "bulkShareEmpty": "Toutes vos recettes sont déjà partagées avec ce groupe.",
+    "invitationBanner": "{{inviterName}} vous a invité à {{groupName}}",
+    "invitationAccept": "Accepter",
+    "invitationPendingCount": "{{count}} invitation(s) en attente",
+    "cannotDemoteSoleAdmin": "Impossible de retirer le seul administrateur d'un groupe avec des membres"
   },
   "search": {
     "title": "Rechercher",

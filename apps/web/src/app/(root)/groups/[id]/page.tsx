@@ -7,11 +7,13 @@ import { Header } from '@/app/_components/Header';
 import { RecipeList } from '@/app/_components/RecipeList';
 import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { ChipFilter, type ChipOption } from '@/app/_components/ChipFilter';
+import { FloatingActionButton } from '@/app/_components/FloatingActionButton';
+import { BulkShareDialog } from '@/app/_components/BulkShareDialog';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
 import { useGroupQuery } from '@/app/_hooks/groups';
 import { routes, generatePath } from '@/app/_utils/routes';
-import { Settings } from '@mui/icons-material';
+import { Settings, Share } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import type { MemberWithCount, Recipe } from '@family-recipe/shared';
 import { resolveAvatarUrl } from '@/app/_utils/avatarUrl';
@@ -22,6 +24,7 @@ export default function GroupPage() {
   const params = useParams<{ id: string }>();
   const { data, isLoading } = useGroupQuery(params.id);
   const [selectedChip, setSelectedChip] = useState<ChipOption | undefined>();
+  const [shareOpen, setShareOpen] = useState(false);
 
   const members = data?.members ?? [];
   const recipes = data?.recipes ?? [];
@@ -79,6 +82,12 @@ export default function GroupPage() {
         />
       )}
       <RecipeList recipes={filteredRecipes} />
+      <FloatingActionButton
+        icon={<Share />}
+        onClick={() => setShareOpen(true)}
+        label={t('groups.fabShareTooltip')}
+      />
+      <BulkShareDialog open={shareOpen} onClose={() => setShareOpen(false)} groupId={params.id} />
     </SceneContent>
   );
 }

@@ -186,7 +186,20 @@
     "createdBy": "Criado por",
     "leaveConfirm": "Tem certeza que deseja sair deste grupo?",
     "deleteConfirm": "Tem certeza que deseja excluir este grupo?",
-    "deleteConfirmMessage": "Esta ação não pode ser desfeita. Todos os dados do grupo e associações de membros serão removidos permanentemente."
+    "deleteConfirmMessage": "Esta ação não pode ser desfeita. Todos os dados do grupo e associações de membros serão removidos permanentemente.",
+    "addMemberTitle": "Adicionar membro",
+    "emailSearchPlaceholder": "Buscar usuários por e-mail...",
+    "noUsersFound": "Nenhum usuário encontrado",
+    "promoteAdmin": "Promover a administrador",
+    "demoteAdmin": "Remover administrador",
+    "fabShareTooltip": "Compartilhar receitas",
+    "bulkShareTitle": "Compartilhar receitas",
+    "bulkShareConfirm": "Compartilhar",
+    "bulkShareEmpty": "Todas as suas receitas já foram compartilhadas com este grupo.",
+    "invitationBanner": "{{inviterName}} convidou você para {{groupName}}",
+    "invitationAccept": "Aceitar",
+    "invitationPendingCount": "{{count}} convite(s) pendente(s)",
+    "cannotDemoteSoleAdmin": "Não é possível remover o único administrador de um grupo com membros"
   },
   "search": {
     "title": "Pesquisar",

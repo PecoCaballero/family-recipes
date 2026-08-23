@@ -164,7 +164,20 @@
     "createdBy": "Erstellt von",
     "leaveConfirm": "Möchten Sie diese Gruppe wirklich verlassen?",
     "deleteConfirm": "Möchten Sie diese Gruppe wirklich löschen?",
-    "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Gruppendaten und Mitgliedszuordnungen werden dauerhaft entfernt."
+    "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Gruppendaten und Mitgliedszuordnungen werden dauerhaft entfernt.",
+    "addMemberTitle": "Mitglied hinzufügen",
+    "emailSearchPlaceholder": "Benutzer per E-Mail suchen...",
+    "noUsersFound": "Keine Benutzer gefunden",
+    "promoteAdmin": "Zum Administrator ernennen",
+    "demoteAdmin": "Administrator entfernen",
+    "fabShareTooltip": "Rezepte teilen",
+    "bulkShareTitle": "Rezepte teilen",
+    "bulkShareConfirm": "Teilen",
+    "bulkShareEmpty": "Alle deine Rezepte sind bereits mit dieser Gruppe geteilt.",
+    "invitationBanner": "{{inviterName}} hat dich zu {{groupName}} eingeladen",
+    "invitationAccept": "Annehmen",
+    "invitationPendingCount": "{{count}} ausstehende Einladung(en)",
+    "cannotDemoteSoleAdmin": "Der einzige Administrator einer Gruppe mit Mitgliedern kann nicht entfernt werden"
   },
   "search": {
     "title": "Suche",

@@ -4,6 +4,7 @@ import {
   createGroupInputSchema,
   updateGroupInputSchema,
   addAdminSchema,
+  batchAddRecipesSchema,
 } from '@family-recipe/shared';
 
 export const groupRouter = Router();
@@ -49,7 +50,27 @@ groupRouter.get('/', async (req, res) => {
       admins: undefined,
     }));
 
-    return res.status(200).json({ groups: result });
+    const pendingInvitations = await prisma.invitation.findMany({
+      where: {
+        inviteeUserId: req.userId,
+        status: 'pending',
+        expiresAt: { gt: new Date() },
+      },
+      include: {
+        group: { select: { name: true } },
+        inviter: { select: { name: true } },
+      },
+    });
+
+    const pendingInvitationsResult = pendingInvitations.map((inv) => ({
+      id: inv.id,
+      groupId: inv.groupId,
+      groupName: inv.group.name,
+      inviterName: inv.inviter.name,
+      expiresAt: inv.expiresAt.toISOString(),
+    }));
+
+    return res.status(200).json({ groups: result, pendingInvitations: pendingInvitationsResult });
   } catch (error) {
     console.error('List groups error:', error);
     return res.status(500).json({ error: 'internal_error' });
@@ -252,6 +273,54 @@ groupRouter.post('/:id/recipes', async (req, res) => {
     return res.status(200).json({ group, recipe });
   } catch (error) {
     console.error('Add recipe to group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+groupRouter.post('/:id/recipes/batch', async (req, res) => {
+  try {
+    const parsed = batchAddRecipesSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { recipeIds } = parsed.data;
+
+    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    const group = await prisma.group.findUnique({ where: { id: req.params.id } });
+    if (!group) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const existing = await prisma.recipeGroup.findMany({
+      where: { groupId: req.params.id, recipeId: { in: recipeIds } },
+      select: { recipeId: true },
+    });
+    const existingIds = new Set(existing.map((r) => r.recipeId));
+
+    await prisma.$transaction(
+      recipeIds.map((recipeId) =>
+        prisma.recipeGroup.upsert({
+          where: {
+            recipeId_groupId: { recipeId, groupId: req.params.id },
+          },
+          create: { recipeId, groupId: req.params.id },
+          update: {},
+        }),
+      ),
+    );
+
+    const added = recipeIds.filter((id) => !existingIds.has(id));
+    const skipped = recipeIds.filter((id) => existingIds.has(id));
+
+    return res.status(200).json({ added, skipped });
+  } catch (error) {
+    console.error('Batch add recipes error:', error);
     return res.status(500).json({ error: 'internal_error' });
   }
 });

@@ -175,3 +175,40 @@ export const addAdminSchema = z.object({
   userId: z.string(),
 });
 export type AddAdminInput = z.infer<typeof addAdminSchema>;
+
+export const batchAddRecipesSchema = z.object({
+  recipeIds: z.array(z.string().uuid()).min(1).max(50),
+});
+export type BatchAddRecipesInput = z.infer<typeof batchAddRecipesSchema>;
+
+export const createInvitationSchema = z.object({
+  inviteeUserId: z.string().uuid(),
+});
+export type CreateInvitationInput = z.infer<typeof createInvitationSchema>;
+
+export const userSearchQuerySchema = z.object({
+  email: z.string().min(1),
+});
+export type UserSearchQuery = z.infer<typeof userSearchQuerySchema>;
+
+export const invitationStatusSchema = z.enum(['pending', 'accepted', 'rejected', 'expired']);
+export type InvitationStatus = z.infer<typeof invitationStatusSchema>;
+
+export const invitationSchema = z.object({
+  id: z.string(),
+  groupId: z.string(),
+  inviterId: z.string(),
+  inviteeUserId: z.string(),
+  status: invitationStatusSchema,
+  expiresAt: z.string(),
+});
+export type InvitationResponse = z.infer<typeof invitationSchema>;
+
+export const pendingInvitationSchema = z.object({
+  id: z.string(),
+  groupId: z.string(),
+  groupName: z.string(),
+  inviterName: z.string(),
+  expiresAt: z.string(),
+});
+export type PendingInvitation = z.infer<typeof pendingInvitationSchema>;

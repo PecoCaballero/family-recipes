@@ -2,15 +2,17 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/app/_utils/apiClient';
-import type { Group, Recipe, MemberWithCount } from '@family-recipe/shared';
+import type { Group, Recipe, MemberWithCount, PendingInvitation } from '@family-recipe/shared';
 
 export function useGroupsQuery(search?: string) {
   return useQuery({
     queryKey: ['groups', { search }],
     queryFn: async () => {
       const url = search ? `/v1/groups?search=${encodeURIComponent(search)}` : '/v1/groups';
-      const res = await apiClient.get<{ groups: Group[] }>(url);
-      return res.data.groups ?? [];
+      const res = await apiClient.get<{ groups: Group[]; pendingInvitations: PendingInvitation[] }>(
+        url,
+      );
+      return res.data;
     },
   });
 }
@@ -130,5 +132,121 @@ export function useRemoveMember(groupId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups', groupId] });
     },
+  });
+}
+
+export function useAddMember(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await apiClient.post<{ status: string }>(
+        `/v1/groups/${groupId}/members/${userId}`,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups', groupId] });
+    },
+  });
+}
+
+export function useAddAdmin(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await apiClient.post<{ status: string }>(
+        `/v1/groups/${groupId}/admins`,
+        { userId },
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups', groupId] });
+    },
+  });
+}
+
+export function useRemoveAdmin(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await apiClient.delete<{ status: string }>(
+        `/v1/groups/${groupId}/admins/${userId}`,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups', groupId] });
+    },
+  });
+}
+
+export function useBatchAddRecipes(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (recipeIds: string[]) => {
+      const res = await apiClient.post<{ added: string[]; skipped: string[] }>(
+        `/v1/groups/${groupId}/recipes/batch`,
+        { recipeIds },
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups', groupId] });
+    },
+  });
+}
+
+export function useCreateInvitation(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (inviteeUserId: string) => {
+      const res = await apiClient.post(`/v1/groups/${groupId}/invitations`, { inviteeUserId });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+    },
+  });
+}
+
+export function useAcceptInvitation(groupId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (invitationId: string) => {
+      const res = await apiClient.post<{ status: string }>(
+        `/v1/groups/${groupId}/invitations/${invitationId}/accept`,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+    },
+  });
+}
+
+export interface UserSearchResult {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string | null;
+}
+
+export function useSearchUsers(email: string) {
+  return useQuery({
+    queryKey: ['users', 'search', { email }],
+    queryFn: async () => {
+      const res = await apiClient.get<{ users: UserSearchResult[] }>(
+        `/v1/users/search?email=${encodeURIComponent(email)}`,
+      );
+      return res.data.users ?? [];
+    },
+    enabled: email.length > 0,
   });
 }

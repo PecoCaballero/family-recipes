@@ -185,6 +185,7 @@ export type GroupWhereInput = {
   admins?: Prisma.GroupAdminListRelationFilter
   members?: Prisma.GroupMemberListRelationFilter
   recipes?: Prisma.RecipeGroupListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
 }
 
 export type GroupOrderByWithRelationInput = {
@@ -196,6 +197,7 @@ export type GroupOrderByWithRelationInput = {
   admins?: Prisma.GroupAdminOrderByRelationAggregateInput
   members?: Prisma.GroupMemberOrderByRelationAggregateInput
   recipes?: Prisma.RecipeGroupOrderByRelationAggregateInput
+  invitations?: Prisma.InvitationOrderByRelationAggregateInput
 }
 
 export type GroupWhereUniqueInput = Prisma.AtLeast<{
@@ -210,6 +212,7 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
   admins?: Prisma.GroupAdminListRelationFilter
   members?: Prisma.GroupMemberListRelationFilter
   recipes?: Prisma.RecipeGroupListRelationFilter
+  invitations?: Prisma.InvitationListRelationFilter
 }, "id">
 
 export type GroupOrderByWithAggregationInput = {
@@ -243,6 +246,7 @@ export type GroupCreateInput = {
   admins?: Prisma.GroupAdminCreateNestedManyWithoutGroupInput
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   recipes?: Prisma.RecipeGroupCreateNestedManyWithoutGroupInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUncheckedCreateInput = {
@@ -254,6 +258,7 @@ export type GroupUncheckedCreateInput = {
   admins?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutGroupInput
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   recipes?: Prisma.RecipeGroupUncheckedCreateNestedManyWithoutGroupInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUpdateInput = {
@@ -265,6 +270,7 @@ export type GroupUpdateInput = {
   admins?: Prisma.GroupAdminUpdateManyWithoutGroupNestedInput
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   recipes?: Prisma.RecipeGroupUpdateManyWithoutGroupNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateInput = {
@@ -276,6 +282,7 @@ export type GroupUncheckedUpdateInput = {
   admins?: Prisma.GroupAdminUncheckedUpdateManyWithoutGroupNestedInput
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   recipes?: Prisma.RecipeGroupUncheckedUpdateManyWithoutGroupNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupCreateManyInput = {
@@ -373,6 +380,20 @@ export type GroupUpdateOneRequiredWithoutRecipesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutRecipesInput, Prisma.GroupUpdateWithoutRecipesInput>, Prisma.GroupUncheckedUpdateWithoutRecipesInput>
 }
 
+export type GroupCreateNestedOneWithoutInvitationsInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutInvitationsInput, Prisma.GroupUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutInvitationsInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneRequiredWithoutInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutInvitationsInput, Prisma.GroupUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutInvitationsInput
+  upsert?: Prisma.GroupUpsertWithoutInvitationsInput
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutInvitationsInput, Prisma.GroupUpdateWithoutInvitationsInput>, Prisma.GroupUncheckedUpdateWithoutInvitationsInput>
+}
+
 export type GroupCreateWithoutMembersInput = {
   id?: string
   name: string
@@ -381,6 +402,7 @@ export type GroupCreateWithoutMembersInput = {
   icon: string
   admins?: Prisma.GroupAdminCreateNestedManyWithoutGroupInput
   recipes?: Prisma.RecipeGroupCreateNestedManyWithoutGroupInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutMembersInput = {
@@ -391,6 +413,7 @@ export type GroupUncheckedCreateWithoutMembersInput = {
   icon: string
   admins?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutGroupInput
   recipes?: Prisma.RecipeGroupUncheckedCreateNestedManyWithoutGroupInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutMembersInput = {
@@ -417,6 +440,7 @@ export type GroupUpdateWithoutMembersInput = {
   icon?: Prisma.StringFieldUpdateOperationsInput | string
   admins?: Prisma.GroupAdminUpdateManyWithoutGroupNestedInput
   recipes?: Prisma.RecipeGroupUpdateManyWithoutGroupNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutMembersInput = {
@@ -427,6 +451,7 @@ export type GroupUncheckedUpdateWithoutMembersInput = {
   icon?: Prisma.StringFieldUpdateOperationsInput | string
   admins?: Prisma.GroupAdminUncheckedUpdateManyWithoutGroupNestedInput
   recipes?: Prisma.RecipeGroupUncheckedUpdateManyWithoutGroupNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutAdminsInput = {
@@ -437,6 +462,7 @@ export type GroupCreateWithoutAdminsInput = {
   icon: string
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   recipes?: Prisma.RecipeGroupCreateNestedManyWithoutGroupInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutAdminsInput = {
@@ -447,6 +473,7 @@ export type GroupUncheckedCreateWithoutAdminsInput = {
   icon: string
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   recipes?: Prisma.RecipeGroupUncheckedCreateNestedManyWithoutGroupInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutAdminsInput = {
@@ -473,6 +500,7 @@ export type GroupUpdateWithoutAdminsInput = {
   icon?: Prisma.StringFieldUpdateOperationsInput | string
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   recipes?: Prisma.RecipeGroupUpdateManyWithoutGroupNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutAdminsInput = {
@@ -483,6 +511,7 @@ export type GroupUncheckedUpdateWithoutAdminsInput = {
   icon?: Prisma.StringFieldUpdateOperationsInput | string
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   recipes?: Prisma.RecipeGroupUncheckedUpdateManyWithoutGroupNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutRecipesInput = {
@@ -493,6 +522,7 @@ export type GroupCreateWithoutRecipesInput = {
   icon: string
   admins?: Prisma.GroupAdminCreateNestedManyWithoutGroupInput
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  invitations?: Prisma.InvitationCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutRecipesInput = {
@@ -503,6 +533,7 @@ export type GroupUncheckedCreateWithoutRecipesInput = {
   icon: string
   admins?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutGroupInput
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  invitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutRecipesInput = {
@@ -529,6 +560,7 @@ export type GroupUpdateWithoutRecipesInput = {
   icon?: Prisma.StringFieldUpdateOperationsInput | string
   admins?: Prisma.GroupAdminUpdateManyWithoutGroupNestedInput
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  invitations?: Prisma.InvitationUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutRecipesInput = {
@@ -539,6 +571,67 @@ export type GroupUncheckedUpdateWithoutRecipesInput = {
   icon?: Prisma.StringFieldUpdateOperationsInput | string
   admins?: Prisma.GroupAdminUncheckedUpdateManyWithoutGroupNestedInput
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  invitations?: Prisma.InvitationUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutInvitationsInput = {
+  id?: string
+  name: string
+  description: string
+  lastUpdated?: Date | string
+  icon: string
+  admins?: Prisma.GroupAdminCreateNestedManyWithoutGroupInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  recipes?: Prisma.RecipeGroupCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutInvitationsInput = {
+  id?: string
+  name: string
+  description: string
+  lastUpdated?: Date | string
+  icon: string
+  admins?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutGroupInput
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  recipes?: Prisma.RecipeGroupUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutInvitationsInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutInvitationsInput, Prisma.GroupUncheckedCreateWithoutInvitationsInput>
+}
+
+export type GroupUpsertWithoutInvitationsInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutInvitationsInput, Prisma.GroupUncheckedUpdateWithoutInvitationsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutInvitationsInput, Prisma.GroupUncheckedCreateWithoutInvitationsInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutInvitationsInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutInvitationsInput, Prisma.GroupUncheckedUpdateWithoutInvitationsInput>
+}
+
+export type GroupUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  icon?: Prisma.StringFieldUpdateOperationsInput | string
+  admins?: Prisma.GroupAdminUpdateManyWithoutGroupNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  recipes?: Prisma.RecipeGroupUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  icon?: Prisma.StringFieldUpdateOperationsInput | string
+  admins?: Prisma.GroupAdminUncheckedUpdateManyWithoutGroupNestedInput
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  recipes?: Prisma.RecipeGroupUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 
@@ -550,12 +643,14 @@ export type GroupCountOutputType = {
   admins: number
   members: number
   recipes: number
+  invitations: number
 }
 
 export type GroupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   admins?: boolean | GroupCountOutputTypeCountAdminsArgs
   members?: boolean | GroupCountOutputTypeCountMembersArgs
   recipes?: boolean | GroupCountOutputTypeCountRecipesArgs
+  invitations?: boolean | GroupCountOutputTypeCountInvitationsArgs
 }
 
 /**
@@ -589,6 +684,13 @@ export type GroupCountOutputTypeCountRecipesArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.RecipeGroupWhereInput
 }
 
+/**
+ * GroupCountOutputType without action
+ */
+export type GroupCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvitationWhereInput
+}
+
 
 export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -599,6 +701,7 @@ export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   admins?: boolean | Prisma.Group$adminsArgs<ExtArgs>
   members?: boolean | Prisma.Group$membersArgs<ExtArgs>
   recipes?: boolean | Prisma.Group$recipesArgs<ExtArgs>
+  invitations?: boolean | Prisma.Group$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
@@ -631,6 +734,7 @@ export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   admins?: boolean | Prisma.Group$adminsArgs<ExtArgs>
   members?: boolean | Prisma.Group$membersArgs<ExtArgs>
   recipes?: boolean | Prisma.Group$recipesArgs<ExtArgs>
+  invitations?: boolean | Prisma.Group$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -642,6 +746,7 @@ export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     admins: Prisma.$GroupAdminPayload<ExtArgs>[]
     members: Prisma.$GroupMemberPayload<ExtArgs>[]
     recipes: Prisma.$RecipeGroupPayload<ExtArgs>[]
+    invitations: Prisma.$InvitationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1046,6 +1151,7 @@ export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Ty
   admins<T extends Prisma.Group$adminsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$adminsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupAdminPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   members<T extends Prisma.Group$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recipes<T extends Prisma.Group$recipesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$recipesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecipeGroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invitations<T extends Prisma.Group$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1542,6 +1648,30 @@ export type Group$recipesArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.RecipeGroupScalarFieldEnum | Prisma.RecipeGroupScalarFieldEnum[]
+}
+
+/**
+ * Group.invitations
+ */
+export type Group$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invitation
+   */
+  select?: Prisma.InvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invitation
+   */
+  omit?: Prisma.InvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvitationInclude<ExtArgs> | null
+  where?: Prisma.InvitationWhereInput
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[]
+  cursor?: Prisma.InvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[]
 }
 
 /**

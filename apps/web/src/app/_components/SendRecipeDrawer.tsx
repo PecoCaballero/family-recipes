@@ -13,7 +13,8 @@ type PpSendRecipeDrawer = {
 
 export function SendRecipeDrawer({ open, onClose, recipe }: PpSendRecipeDrawer) {
   const { t } = useTranslation();
-  const { data: groups = [], isLoading } = useGroupsQuery();
+  const { data, isLoading } = useGroupsQuery();
+  const groups = data?.groups ?? [];
   const addRecipeToGroup = useAddRecipeToGroup();
 
   const handleSend = (groupId: string) => {

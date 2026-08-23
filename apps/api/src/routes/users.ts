@@ -1,7 +1,7 @@
 import { Router, type RequestHandler } from 'express';
 import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
-import { updateProfileSchema, changePasswordSchema } from '@family-recipe/shared';
+import { updateProfileSchema, changePasswordSchema, userSearchQuerySchema } from '@family-recipe/shared';
 import type { User } from '@family-recipe/shared';
 import { LocalStorageProvider } from '../lib/storage';
 import { avatarUploadMiddleware } from '../lib/avatarUpload';
@@ -53,6 +53,31 @@ usersRouter.get('/me', async (req, res) => {
     return res.status(200).json(userToResponse(user));
   } catch (error) {
     console.error('Get user error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+usersRouter.get('/search', async (req, res) => {
+  try {
+    const parsed = userSearchQuerySchema.safeParse({ email: String(req.query.email ?? '') });
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        email: { contains: parsed.data.email, mode: 'insensitive' },
+      },
+      select: { id: true, name: true, email: true, avatar: true },
+      take: 10,
+    });
+
+    return res.status(200).json({ users });
+  } catch (error) {
+    console.error('Search users error:', error);
     return res.status(500).json({ error: 'internal_error' });
   }
 });

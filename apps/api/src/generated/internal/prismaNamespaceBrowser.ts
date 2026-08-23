@@ -59,7 +59,8 @@ export const ModelName = {
   Group: 'Group',
   GroupMember: 'GroupMember',
   GroupAdmin: 'GroupAdmin',
-  RecipeGroup: 'RecipeGroup'
+  RecipeGroup: 'RecipeGroup',
+  Invitation: 'Invitation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -175,6 +176,21 @@ export const RecipeGroupScalarFieldEnum = {
 } as const
 
 export type RecipeGroupScalarFieldEnum = (typeof RecipeGroupScalarFieldEnum)[keyof typeof RecipeGroupScalarFieldEnum]
+
+
+export const InvitationScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  groupId: 'groupId',
+  inviterId: 'inviterId',
+  inviteeUserId: 'inviteeUserId',
+  status: 'status',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
 
 
 export const SortOrder = {
