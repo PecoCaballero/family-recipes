@@ -1,9 +1,7 @@
 ## Purpose
 
 TBD — Group settings page at `/groups/:id/settings` providing group information display, member management (kick), quit/leave functionality, edit navigation, and delete with last-member-only restriction. Fully i18n-aware.
-
 ## Requirements
-
 ### Requirement: Group settings page displays group information and member list
 
 The system SHALL provide a group settings page at `/groups/:id/settings` accessible only to group members. The page SHALL display the group's icon, name, and description as read-only summary at the top. Below the summary, the page SHALL display a list of all group members, where each member row shows the member's name, avatar, and the number of recipes they have authored that are shared with this group.
@@ -157,36 +155,30 @@ The system SHALL provide an "Add Member" button on the group settings page, visi
 
 ### Requirement: Admin can promote members to admin from settings page
 
-The system SHALL provide a promote button (crown icon) on each non-admin member row in the settings page member list, visible only to admins. Clicking the promote button SHALL call `POST /v1/groups/:id/admins` with the member's `userId`. On success, the member list SHALL refresh to reflect the new admin status.
+The system SHALL provide a promote button (crown icon) on each non-admin member row in the settings page member list, visible only to admins. The promote button SHALL have a tooltip labeled "Promote to admin". Clicking the promote button SHALL call `POST /v1/groups/:id/admins` with the member's `userId`. On success, the member list SHALL refresh to reflect the new admin status.
 
 #### Scenario: Admin promotes a non-admin member
 
 - **WHEN** an admin clicks the promote (crown) button on a non-admin member row
 - **THEN** the system calls `POST /v1/groups/:id/admins` with `{ userId: member.id }`
-- **THEN** on success, the promote button is replaced with a demote button and the member appears in the admin list
+- **THEN** on success, the promote button is removed and an Admin badge appears next to the member's name
 
 #### Scenario: Non-admin does not see promote buttons
 
 - **WHEN** a non-admin member views the settings page
 - **THEN** promote buttons are not visible
 
-### Requirement: Admin can demote admin from settings page
+### Requirement: Admin members are identified by an Admin badge
 
-The system SHALL provide a demote button (remove-crown icon) on each admin member row in the settings page member list, visible only to admins. The demote button SHALL NOT appear on the viewing admin themselves. Clicking the demote button SHALL call `DELETE /v1/groups/:id/admins/:userId`. On success, the member list SHALL refresh. If the target is the sole admin with other members, the API SHALL return a 400 error.
+The system SHALL display an "Admin" badge (Chip) next to the name of each member who is a group admin in the settings member list. The badge SHALL be visible to all members viewing the list, not only admins.
 
-#### Scenario: Admin demotes another admin
+#### Scenario: Admin member shows badge
 
-- **WHEN** an admin clicks the demote button on another admin (not the sole admin)
-- **THEN** the system calls `DELETE /v1/groups/:id/admins/:userId`
-- **THEN** on success, the demote button is replaced with a promote button
+- **WHEN** a member views the settings member list and a listed member is a group admin
+- **THEN** an "Admin" badge is displayed next to that member's name
 
-#### Scenario: Cannot demote sole admin with other members
+#### Scenario: Non-admin member has no badge
 
-- **WHEN** an admin attempts to demote the only other admin in a group with members
-- **THEN** the system returns a 400 error with `{ error: 'cannot_remove_sole_admin' }`
-- **THEN** the UI displays the error message
+- **WHEN** a member views the settings member list and a listed member is not a group admin
+- **THEN** no Admin badge is displayed for that member
 
-#### Scenario: Non-admin does not see demote buttons
-
-- **WHEN** a non-admin member views the settings page
-- **THEN** demote buttons are not visible

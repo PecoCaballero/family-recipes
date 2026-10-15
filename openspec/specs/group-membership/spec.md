@@ -1,9 +1,7 @@
 ## Purpose
 
 TBD — Group membership management, member-based visibility gating for both groups and recipes, and recipe-group association population in API responses.
-
 ## Requirements
-
 ### Requirement: Group admins can add members to their group
 
 The system SHALL allow group admins (any user with a GroupAdmin row) to add a user to their group via `POST /v1/groups/:id/members/:userId`. The operation SHALL be idempotent (no error if already a member). Non-admins SHALL receive a 403 error.
@@ -188,32 +186,6 @@ The system SHALL allow group admins (any user with a GroupAdmin row) to promote 
 - **WHEN** a non-admin authenticated user sends `POST /v1/groups/:id/admins`
 - **THEN** the system returns a 403 error with `{ error: 'forbidden' }`
 
-### Requirement: Group admins can remove another admin
-
-The system SHALL allow group admins to remove another admin's admin status via `DELETE /v1/groups/:id/admins/:userId`. The operation SHALL NOT remove the user from the group (they remain a member). The sole admin of a group with other members SHALL NOT be removable. Non-admins SHALL receive a 403 error.
-
-#### Scenario: Admin removes another admin
-
-- **WHEN** a group admin sends `DELETE /v1/groups/:id/admins/:userId` for another admin (not the sole admin)
-- **THEN** the system deletes the corresponding GroupAdmin row
-- **THEN** the user remains as a GroupMember (not removed from group)
-- **THEN** the system returns a 200 response with `{ status: 'removed' }`
-
-#### Scenario: Cannot remove sole admin from group with members
-
-- **WHEN** a request attempts to remove the only admin from a group that has other members
-- **THEN** the system returns a 400 error with `{ error: 'cannot_remove_sole_admin' }`
-
-#### Scenario: Admin cannot remove themselves if sole admin with members
-
-- **WHEN** the sole admin of a group with other members sends `DELETE /v1/groups/:id/admins/:userId` for themselves
-- **THEN** the system returns a 400 error with `{ error: 'cannot_remove_sole_admin' }`
-
-#### Scenario: Non-admin cannot remove admins
-
-- **WHEN** a non-admin authenticated user sends `DELETE /v1/groups/:id/admins/:userId`
-- **THEN** the system returns a 403 error with `{ error: 'forbidden' }`
-
 ### Requirement: Invited users can accept group invitations
 
 The system SHALL allow an invited user to accept a pending invitation via `POST /v1/groups/:id/invitations/:invitationId/accept`. The authenticated user SHALL match the invitation's `inviteeUserId`. The invitation SHALL be in `pending` status and not expired. On acceptance, the system SHALL add the user as a group member and update the invitation status to `accepted`.
@@ -273,3 +245,4 @@ The `GET /v1/groups` endpoint SHALL include a `pendingInvitations` array in the 
 
 - **WHEN** an authenticated user with no pending invitations requests `GET /v1/groups`
 - **THEN** the response includes `pendingInvitations: []`
+
