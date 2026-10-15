@@ -37,6 +37,11 @@ model Recipe {
   image           String?
   description     String
   instructions    String
+  cuisine         String?
+  prepTime        Int?
+  cookTime        Int?
+  servings        Int?
+  difficulty      String?
   visibility      String    @default("private")
   lastUpdated     DateTime  @default(now())
   createdAt       DateTime  @default(now())

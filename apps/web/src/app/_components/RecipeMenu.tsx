@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAnchor } from '../_hooks/useAnchor';
 import { useSaveRecipe, useUnsaveRecipe } from '../_hooks/recipes';
+import { useToast } from '../_providers/ToastProvider';
 import { SendRecipeDrawer } from './SendRecipeDrawer';
 
 type PpRecipeMenu = {
@@ -21,6 +22,7 @@ type PpRecipeMenu = {
 
 export default function RecipeMenu({ anchorEl, open, onClose, recipe, onDelete }: PpRecipeMenu) {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const { handleClick, handleClose, open: shareGroupOpen } = useAnchor();
   const router = useRouter();
   const saveRecipe = useSaveRecipe(recipe.id);
@@ -47,7 +49,7 @@ export default function RecipeMenu({ anchorEl, open, onClose, recipe, onDelete }
     } else {
       try {
         await navigator.clipboard.writeText(url);
-        window.alert(t('recipes.shareFallbackCopied'));
+        showToast(t('recipes.shareFallbackCopied'), 'success');
       } catch (err) {
         console.error('Copy to clipboard failed:', err);
       }

@@ -8,8 +8,15 @@ import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { SafeAvatar } from '@/app/_components/SafeAvatar';
 import { ConfirmDialog } from '@/app/_components/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
-import { useGroupQuery, useDeleteGroup, useQuitGroup, useRemoveMember, useAddAdmin } from '@/app/_hooks/groups';
+import {
+  useGroupQuery,
+  useDeleteGroup,
+  useQuitGroup,
+  useRemoveMember,
+  useAddAdmin,
+} from '@/app/_hooks/groups';
 import { AddMemberDialog } from '@/app/_components/AddMemberDialog';
+import { InviteMemberDialog } from '@/app/_components/InviteMemberDialog';
 import { routes, generatePath } from '@/app/_utils/routes';
 import type { MemberWithCount } from '@family-recipe/shared';
 import {
@@ -25,7 +32,14 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Delete, Edit, PersonRemove, PersonAdd, WorkspacePremium } from '@mui/icons-material';
+import {
+  Delete,
+  Edit,
+  MailOutline,
+  PersonRemove,
+  PersonAdd,
+  WorkspacePremium,
+} from '@mui/icons-material';
 
 function EditGroupButton({ isAdmin, groupId }: { isAdmin: boolean; groupId: string }) {
   const { t } = useTranslation();
@@ -106,6 +120,7 @@ export default function GroupSettingsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState<string | null>(null);
 
@@ -130,7 +145,8 @@ export default function GroupSettingsPage() {
         router.push(routes.groups.base.path);
       },
       onError: (err) => {
-        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error;
         if (errorMsg === 'group_has_other_members') {
           setDeleteError(t('groups.settings.cannotDeleteWithMembers'));
         } else {
@@ -147,7 +163,8 @@ export default function GroupSettingsPage() {
         router.push(routes.groups.base.path);
       },
       onError: (err) => {
-        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+        const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error;
         if (errorMsg === 'sole_admin_must_promote_or_delete') {
           setLeaveError(t('groups.settings.ownerCannotLeave'));
         } else {
@@ -184,10 +201,12 @@ export default function GroupSettingsPage() {
           <Stack direction="row" alignItems="center">
             <EditGroupButton isAdmin={isAdmin} groupId={params.id} />
             {isAdmin && (
-              <IconButton
-                aria-label={t('groups.addMember')}
-                onClick={() => setAddMemberOpen(true)}
-              >
+              <IconButton aria-label={t('groups.inviteMember')} onClick={() => setInviteOpen(true)}>
+                <MailOutline />
+              </IconButton>
+            )}
+            {isAdmin && (
+              <IconButton aria-label={t('groups.addMember')} onClick={() => setAddMemberOpen(true)}>
                 <PersonAdd />
               </IconButton>
             )}
@@ -251,11 +270,7 @@ export default function GroupSettingsPage() {
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography component="span">{member.name}</Typography>
                       {isMemberAdmin && (
-                        <Chip
-                          size="small"
-                          color="primary"
-                          label={t('groups.adminBadge')}
-                        />
+                        <Chip size="small" color="primary" label={t('groups.adminBadge')} />
                       )}
                     </Stack>
                   }
@@ -299,6 +314,12 @@ export default function GroupSettingsPage() {
       <AddMemberDialog
         open={addMemberOpen}
         onClose={() => setAddMemberOpen(false)}
+        groupId={params.id}
+      />
+
+      <InviteMemberDialog
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
         groupId={params.id}
       />
     </SceneContent>

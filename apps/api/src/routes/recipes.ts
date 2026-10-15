@@ -18,7 +18,13 @@ const recipeDbSchema = z.object({
   image: z.string().nullable(),
   description: z.string(),
   instructions: z.string(),
+  cuisine: z.string().nullable().optional(),
+  prepTime: z.number().int().nullable().optional(),
+  cookTime: z.number().int().nullable().optional(),
+  servings: z.number().int().nullable().optional(),
+  difficulty: z.string().nullable().optional(),
   lastUpdated: z.date(),
+  parentRecipeId: z.string().nullable().optional(),
   ingredients: z.array(prismaIngredientSchema),
 });
 
@@ -33,7 +39,15 @@ async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
 
   const children = await prisma.recipe.findMany({
     where: { parentRecipeId: dbRecipe.id },
+    select: { id: true, name: true },
   });
+
+  const parent = dbRecipe.parentRecipeId
+    ? await prisma.recipe.findUnique({
+        where: { id: dbRecipe.parentRecipeId },
+        select: { id: true, name: true },
+      })
+    : null;
 
   const recipeGroups = await prisma.recipeGroup.findMany({
     where: { recipeId: dbRecipe.id },
@@ -55,8 +69,15 @@ async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
     description: dbRecipe.description,
     ingredients,
     instructions: dbRecipe.instructions,
+    cuisine: dbRecipe.cuisine ?? undefined,
+    prepTime: dbRecipe.prepTime ?? undefined,
+    cookTime: dbRecipe.cookTime ?? undefined,
+    servings: dbRecipe.servings ?? undefined,
+    difficulty: (dbRecipe.difficulty ?? undefined) as Recipe['difficulty'],
     lastUpdated: dbRecipe.lastUpdated.toISOString(),
-    nestedRecipeIds: children.map((c: { id: string }) => c.id),
+    nestedRecipeIds: children.map((c) => c.id),
+    nestedRecipes: children.map((c) => ({ id: c.id, name: c.name })),
+    parentRecipe: parent ? { id: parent.id, name: parent.name } : undefined,
     groupIds: recipeGroups.map((rg: { groupId: string }) => rg.groupId),
     savedByIds: [],
     isAuthor,
@@ -150,6 +171,19 @@ recipeRouter.post('/', async (req, res) => {
     }
     const { name, description, image, ingredients, instructions, parentRecipeId } = parsed.data;
 
+    if (parentRecipeId) {
+      const parent = await prisma.recipe.findUnique({
+        where: { id: parentRecipeId },
+        select: { id: true },
+      });
+      if (!parent) {
+        return res.status(400).json({
+          error: 'validation_error',
+          details: ['parentRecipeId: parent recipe not found'],
+        });
+      }
+    }
+
     const user = await prisma.user.findUnique({ where: { id: req.userId } });
     const authorName = user?.name ?? 'Unknown';
 
@@ -161,6 +195,11 @@ recipeRouter.post('/', async (req, res) => {
         description,
         image: image || null,
         instructions,
+        cuisine: parsed.data.cuisine ?? null,
+        prepTime: parsed.data.prepTime ?? null,
+        cookTime: parsed.data.cookTime ?? null,
+        servings: parsed.data.servings ?? null,
+        difficulty: parsed.data.difficulty ?? null,
         parentRecipeId: parentRecipeId || null,
         ingredients: {
           create: ingredients.map((ing) => ({
@@ -204,6 +243,27 @@ recipeRouter.patch('/:id', async (req, res) => {
     }
     const { name, description, image, ingredients, instructions, parentRecipeId } = parsed.data;
 
+    if (parentRecipeId !== undefined) {
+      if (parentRecipeId === req.params.id) {
+        return res.status(400).json({
+          error: 'validation_error',
+          details: ['parentRecipeId: a recipe cannot be its own parent'],
+        });
+      }
+      if (parentRecipeId) {
+        const parent = await prisma.recipe.findUnique({
+          where: { id: parentRecipeId },
+          select: { id: true },
+        });
+        if (!parent) {
+          return res.status(400).json({
+            error: 'validation_error',
+            details: ['parentRecipeId: parent recipe not found'],
+          });
+        }
+      }
+    }
+
     await prisma.$transaction([
       prisma.recipe.update({
         where: { id: req.params.id },
@@ -213,6 +273,11 @@ recipeRouter.patch('/:id', async (req, res) => {
           ...(image !== undefined && { image }),
           ...(instructions !== undefined && { instructions }),
           ...(parentRecipeId !== undefined && { parentRecipeId }),
+          ...(parsed.data.cuisine !== undefined && { cuisine: parsed.data.cuisine }),
+          ...(parsed.data.prepTime !== undefined && { prepTime: parsed.data.prepTime }),
+          ...(parsed.data.cookTime !== undefined && { cookTime: parsed.data.cookTime }),
+          ...(parsed.data.servings !== undefined && { servings: parsed.data.servings }),
+          ...(parsed.data.difficulty !== undefined && { difficulty: parsed.data.difficulty }),
           lastUpdated: new Date(),
         },
         include: { ingredients: true },

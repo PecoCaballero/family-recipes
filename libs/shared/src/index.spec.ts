@@ -1,6 +1,8 @@
 import {
   ingredientSchema,
   createRecipeInputSchema,
+  updateRecipeInputSchema,
+  recipeSchema,
   createGroupInputSchema,
   loginInputSchema,
   batchAddRecipesSchema,
@@ -44,6 +46,82 @@ describe('shared schemas', () => {
     it('rejects missing instructions', () => {
       const { instructions: _instructions, ...rest } = valid;
       expect(createRecipeInputSchema.safeParse(rest).success).toBe(false);
+    });
+  });
+
+  describe('recipeSchema nesting', () => {
+    const base = {
+      id: 'r1',
+      authorId: 'u1',
+      author: 'Alice',
+      name: 'Pancakes',
+      description: 'Fluffy',
+      ingredients: [],
+      instructions: 'Mix',
+      lastUpdated: new Date().toISOString(),
+      groupIds: [],
+      savedByIds: [],
+    };
+
+    it('accepts a recipe without nesting', () => {
+      expect(recipeSchema.safeParse(base).success).toBe(true);
+    });
+
+    it('accepts parent and variation summaries', () => {
+      const parsed = recipeSchema.safeParse({
+        ...base,
+        parentRecipe: { id: 'p1', name: 'Grandma Pancakes' },
+        nestedRecipes: [{ id: 'c1', name: 'Buttermilk version' }],
+      });
+      expect(parsed.success).toBe(true);
+    });
+
+    it('rejects a malformed summary', () => {
+      expect(recipeSchema.safeParse({ ...base, nestedRecipes: [{ id: 'c1' }] }).success).toBe(
+        false,
+      );
+    });
+  });
+
+  describe('recipe metadata', () => {
+    const valid = {
+      name: 'Pancakes',
+      description: 'Fluffy stacks',
+      instructions: 'Mix and fry',
+      ingredients: [{ name: 'Flour', quantity: '2 cups' }],
+    };
+
+    it('accepts a recipe without metadata', () => {
+      expect(createRecipeInputSchema.safeParse(valid).success).toBe(true);
+    });
+
+    it('accepts valid metadata', () => {
+      const parsed = createRecipeInputSchema.safeParse({
+        ...valid,
+        cuisine: 'American',
+        prepTime: 10,
+        cookTime: 20,
+        servings: 4,
+        difficulty: 'easy',
+      });
+      expect(parsed.success).toBe(true);
+    });
+
+    it('rejects non-positive times and servings', () => {
+      expect(createRecipeInputSchema.safeParse({ ...valid, prepTime: -1 }).success).toBe(false);
+      expect(createRecipeInputSchema.safeParse({ ...valid, cookTime: 0 }).success).toBe(false);
+      expect(createRecipeInputSchema.safeParse({ ...valid, servings: 2.5 }).success).toBe(false);
+    });
+
+    it('rejects an unknown difficulty', () => {
+      expect(
+        createRecipeInputSchema.safeParse({ ...valid, difficulty: 'impossible' }).success,
+      ).toBe(false);
+    });
+
+    it('validates metadata on update', () => {
+      expect(updateRecipeInputSchema.safeParse({ difficulty: 'hard' }).success).toBe(true);
+      expect(updateRecipeInputSchema.safeParse({ difficulty: 'nope' }).success).toBe(false);
     });
   });
 

@@ -30,6 +30,23 @@ export const userSettingsUpdateSchema = z.object({
 });
 export type UserSettingsUpdate = z.infer<typeof userSettingsUpdateSchema>;
 
+export const recipeSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+export type RecipeSummary = z.infer<typeof recipeSummarySchema>;
+
+export const recipeDifficultySchema = z.enum(['easy', 'medium', 'hard']);
+export type RecipeDifficulty = z.infer<typeof recipeDifficultySchema>;
+
+const recipeMetadataSchema = {
+  cuisine: z.string().optional(),
+  prepTime: z.number().int().positive().optional(),
+  cookTime: z.number().int().positive().optional(),
+  servings: z.number().int().positive().optional(),
+  difficulty: recipeDifficultySchema.optional(),
+};
+
 export const recipeSchema = z.object({
   id: z.string(),
   authorId: z.string(),
@@ -40,7 +57,10 @@ export const recipeSchema = z.object({
   ingredients: z.array(ingredientSchema),
   instructions: z.string(),
   lastUpdated: z.string(),
+  ...recipeMetadataSchema,
   nestedRecipeIds: z.array(z.string()).optional(),
+  nestedRecipes: z.array(recipeSummarySchema).optional(),
+  parentRecipe: recipeSummarySchema.optional(),
   groupIds: z.array(z.string()),
   savedByIds: z.array(z.string()),
   isAuthor: z.boolean().optional(),
@@ -55,6 +75,7 @@ export const createRecipeInputSchema = z.object({
   ingredients: z.array(ingredientSchema),
   instructions: z.string().min(1),
   parentRecipeId: z.string().optional(),
+  ...recipeMetadataSchema,
 });
 export type CreateRecipeInput = z.infer<typeof createRecipeInputSchema>;
 
@@ -65,6 +86,7 @@ export const updateRecipeInputSchema = z.object({
   ingredients: z.array(ingredientSchema).optional(),
   instructions: z.string().optional(),
   parentRecipeId: z.string().optional(),
+  ...recipeMetadataSchema,
 });
 export type UpdateRecipeInput = z.infer<typeof updateRecipeInputSchema>;
 

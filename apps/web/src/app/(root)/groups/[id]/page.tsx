@@ -5,26 +5,35 @@ import { useRouter } from 'next/navigation';
 import { SceneContent } from '@/app/_components/SceneComponents';
 import { Header } from '@/app/_components/Header';
 import { RecipeList } from '@/app/_components/RecipeList';
+import { SearchInput } from '@/app/_components/SearchInput';
 import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { ChipFilter, type ChipOption } from '@/app/_components/ChipFilter';
 import { FloatingActionButton } from '@/app/_components/FloatingActionButton';
+import { EmptyRecipeState } from '@/app/_components/EmptyState';
 import { BulkShareDialog } from '@/app/_components/BulkShareDialog';
+import { ConfirmDialog } from '@/app/_components/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'next/navigation';
-import { useGroupQuery } from '@/app/_hooks/groups';
+import { useGroupQuery, useRemoveRecipeFromGroup } from '@/app/_hooks/groups';
+import { useToast } from '@/app/_providers/ToastProvider';
+import { filterRecipesByQuery } from '@/app/_utils/recipeFilters';
 import { routes, generatePath } from '@/app/_utils/routes';
 import { Settings, Share } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import type { MemberWithCount, Recipe } from '@family-recipe/shared';
 import { resolveAvatarUrl } from '@/app/_utils/avatarUrl';
 
 export default function GroupPage() {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const { data, isLoading } = useGroupQuery(params.id);
+  const removeRecipe = useRemoveRecipeFromGroup();
   const [selectedChip, setSelectedChip] = useState<ChipOption | undefined>();
+  const [searchQuery, setSearchQuery] = useState('');
   const [shareOpen, setShareOpen] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<Recipe | null>(null);
 
   const members = useMemo(() => data?.members ?? [], [data?.members]);
   const recipes = useMemo(() => data?.recipes ?? [], [data?.recipes]);
@@ -41,24 +50,41 @@ export default function GroupPage() {
   }, [members, t]);
 
   const filteredRecipes = useMemo(() => {
+    const searched = filterRecipesByQuery(recipes, searchQuery);
     if (!selectedChip || selectedChip.label === t('groups.view.allRecipes')) {
-      return recipes;
+      return searched;
     }
     const selectedMember = members.find((m: MemberWithCount) => m.name === selectedChip.label);
-    if (!selectedMember) return recipes;
-    return recipes.filter((r: Recipe) => r.authorId === selectedMember.id);
-  }, [recipes, selectedChip, members, t]);
+    if (!selectedMember) return searched;
+    return searched.filter((r: Recipe) => r.authorId === selectedMember.id);
+  }, [recipes, searchQuery, selectedChip, members, t]);
 
   if (isLoading || !data) {
     return (
       <SceneContent>
         <Header goBack title={t('groups.view.title')} />
-        <ContentSkeleton variant="card" count={3} />
+        <ContentSkeleton variant="rows" />
       </SceneContent>
     );
   }
 
   const settingsPath = generatePath(routes.groups.settings.path, { id: params.id });
+
+  const handleRemoveConfirm = () => {
+    if (!removeTarget) return;
+    removeRecipe.mutate(
+      { groupId: params.id, recipeId: removeTarget.id },
+      {
+        onSuccess: () => {
+          showToast(t('groups.removedFromGroup'), 'success');
+          setRemoveTarget(null);
+        },
+        onError: () => {
+          showToast(t('common.error'), 'error');
+        },
+      },
+    );
+  };
 
   return (
     <SceneContent>
@@ -74,6 +100,13 @@ export default function GroupPage() {
           </IconButton>
         }
       />
+      <Box sx={{ px: 2, pt: 1 }}>
+        <SearchInput
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t('search.searchPlaceholder')}
+        />
+      </Box>
       {members.length > 1 && (
         <ChipFilter
           options={chipOptions}
@@ -81,13 +114,30 @@ export default function GroupPage() {
           onSelect={setSelectedChip}
         />
       )}
-      <RecipeList recipes={filteredRecipes} />
+      {filteredRecipes.length > 0 ? (
+        <RecipeList
+          recipes={filteredRecipes}
+          onRemove={data.isAdmin ? setRemoveTarget : undefined}
+          removeLabel={t('groups.removeRecipe')}
+        />
+      ) : (
+        <EmptyRecipeState message={searchQuery ? t('search.noResults') : t('recipes.noRecipes')} />
+      )}
       <FloatingActionButton
         icon={<Share />}
         onClick={() => setShareOpen(true)}
         label={t('groups.fabShareTooltip')}
       />
       <BulkShareDialog open={shareOpen} onClose={() => setShareOpen(false)} groupId={params.id} />
+      <ConfirmDialog
+        open={removeTarget !== null}
+        onClose={() => setRemoveTarget(null)}
+        title={t('groups.removeRecipeConfirm')}
+        message={t('groups.removeRecipeConfirmMessage')}
+        onConfirm={handleRemoveConfirm}
+        loading={removeRecipe.isPending}
+        confirmLabel={t('common.delete')}
+      />
     </SceneContent>
   );
 }

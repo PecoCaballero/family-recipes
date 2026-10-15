@@ -2,9 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/app/_utils/apiClient';
-import type { Recipe } from '@family-recipe/shared';
+import type { Recipe, RecipeDifficulty } from '@family-recipe/shared';
 
-export function useRecipesQuery(search?: string) {
+export function useRecipesQuery(search?: string, enabled = true) {
   return useQuery({
     queryKey: ['recipes', { search }],
     queryFn: async () => {
@@ -12,6 +12,7 @@ export function useRecipesQuery(search?: string) {
       const res = await apiClient.get<{ recipes: Recipe[] }>(url);
       return res.data.recipes ?? [];
     },
+    enabled,
   });
 }
 
@@ -32,6 +33,12 @@ type RecipeFormData = {
   image?: string;
   ingredients: { name: string; unit?: string; quantity: string }[];
   instructions: string;
+  parentRecipeId?: string;
+  cuisine?: string;
+  prepTime?: number;
+  cookTime?: number;
+  servings?: number;
+  difficulty?: RecipeDifficulty;
 };
 
 export function useCreateRecipe() {

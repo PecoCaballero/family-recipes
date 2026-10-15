@@ -51,7 +51,6 @@ export function AccountScene() {
       user?.settings.language ??
       i18n.language ??
       'en',
-    privacyLevel: user?.settings.privacyLevel ?? 'private',
     notifications: user?.settings.notifications ?? true,
   }));
 
@@ -148,12 +147,6 @@ export function AccountScene() {
     { label: t('account.themeAuto'), value: 'auto' },
   ];
 
-  const privacyOptions = [
-    { label: t('account.privacyPrivate'), value: 'private' },
-    { label: t('account.privacyFamily'), value: 'family' },
-    { label: t('account.privacyPublic'), value: 'public' },
-  ];
-
   return (
     <Scene>
       <SceneContent>
@@ -210,15 +203,6 @@ export function AccountScene() {
             options={themeOptions}
           />
 
-          <Divider />
-          <SettingOption
-            label={t('account.privacy')}
-            description={t('account.privacyDescription')}
-            type="select"
-            value={settings.privacyLevel}
-            onChange={(value) => handleSettingChange('privacyLevel', value)}
-            options={privacyOptions}
-          />
           <Divider />
 
           <SettingOption
