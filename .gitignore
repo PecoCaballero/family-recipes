@@ -52,3 +52,6 @@ next-env.d.ts
 # AI tooling (personal/local configs)
 .claude/
 .cursor/
+
+# generated build artifacts
+/tmp/
