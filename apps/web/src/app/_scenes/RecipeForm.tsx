@@ -127,11 +127,6 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
     try {
       if (onSubmit) {
         await onSubmit(formData);
-      } else {
-        // TODO: Replace with actual API call
-        console.log('Saving recipe:', formData);
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
       router.push('/recipes');

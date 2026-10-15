@@ -8,23 +8,24 @@ import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { SafeAvatar } from '@/app/_components/SafeAvatar';
 import { ConfirmDialog } from '@/app/_components/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
-import { useGroupQuery, useDeleteGroup, useQuitGroup, useRemoveMember, useAddAdmin, useRemoveAdmin } from '@/app/_hooks/groups';
-import { useAuth } from '@/app/_providers/AuthContext';
+import { useGroupQuery, useDeleteGroup, useQuitGroup, useRemoveMember, useAddAdmin } from '@/app/_hooks/groups';
 import { AddMemberDialog } from '@/app/_components/AddMemberDialog';
 import { routes, generatePath } from '@/app/_utils/routes';
 import type { MemberWithCount } from '@family-recipe/shared';
 import {
   Box,
   Button,
+  Chip,
   IconButton,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
-import { Delete, Edit, PersonRemove, PersonAdd, WorkspacePremium, WorkspacePremiumOutlined } from '@mui/icons-material';
+import { Delete, Edit, PersonRemove, PersonAdd, WorkspacePremium } from '@mui/icons-material';
 
 function EditGroupButton({ isAdmin, groupId }: { isAdmin: boolean; groupId: string }) {
   const { t } = useTranslation();
@@ -96,13 +97,11 @@ export default function GroupSettingsPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const params = useParams<{ id: string }>();
-  const { user } = useAuth();
   const { data, isLoading } = useGroupQuery(params.id);
   const deleteGroup = useDeleteGroup(params.id);
   const quitGroup = useQuitGroup(params.id);
   const removeMember = useRemoveMember(params.id);
   const addAdmin = useAddAdmin(params.id);
-  const removeAdmin = useRemoveAdmin(params.id);
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
@@ -166,10 +165,6 @@ export default function GroupSettingsPage() {
     addAdmin.mutate(userId);
   };
 
-  const handleDemote = (userId: string) => {
-    removeAdmin.mutate(userId);
-  };
-
   const leaveTitle = isLastMember
     ? t('groups.settings.leaveAndDeleteConfirm')
     : t('groups.settings.leaveConfirm');
@@ -224,7 +219,6 @@ export default function GroupSettingsPage() {
         <List>
           {members.map((member: MemberWithCount) => {
             const isMemberAdmin = group.adminIds.includes(member.id);
-            const isSelf = user?.id === member.id;
 
             return (
               <ListItem
@@ -232,22 +226,15 @@ export default function GroupSettingsPage() {
                 secondaryAction={
                   <Box display="flex">
                     {isAdmin && !isMemberAdmin && (
-                      <IconButton
-                        edge="end"
-                        aria-label={t('groups.promoteAdmin')}
-                        onClick={() => handlePromote(member.id)}
-                      >
-                        <WorkspacePremium />
-                      </IconButton>
-                    )}
-                    {isAdmin && isMemberAdmin && !isSelf && (
-                      <IconButton
-                        edge="end"
-                        aria-label={t('groups.demoteAdmin')}
-                        onClick={() => handleDemote(member.id)}
-                      >
-                        <WorkspacePremiumOutlined />
-                      </IconButton>
+                      <Tooltip title={t('groups.promoteAdmin')}>
+                        <IconButton
+                          edge="end"
+                          aria-label={t('groups.promoteAdmin')}
+                          onClick={() => handlePromote(member.id)}
+                        >
+                          <WorkspacePremium />
+                        </IconButton>
+                      </Tooltip>
                     )}
                     <KickMemberButton
                       canKick={isAdmin && !isMemberAdmin}
@@ -260,7 +247,18 @@ export default function GroupSettingsPage() {
                   <SafeAvatar src={member.avatar} fallback={member.name.charAt(0)} />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={member.name}
+                  primary={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography component="span">{member.name}</Typography>
+                      {isMemberAdmin && (
+                        <Chip
+                          size="small"
+                          color="primary"
+                          label={t('groups.adminBadge')}
+                        />
+                      )}
+                    </Stack>
+                  }
                   secondary={t('groups.settings.recipeCount', { count: member.recipeCount })}
                 />
               </ListItem>

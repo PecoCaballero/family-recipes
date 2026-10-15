@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { RecipeForm } from './RecipeForm';
 import { LoadingPage } from './LoadingPage';
-import { useRecipeQuery, useCreateRecipe, useUpdateRecipe, useDeleteRecipe } from '../_hooks/recipes';
+import { useRecipeQuery, useCreateRecipe, useUpdateRecipe } from '../_hooks/recipes';
 import type { Recipe } from '@family-recipe/shared';
 
 type PpRecipeFormScene = {
@@ -24,7 +24,6 @@ export function RecipeFormScene({ isEditing = false }: PpRecipeFormScene) {
   );
   const createMutation = useCreateRecipe();
   const updateMutation = useUpdateRecipe(recipeId ?? '');
-  const deleteMutation = useDeleteRecipe(recipeId ?? '');
 
   const handleSubmit = async (formData: {
     name: string;
@@ -38,12 +37,6 @@ export function RecipeFormScene({ isEditing = false }: PpRecipeFormScene) {
     } else {
       await createMutation.mutateAsync(formData);
     }
-    router.push('/recipes');
-  };
-
-  const handleDelete = async () => {
-    if (!recipeId) return;
-    await deleteMutation.mutateAsync();
     router.push('/recipes');
   };
 

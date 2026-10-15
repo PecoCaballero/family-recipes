@@ -81,6 +81,7 @@
     "unsaveRecipe": "Rezept entfernen",
     "sendToGroup": "An Gruppe senden",
     "share": "Teilen",
+    "shareFallbackCopied": "Link in die Zwischenablage kopiert",
     "recipeName": "Rezeptname",
     "ingredients": "Zutaten",
     "instructions": "Anleitung",
@@ -169,15 +170,14 @@
     "emailSearchPlaceholder": "Benutzer per E-Mail suchen...",
     "noUsersFound": "Keine Benutzer gefunden",
     "promoteAdmin": "Zum Administrator ernennen",
-    "demoteAdmin": "Administrator entfernen",
+    "adminBadge": "Administrator",
     "fabShareTooltip": "Rezepte teilen",
     "bulkShareTitle": "Rezepte teilen",
     "bulkShareConfirm": "Teilen",
     "bulkShareEmpty": "Alle deine Rezepte sind bereits mit dieser Gruppe geteilt.",
     "invitationBanner": "{{inviterName}} hat dich zu {{groupName}} eingeladen",
     "invitationAccept": "Annehmen",
-    "invitationPendingCount": "{{count}} ausstehende Einladung(en)",
-    "cannotDemoteSoleAdmin": "Der einzige Administrator einer Gruppe mit Mitgliedern kann nicht entfernt werden"
+    "invitationPendingCount": "{{count}} ausstehende Einladung(en)"
   },
   "search": {
     "title": "Suche",

@@ -103,6 +103,7 @@
     "unsaveRecipe": "Remover receita salva",
     "sendToGroup": "Enviar para grupo",
     "share": "Compartilhar",
+    "shareFallbackCopied": "Link copiado para a área de transferência",
     "recipeName": "Nome da receita",
     "ingredients": "Ingredientes",
     "instructions": "Instruções",
@@ -191,15 +192,14 @@
     "emailSearchPlaceholder": "Buscar usuários por e-mail...",
     "noUsersFound": "Nenhum usuário encontrado",
     "promoteAdmin": "Promover a administrador",
-    "demoteAdmin": "Remover administrador",
+    "adminBadge": "Administrador",
     "fabShareTooltip": "Compartilhar receitas",
     "bulkShareTitle": "Compartilhar receitas",
     "bulkShareConfirm": "Compartilhar",
     "bulkShareEmpty": "Todas as suas receitas já foram compartilhadas com este grupo.",
     "invitationBanner": "{{inviterName}} convidou você para {{groupName}}",
     "invitationAccept": "Aceitar",
-    "invitationPendingCount": "{{count}} convite(s) pendente(s)",
-    "cannotDemoteSoleAdmin": "Não é possível remover o único administrador de um grupo com membros"
+    "invitationPendingCount": "{{count}} convite(s) pendente(s)"
   },
   "search": {
     "title": "Pesquisar",

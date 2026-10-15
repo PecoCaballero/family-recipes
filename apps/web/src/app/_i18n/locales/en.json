@@ -103,6 +103,7 @@
     "unsaveRecipe": "Unsave recipe",
     "sendToGroup": "Send to group",
     "share": "Share",
+    "shareFallbackCopied": "Link copied to clipboard",
     "recipeName": "Recipe Name",
     "ingredients": "Ingredients",
     "instructions": "Instructions",
@@ -191,15 +192,14 @@
     "emailSearchPlaceholder": "Search users by email...",
     "noUsersFound": "No users found",
     "promoteAdmin": "Promote to admin",
-    "demoteAdmin": "Remove admin",
+    "adminBadge": "Admin",
     "fabShareTooltip": "Share recipes",
     "bulkShareTitle": "Share Recipes",
     "bulkShareConfirm": "Share",
     "bulkShareEmpty": "All your recipes are already shared to this group.",
     "invitationBanner": "{{inviterName}} invited you to {{groupName}}",
     "invitationAccept": "Accept",
-    "invitationPendingCount": "{{count}} pending invitation(s)",
-    "cannotDemoteSoleAdmin": "Cannot remove the sole admin of a group with members"
+    "invitationPendingCount": "{{count}} pending invitation(s)"
   },
   "search": {
     "title": "Search",

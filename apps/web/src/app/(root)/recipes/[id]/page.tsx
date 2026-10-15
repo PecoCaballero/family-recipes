@@ -1,20 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { Stack, Typography, IconButton } from '@mui/material';
 import { Header } from '@/app/_components/Header';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { LoadingPage } from '@/app/_scenes/LoadingPage';
 import Image from 'next/image';
 import RecipeMenu from '@/app/_components/RecipeMenu';
 import { MoreVert } from '@mui/icons-material';
 import { useAnchor } from '@/app/_hooks/useAnchor';
-import { useRecipeQuery } from '@/app/_hooks/recipes';
+import { useRecipeQuery, useDeleteRecipe } from '@/app/_hooks/recipes';
 import { EmptyRecipeState } from '@/app/_components/EmptyState';
+import { ConfirmDialog } from '@/app/_components/ConfirmDialog';
+import { routes } from '@/app/_utils/routes';
 
 export default function RecipePage() {
   const { t } = useTranslation();
+  const router = useRouter();
   const {
     open: openMenu,
     anchor: menuAnchor,
@@ -23,6 +27,21 @@ export default function RecipePage() {
   } = useAnchor();
   const params = useParams<{ id: string }>();
   const { data: recipe, isLoading } = useRecipeQuery(params.id);
+  const deleteRecipe = useDeleteRecipe(params.id);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDelete = () => {
+    setDeleteError(null);
+    deleteRecipe.mutate(undefined, {
+      onSuccess: () => {
+        router.push(routes.recipes.base.path);
+      },
+      onError: () => {
+        setDeleteError(t('common.error'));
+      },
+    });
+  };
 
   if (isLoading) {
     return <LoadingPage />;
@@ -99,7 +118,23 @@ export default function RecipePage() {
           {recipe.instructions}
         </Typography>
       </SceneContent>
-      <RecipeMenu recipe={recipe} anchorEl={menuAnchor} open={openMenu} onClose={handleMenuClose} />
+      <RecipeMenu
+        recipe={recipe}
+        anchorEl={menuAnchor}
+        open={openMenu}
+        onClose={handleMenuClose}
+        onDelete={() => setDeleteOpen(true)}
+      />
+      <ConfirmDialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        title={t('recipes.deleteRecipe')}
+        message={t('recipes.deleteConfirm')}
+        error={deleteError}
+        onConfirm={handleDelete}
+        loading={deleteRecipe.isPending}
+        confirmLabel={t('common.delete')}
+      />
     </Scene>
   );
 }

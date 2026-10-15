@@ -73,3 +73,31 @@ export function useDeleteRecipe(id: string) {
     },
   });
 }
+
+export function useSaveRecipe(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await apiClient.post(`/v1/recipes/${id}/save`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes', id] });
+      queryClient.invalidateQueries({ queryKey: ['recipes'] });
+    },
+  });
+}
+
+export function useUnsaveRecipe(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await apiClient.post(`/v1/recipes/${id}/unsave`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes', id] });
+      queryClient.invalidateQueries({ queryKey: ['recipes'] });
+    },
+  });
+}

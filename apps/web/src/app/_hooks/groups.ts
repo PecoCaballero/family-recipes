@@ -168,22 +168,6 @@ export function useAddAdmin(groupId: string) {
   });
 }
 
-export function useRemoveAdmin(groupId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (userId: string) => {
-      const res = await apiClient.delete<{ status: string }>(
-        `/v1/groups/${groupId}/admins/${userId}`,
-      );
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups', groupId] });
-    },
-  });
-}
-
 export function useBatchAddRecipes(groupId: string) {
   const queryClient = useQueryClient();
 

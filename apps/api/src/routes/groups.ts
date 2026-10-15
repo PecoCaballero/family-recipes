@@ -524,38 +524,3 @@ groupRouter.post('/:id/admins', async (req, res) => {
     return res.status(500).json({ error: 'internal_error' });
   }
 });
-
-groupRouter.delete('/:id/admins/:userId', async (req, res) => {
-  try {
-    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
-      return res.status(403).json({ error: 'forbidden' });
-    }
-
-    const group = await prisma.group.findUnique({
-      where: { id: req.params.id },
-      include: { admins: true, members: true },
-    });
-    if (!group) {
-      return res.status(404).json({ error: 'group_not_found' });
-    }
-
-    const isSoleAdmin = group.admins.length === 1 && group.admins[0].userId === req.params.userId;
-    const hasOtherMembers = group.members.length > 1;
-
-    if (isSoleAdmin && hasOtherMembers) {
-      return res.status(400).json({ error: 'cannot_remove_sole_admin' });
-    }
-
-    await prisma.groupAdmin.deleteMany({
-      where: {
-        groupId: req.params.id,
-        userId: req.params.userId,
-      },
-    });
-
-    return res.status(200).json({ status: 'removed' });
-  } catch (error) {
-    console.error('Remove admin error:', error);
-    return res.status(500).json({ error: 'internal_error' });
-  }
-});
