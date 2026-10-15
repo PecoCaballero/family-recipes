@@ -23,7 +23,7 @@ export const useTheme = () => {
 
 function readStoredTheme(): ThemeMode {
   if (typeof window === 'undefined') return 'auto';
-  const stored = sessionStorage.getItem('theme');
+  const stored = localStorage.getItem('theme');
   if (stored === 'light' || stored === 'dark' || stored === 'auto') return stored;
   return 'auto';
 }
@@ -41,7 +41,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const setMode = (mode: ThemeMode) => {
     setStoredMode(mode);
-    sessionStorage.setItem('theme', mode);
+    localStorage.setItem('theme', mode);
   };
 
   const mode = getMode();

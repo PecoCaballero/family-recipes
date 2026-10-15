@@ -73,6 +73,12 @@ export default function BottomNavigator() {
         right: 0,
         zIndex: 1000,
         backgroundColor: 'background.paper',
+        borderTop: 1,
+        borderColor: 'divider',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        '& .Mui-selected': {
+          color: 'primary.main',
+        },
       }}
       showLabels
     >

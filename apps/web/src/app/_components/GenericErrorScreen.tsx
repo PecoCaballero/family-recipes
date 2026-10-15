@@ -27,20 +27,20 @@ export function GenericErrorScreen({
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        bgcolor: 'background.default',
       }}
     >
       <Container maxWidth="sm">
-        <Stack spacing={3} sx={{ color: 'white' }}>
-          <Stack direction="row" spacing={1}>
-            <ErrorOutlineIcon sx={{ fontSize: 80, color: 'white' }} />
+        <Stack spacing={3} sx={{ color: 'text.primary' }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+            <ErrorOutlineIcon sx={{ fontSize: 80, color: 'error.main' }} />
 
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
               {t('error.title', 'Something went wrong')}
             </Typography>
           </Stack>
 
-          <Typography variant="body1" sx={{ opacity: 0.9 }}>
+          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             {t(
               'error.description',
               'We encountered an unexpected error. Please try again or contact support if the problem persists.',
@@ -52,7 +52,7 @@ export function GenericErrorScreen({
               sx={{
                 mt: 2,
                 p: 2,
-                bgcolor: 'rgba(0, 0, 0, 0.3)',
+                bgcolor: 'action.hover',
                 borderRadius: 1,
                 textAlign: 'left',
               }}
@@ -73,35 +73,12 @@ export function GenericErrorScreen({
 
           <Stack direction="row" spacing={2} sx={{ justifyContent: 'center' }}>
             {reset && (
-              <Button
-                onClick={reset}
-                variant="contained"
-                sx={{
-                  bgcolor: 'white',
-                  color: '#667eea',
-                  fontWeight: 'bold',
-                  '&:hover': {
-                    bgcolor: 'rgba(255, 255, 255, 0.9)',
-                  },
-                }}
-              >
+              <Button onClick={reset} variant="contained">
                 {t('error.retry', 'Try Again')}
               </Button>
             )}
 
-            <Button
-              onClick={() => router.push('/')}
-              variant="outlined"
-              sx={{
-                borderColor: 'white',
-                color: 'white',
-                fontWeight: 'bold',
-                '&:hover': {
-                  borderColor: 'rgba(255, 255, 255, 0.8)',
-                  bgcolor: 'rgba(255, 255, 255, 0.1)',
-                },
-              }}
-            >
+            <Button onClick={() => router.push('/')} variant="outlined">
               {t('error.home', 'Go Home')}
             </Button>
           </Stack>

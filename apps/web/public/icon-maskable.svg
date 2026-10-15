@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Family Recipe">
+  <rect width="512" height="512" fill="#075E54" />
+  <circle cx="256" cy="256" r="144" fill="#FFFFFF" />
+  <circle cx="256" cy="256" r="96" fill="#ECE5DD" />
+  <path
+    d="M256 316c-35.2-24.8-56-45.6-56-72.8 0-19.2 14.4-33.6 32.8-33.6 9.6 0 18.4 4.8 23.2 12 4.8-7.2 13.6-12 23.2-12 18.4 0 32.8 14.4 32.8 33.6 0 27.2-20.8 48-56 72.8z"
+    fill="#25D366"
+  />
+</svg>
