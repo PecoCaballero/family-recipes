@@ -3,7 +3,7 @@
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { TextField, Box, Typography, Alert } from '@mui/material';
+import { TextField, Box, Alert } from '@mui/material';
 import { Header } from '@/app/_components/Header';
 import { LoadingButton } from '@/app/_components/LoadingButton';
 import { useCreateGroup } from '@/app/_hooks/groups';

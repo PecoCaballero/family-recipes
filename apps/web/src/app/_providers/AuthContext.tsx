@@ -37,12 +37,16 @@ function readSessionString(key: string): string | null {
 
 export function AuthProvider({ children }: PpWC) {
   const [user, setUser] = useState<User | null>(() => readSessionJSON<User | null>('user', null));
-  const [accessToken, setAccessToken] = useState<string | null>(() => readSessionString('accessToken'));
-  const [refreshToken, setRefreshToken] = useState<string | null>(() => readSessionString('refreshToken'));
+  const [accessToken, setAccessToken] = useState<string | null>(() =>
+    readSessionString('accessToken'),
+  );
+  const [refreshToken, setRefreshToken] = useState<string | null>(() =>
+    readSessionString('refreshToken'),
+  );
 
-  const loginMutation = useLoginMutation();
-  const registerMutation = useRegisterMutation();
-  const logoutMutation = useLogoutMutation();
+  const { mutateAsync: loginAsync } = useLoginMutation();
+  const { mutateAsync: registerAsync } = useRegisterMutation();
+  const { mutateAsync: logoutAsync } = useLogoutMutation();
 
   const persistTokens = useCallback((tokens: TokenPair, userData: User) => {
     sessionStorage.setItem('accessToken', tokens.accessToken);
@@ -59,24 +63,24 @@ export function AuthProvider({ children }: PpWC) {
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const data = await loginMutation.mutateAsync({ email, password });
+      const data = await loginAsync({ email, password });
       persistTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken }, data.user);
     },
-    [loginMutation.mutateAsync, persistTokens],
+    [loginAsync, persistTokens],
   );
 
   const register = useCallback(
     async (name: string, email: string, password: string) => {
-      const data = await registerMutation.mutateAsync({ name, email, password });
+      const data = await registerAsync({ name, email, password });
       persistTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken }, data.user);
     },
-    [registerMutation.mutateAsync, persistTokens],
+    [registerAsync, persistTokens],
   );
 
   const logout = useCallback(async () => {
     if (refreshToken) {
       try {
-        await logoutMutation.mutateAsync({ refreshToken });
+        await logoutAsync({ refreshToken });
       } catch {
         // Ignore logout API errors
       }
@@ -88,7 +92,7 @@ export function AuthProvider({ children }: PpWC) {
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
-  }, [refreshToken, logoutMutation.mutateAsync]);
+  }, [refreshToken, logoutAsync]);
 
   const setTokensValue = useCallback((tokens: TokenPair) => {
     setAccessToken(tokens.accessToken);

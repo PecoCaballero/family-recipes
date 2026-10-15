@@ -26,8 +26,8 @@ export default function GroupPage() {
   const [selectedChip, setSelectedChip] = useState<ChipOption | undefined>();
   const [shareOpen, setShareOpen] = useState(false);
 
-  const members = data?.members ?? [];
-  const recipes = data?.recipes ?? [];
+  const members = useMemo(() => data?.members ?? [], [data?.members]);
+  const recipes = useMemo(() => data?.recipes ?? [], [data?.recipes]);
   const group = data?.group;
 
   const chipOptions: ChipOption[] = useMemo(() => {

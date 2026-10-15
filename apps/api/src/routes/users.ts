@@ -1,7 +1,11 @@
-import { Router, type RequestHandler } from 'express';
+import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
-import { updateProfileSchema, changePasswordSchema, userSearchQuerySchema } from '@family-recipe/shared';
+import {
+  updateProfileSchema,
+  changePasswordSchema,
+  userSearchQuerySchema,
+} from '@family-recipe/shared';
 import type { User } from '@family-recipe/shared';
 import { LocalStorageProvider } from '../lib/storage';
 import { avatarUploadMiddleware } from '../lib/avatarUpload';
@@ -201,11 +205,12 @@ usersRouter.post('/me/avatar', avatarUploadMiddleware as any, async (req, res) =
     });
 
     return res.status(200).json({ avatarUrl });
-  } catch (error: any) {
-    if (error?.message?.includes('Only image files')) {
-      return res.status(400).json({ error: 'invalid_file_type', detail: error.message });
+  } catch (error) {
+    const err = error as { message?: string; code?: string };
+    if (err.message?.includes('Only image files')) {
+      return res.status(400).json({ error: 'invalid_file_type', detail: err.message });
     }
-    if (error?.code === 'LIMIT_FILE_SIZE') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(413).json({ error: 'file_too_large', detail: 'Maximum file size is 5 MB' });
     }
     console.error('Avatar upload error:', error);
@@ -248,9 +253,7 @@ usersRouter.delete('/me', async (req, res) => {
       },
     });
 
-    const soleAdminGroups = adminGroups.filter(
-      (ag) => ag.group.admins.length === 1,
-    );
+    const soleAdminGroups = adminGroups.filter((ag) => ag.group.admins.length === 1);
 
     if (soleAdminGroups.length > 0) {
       return res.status(409).json({

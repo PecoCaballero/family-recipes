@@ -33,13 +33,15 @@ export function AddMemberDialog({ open, onClose, groupId }: PpAddMemberDialog) {
   const { data: users = [], isLoading, isError } = useSearchUsers(debouncedEmail);
   const addMember = useAddMember(groupId);
 
-  useEffect(() => {
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (open) {
       setEmail('');
       setDebouncedEmail('');
       setError(null);
     }
-  }, [open]);
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedEmail(email.trim()), 300);

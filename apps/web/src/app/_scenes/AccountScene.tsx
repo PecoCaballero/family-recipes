@@ -7,7 +7,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Button, Divider, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Scene, SceneContent } from '../_components/SceneComponents';
 import { SettingOption } from '../_components/SettingOption';
@@ -34,7 +34,7 @@ export function AccountScene() {
   const { storedMode, setMode } = useTheme();
   const [logoutLoading, setLogoutLoading] = useState(false);
   const { user, logout, setUser } = useAuth();
-  const { mutateAsync: updateSetting, isPending: savingSetting } = useUserSettingsUpdate();
+  const { mutateAsync: updateSetting } = useUserSettingsUpdate();
   const profileUpdate = useProfileUpdate();
   const passwordChange = usePasswordChange();
   const avatarUpload = useAvatarUpload();
@@ -45,20 +45,15 @@ export function AccountScene() {
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
 
-  const [settings, setSettings] = useState({
-    language: user?.settings.language ?? i18n.language ?? 'en',
+  const [settings, setSettings] = useState(() => ({
+    language:
+      (typeof window !== 'undefined' ? sessionStorage.getItem('language') : null) ??
+      user?.settings.language ??
+      i18n.language ??
+      'en',
     privacyLevel: user?.settings.privacyLevel ?? 'private',
     notifications: user?.settings.notifications ?? true,
-  });
-
-  useEffect(() => {
-    const storedLanguage =
-      typeof window !== 'undefined' ? sessionStorage.getItem('language') : null;
-    if (storedLanguage && storedLanguage !== settings.language) {
-      i18n.changeLanguage(storedLanguage);
-      setSettings((prev) => ({ ...prev, language: storedLanguage }));
-    }
-  }, [i18n, settings.language]);
+  }));
 
   const handleLogout = async () => {
     setLogoutLoading(true);
@@ -167,9 +162,11 @@ export function AccountScene() {
             <AvatarUpload
               src={user?.avatar}
               fallback={
-                user?.name
-                  ? user.name.charAt(0).toUpperCase()
-                  : <AccountCircle sx={{ fontSize: 40 }} />
+                user?.name ? (
+                  user.name.charAt(0).toUpperCase()
+                ) : (
+                  <AccountCircle sx={{ fontSize: 40 }} />
+                )
               }
               uploadLabel={t('account.uploadAvatar')}
               deleteLabel={t('account.deleteAvatar')}
@@ -184,11 +181,7 @@ export function AccountScene() {
                 {user?.email ?? ''}
               </Typography>
             </Stack>
-            <Button
-              size="small"
-              startIcon={<EditIcon />}
-              onClick={() => setEditProfileOpen(true)}
-            >
+            <Button size="small" startIcon={<EditIcon />} onClick={() => setEditProfileOpen(true)}>
               {t('account.editProfile')}
             </Button>
           </Stack>

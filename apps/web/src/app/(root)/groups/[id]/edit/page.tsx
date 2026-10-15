@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { TextField, Box, Alert, CircularProgress } from '@mui/material';
@@ -20,13 +20,15 @@ export default function EditGroupPage() {
   const [icon, setIcon] = useState('');
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const [syncedData, setSyncedData] = useState(data);
+  if (data !== syncedData) {
+    setSyncedData(data);
     if (data?.group) {
       setName(data.group.name ?? '');
       setDescription(data.group.description ?? '');
       setIcon(data.group.icon ?? '');
     }
-  }, [data]);
+  }
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();

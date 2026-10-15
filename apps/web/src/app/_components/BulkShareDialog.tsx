@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -38,12 +38,14 @@ export function BulkShareDialog({ open, onClose, groupId }: PpBulkShareDialog) {
   const { data: groupData, isLoading: groupLoading } = useGroupQuery(groupId);
   const batchAdd = useBatchAddRecipes(groupId);
 
-  useEffect(() => {
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (open) {
       setSelectedIds([]);
       setError(null);
     }
-  }, [open]);
+  }
 
   const groupRecipeIds = groupData?.group.recipeIds ?? [];
   const unshared = recipes.filter((r: Recipe) => !groupRecipeIds.includes(r.id));
