@@ -29,10 +29,16 @@ export PORT
 
 API_PID=""
 cleanup() {
-  if [[ -n "${API_PID}" ]] && kill -0 "${API_PID}" 2>/dev/null; then
+  if [[ -n "${API_PID}" ]]; then
     kill "${API_PID}" 2>/dev/null || true
-    wait "${API_PID}" 2>/dev/null || true
   fi
+  # npx/tsx may leave a child holding the port; sweep by port too.
+  local pids
+  pids="$(lsof -ti "tcp:${PORT}" 2>/dev/null || true)"
+  if [[ -n "${pids}" ]]; then
+    kill ${pids} 2>/dev/null || true
+  fi
+  wait 2>/dev/null || true
 }
 trap cleanup EXIT
 
@@ -52,7 +58,7 @@ echo "=== e2e: applying migrations + seed ==="
 (cd "${ROOT}/apps/api" && npx prisma migrate deploy >/dev/null && npx prisma db seed >/dev/null)
 
 echo "=== e2e: starting API on :${PORT} ==="
-(cd "${ROOT}/apps/api" && npx tsx src/index.ts >/tmp/family-recipes-e2e-api.log 2>&1) &
+(cd "${ROOT}/apps/api" && exec npx tsx src/index.ts) >/tmp/family-recipes-e2e-api.log 2>&1 &
 API_PID=$!
 
 for _ in $(seq 1 60); do
