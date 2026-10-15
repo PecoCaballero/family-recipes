@@ -31,6 +31,7 @@ export function RecipeFormScene({ isEditing = false }: PpRecipeFormScene) {
     image?: string;
     ingredients: { name: string; unit?: string; quantity: string }[];
     instructions: string;
+    parentRecipeId?: string;
   }) => {
     if (isEditing && recipeId) {
       await updateMutation.mutateAsync(formData);
