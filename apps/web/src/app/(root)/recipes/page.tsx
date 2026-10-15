@@ -8,11 +8,12 @@ import { RecipeList } from '@/app/_components/RecipeList';
 import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { SearchInput } from '@/app/_components/SearchInput';
 import { FloatingActionButton } from '@/app/_components/FloatingActionButton';
-import { LoadingPage } from '@/app/_scenes/LoadingPage';
+import { ContentSkeleton } from '@/app/_components/ContentSkeleton';
 import { EmptyRecipeState } from '@/app/_components/EmptyState';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from '@/app/_hooks/useSearch';
 import { useRecipesQuery } from '@/app/_hooks/recipes';
+import { filterOwnAndSaved } from '@/app/_utils/recipeFilters';
 import { routes } from '@/app/_utils/routes';
 
 export default function RecipesPage() {
@@ -26,17 +27,14 @@ export default function RecipesPage() {
     { label: t('recipes.savedRecipes') },
   ];
 
+  const ownAndSaved = filterOwnAndSaved(recipes);
   const chipFilteredData = selectedChip
-    ? recipes.filter((recipe) => {
-      if (selectedChip.label === t('recipes.myRecipes')) return recipe.isAuthor;
-      if (selectedChip.label === t('recipes.savedRecipes')) return recipe.isSaved;
-      return true;
-    })
-    : recipes;
-
-  if (isLoading && recipes.length === 0) {
-    return <LoadingPage />;
-  }
+    ? ownAndSaved.filter((recipe) => {
+        if (selectedChip.label === t('recipes.myRecipes')) return recipe.isAuthor;
+        if (selectedChip.label === t('recipes.savedRecipes')) return recipe.isSaved;
+        return true;
+      })
+    : ownAndSaved;
 
   return (
     <Scene>
@@ -52,12 +50,18 @@ export default function RecipesPage() {
           onSelect={setSelectedChip}
         />
       </Header>
-      {chipFilteredData.length > 0 && (
-        <SceneContent>
+      <SceneContent>
+        {isLoading && recipes.length === 0 ? (
+          <ContentSkeleton variant="rows" />
+        ) : chipFilteredData.length > 0 ? (
           <RecipeList recipes={chipFilteredData} />
-        </SceneContent>
-      )}
-      {chipFilteredData.length === 0 && <EmptyRecipeState />}
+        ) : (
+          <EmptyRecipeState
+            actionLabel={t('recipes.newRecipe')}
+            actionHref={routes.recipes.create.path}
+          />
+        )}
+      </SceneContent>
       <FloatingActionButton
         icon={<Add />}
         href={routes.recipes.create.path}

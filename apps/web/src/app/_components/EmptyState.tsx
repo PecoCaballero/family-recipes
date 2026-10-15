@@ -1,31 +1,59 @@
 'use client';
 
 import { ImportContacts, GroupWork } from '@mui/icons-material';
-import { Typography, Stack } from '@mui/material';
+import { Typography, Stack, Button } from '@mui/material';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 
-export function EmptyRecipeState({ message }: { message?: string }) {
-  const { t } = useTranslation();
+type PpEmptyState = {
+  message?: string;
+  actionLabel?: string;
+  actionHref?: string;
+};
 
+function EmptyStateShell({
+  icon,
+  message,
+  actionLabel,
+  actionHref,
+}: PpEmptyState & { icon: React.ReactNode }) {
   return (
-    <Stack alignItems="center" flex={1} justifyContent="center">
-      <ImportContacts fontSize="large" />
-      <Typography variant="h6" align="center" color="textSecondary">
-        {message ?? t('recipes.noRecipes')}
+    <Stack alignItems="center" flex={1} justifyContent="center" spacing={2} sx={{ p: 3 }}>
+      {icon}
+      <Typography variant="h6" align="center" color="text.secondary">
+        {message}
       </Typography>
+      {actionLabel && actionHref && (
+        <Button component={Link} href={actionHref} variant="contained">
+          {actionLabel}
+        </Button>
+      )}
     </Stack>
   );
 }
 
-export function EmptyGroupState({ message }: { message?: string }) {
+export function EmptyRecipeState({ message, actionLabel, actionHref }: PpEmptyState) {
   const { t } = useTranslation();
 
   return (
-    <Stack alignItems="center" flex={1} justifyContent="center">
-      <GroupWork fontSize="large" />
-      <Typography variant="h6" align="center" color="textSecondary">
-        {message ?? t('groups.noGroups')}
-      </Typography>
-    </Stack>
+    <EmptyStateShell
+      icon={<ImportContacts fontSize="large" color="disabled" />}
+      message={message ?? t('recipes.noRecipes')}
+      actionLabel={actionLabel}
+      actionHref={actionHref}
+    />
+  );
+}
+
+export function EmptyGroupState({ message, actionLabel, actionHref }: PpEmptyState) {
+  const { t } = useTranslation();
+
+  return (
+    <EmptyStateShell
+      icon={<GroupWork fontSize="large" color="disabled" />}
+      message={message ?? t('groups.noGroups')}
+      actionLabel={actionLabel}
+      actionHref={actionHref}
+    />
   );
 }

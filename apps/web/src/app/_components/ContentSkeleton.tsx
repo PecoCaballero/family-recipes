@@ -1,9 +1,10 @@
 'use client';
 
 import { Skeleton, Stack, Card, CardContent } from '@mui/material';
+import { radius } from '../_theme/tokens';
 
 type ContentSkeletonProps = {
-  variant?: 'card' | 'form' | 'list' | 'text';
+  variant?: 'card' | 'form' | 'list' | 'rows' | 'text';
   count?: number;
   height?: number;
 };
@@ -36,7 +37,34 @@ function ListSkeleton() {
   return (
     <Stack spacing={1} sx={{ px: 2 }}>
       {Array.from({ length: 5 }).map((_, i) => (
-        <Skeleton key={i} variant="rectangular" height={72} sx={{ borderRadius: 1 }} />
+        <Skeleton
+          key={i}
+          variant="rectangular"
+          height={72}
+          sx={{ borderRadius: `${radius.md}px` }}
+        />
+      ))}
+    </Stack>
+  );
+}
+
+function RowsSkeleton({ count = 6 }: { count?: number }) {
+  return (
+    <Stack spacing={1}>
+      {Array.from({ length: count }).map((_, i) => (
+        <Stack
+          key={i}
+          direction="row"
+          spacing={1.5}
+          alignItems="center"
+          sx={{ p: 1.5, borderRadius: `${radius.md}px`, bgcolor: 'background.paper' }}
+        >
+          <Skeleton variant="circular" width={48} height={48} />
+          <Stack sx={{ flex: 1 }} spacing={0.5}>
+            <Skeleton variant="text" width="55%" height={24} />
+            <Skeleton variant="text" width="80%" height={18} />
+          </Stack>
+        </Stack>
       ))}
     </Stack>
   );
@@ -68,6 +96,8 @@ export function ContentSkeleton({ variant = 'text', count = 1, height }: Content
       return <FormSkeleton />;
     case 'list':
       return <ListSkeleton />;
+    case 'rows':
+      return <RowsSkeleton count={count > 1 ? count : 6} />;
     case 'text':
       return <TextSkeleton height={height} />;
     default:

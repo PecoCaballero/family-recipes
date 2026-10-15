@@ -1,6 +1,7 @@
 'use client';
 
 import { Add } from '@mui/icons-material';
+import { Stack } from '@mui/material';
 import { Scene, SceneContent } from '@/app/_components/SceneComponents';
 import { GroupList } from '@/app/_components/GroupList';
 import { SearchInput } from '@/app/_components/SearchInput';
@@ -32,7 +33,7 @@ export default function GroupsPage() {
           />
         </Header>
         <SceneContent>
-          <ContentSkeleton variant="list" />
+          <ContentSkeleton variant="rows" />
         </SceneContent>
         <FloatingActionButton
           icon={<Add />}
@@ -53,10 +54,16 @@ export default function GroupsPage() {
             placeholder={t('groups.searchPlaceholder')}
           />
         </Header>
-        <EmptyGroupState message={t('groups.noGroupsYet')} />
-        {pendingInvitations.map((invitation) => (
-          <InvitationBanner key={invitation.id} invitation={invitation} />
-        ))}
+        <EmptyGroupState
+          message={t('groups.noGroupsYet')}
+          actionLabel={t('groups.newGroup')}
+          actionHref={routes.groups.create.path}
+        />
+        <SceneContent>
+          {pendingInvitations.map((invitation) => (
+            <InvitationBanner key={invitation.id} invitation={invitation} />
+          ))}
+        </SceneContent>
         <FloatingActionButton
           icon={<Add />}
           href={routes.groups.create.path}
@@ -76,10 +83,12 @@ export default function GroupsPage() {
         />
       </Header>
       <SceneContent>
-        {pendingInvitations.map((invitation) => (
-          <InvitationBanner key={invitation.id} invitation={invitation} />
-        ))}
-        <GroupList groups={groups} />
+        <Stack spacing={1}>
+          {pendingInvitations.map((invitation) => (
+            <InvitationBanner key={invitation.id} invitation={invitation} />
+          ))}
+          <GroupList groups={groups} />
+        </Stack>
       </SceneContent>
       <FloatingActionButton
         icon={<Add />}
