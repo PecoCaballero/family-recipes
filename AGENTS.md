@@ -40,8 +40,9 @@ nx build <project>       nx serve <project>           nx run api:e2e
 4. For API/DB behavior also run **`yarn verify:full`**.
 5. Only then report done. **Do not commit/push unless explicitly asked.**
 
-Sensors, in order of speed: `lint` → `typecheck` → `test` → `build` → `e2e`.
-All must pass. A red sensor is a blocked task, not a footnote.
+Sensors, in order of speed: `lint` (incl. module-boundary / arch fitness) →
+`typecheck` → `test` → `build` → `e2e`. All must pass. A red sensor is a blocked
+task, not a footnote.
 
 ## Testing
 
@@ -56,6 +57,16 @@ All must pass. A red sensor is a blocked task, not a footnote.
   `family_recipes_test`, applies migrations, seeds, boots the API on `:4002`,
   exercises a group-sharing flow, tears down. Overrides: `E2E_DB_CONTAINER`,
   `E2E_DB_NAME`, `E2E_PORT`.
+
+## Architecture boundaries
+
+Projects are tagged (`scope:web|api|shared`, `type:app|lib`) and Nx enforces
+`@nx/enforce-module-boundaries` as part of `nx lint`:
+
+- apps may only depend on libs — never on another app
+- `web` and `api` may depend on `shared`; `shared` depends on nothing internal
+
+A violation fails `lint`. Fix the import direction; don't add an exception.
 
 ## Database & migrations
 

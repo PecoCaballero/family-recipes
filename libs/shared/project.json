@@ -2,6 +2,7 @@
   "name": "shared",
   "projectType": "library",
   "sourceRoot": "libs/shared/src",
+  "tags": ["scope:shared", "type:lib"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
