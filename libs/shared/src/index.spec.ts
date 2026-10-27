@@ -5,6 +5,7 @@ import {
   recipeSchema,
   createGroupInputSchema,
   loginInputSchema,
+  googleAuthInputSchema,
   batchAddRecipesSchema,
   updateProfileSchema,
 } from './index';
@@ -147,6 +148,14 @@ describe('shared schemas', () => {
       );
       expect(loginInputSchema.safeParse({ email: 'nope', password: 'secret' }).success).toBe(false);
       expect(loginInputSchema.safeParse({ email: 'a@b.com', password: '123' }).success).toBe(false);
+    });
+  });
+
+  describe('googleAuthInputSchema', () => {
+    it('requires a non-empty idToken', () => {
+      expect(googleAuthInputSchema.safeParse({ idToken: 'abc.def.ghi' }).success).toBe(true);
+      expect(googleAuthInputSchema.safeParse({}).success).toBe(false);
+      expect(googleAuthInputSchema.safeParse({ idToken: '' }).success).toBe(false);
     });
   });
 

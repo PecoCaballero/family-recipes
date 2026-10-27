@@ -1,14 +1,21 @@
 import { Router } from 'express';
 import bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../lib/prisma';
 import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from '../utils/jwt';
 import { authMiddleware } from '../middleware/auth';
-import { userSettingsSchema, loginInputSchema, registerInputSchema } from '@family-recipe/shared';
+import {
+  userSettingsSchema,
+  loginInputSchema,
+  registerInputSchema,
+  googleAuthInputSchema,
+} from '@family-recipe/shared';
 import type { AuthResponse } from '@family-recipe/shared';
 
 export const authRouter = Router();
 
 const SALT_ROUNDS = 12;
+const GOOGLE_CLIENT_ID = process.env['GOOGLE_CLIENT_ID'] ?? '';
 
 authRouter.post('/login', async (req, res) => {
   try {
@@ -23,6 +30,10 @@ authRouter.post('/login', async (req, res) => {
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
+      return res.status(401).json({ error: 'invalid_credentials' });
+    }
+
+    if (!user.passwordHash) {
       return res.status(401).json({ error: 'invalid_credentials' });
     }
 
@@ -199,10 +210,86 @@ authRouter.post('/logout', authMiddleware, async (req, res) => {
   }
 });
 
-authRouter.post('/oauth/google', (_req, res) => {
-  res.status(501).json({ error: 'not_implemented' });
-});
+authRouter.post('/google', async (req, res) => {
+  try {
+    const parsed = googleAuthInputSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { idToken } = parsed.data;
 
-authRouter.post('/oauth/apple', (_req, res) => {
-  res.status(501).json({ error: 'not_implemented' });
+    let payload;
+    try {
+      const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+      const ticket = await client.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
+      payload = ticket.getPayload();
+    } catch {
+      return res.status(401).json({ error: 'invalid_google_token' });
+    }
+
+    if (!payload?.sub || !payload?.email || !payload?.email_verified) {
+      return res.status(401).json({ error: 'invalid_google_token' });
+    }
+
+    const email = payload.email;
+    const sub = payload.sub;
+    const name = payload.name ?? email.split('@')[0];
+    const avatar = payload.picture ?? null;
+
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (user) {
+      if (user.provider !== 'google' || user.providerId !== sub) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { provider: 'google', providerId: sub },
+        });
+      }
+    } else {
+      user = await prisma.user.create({
+        data: { name, email, provider: 'google', providerId: sub, avatar },
+      });
+    }
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken();
+    const expiresAt = getRefreshTokenExpiry();
+
+    await prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    const response: AuthResponse = {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar ?? undefined,
+        settings: userSettingsSchema.parse({
+          language: user.language,
+          privacyLevel: user.privacyLevel,
+          notifications: user.notifications,
+          theme: user.theme,
+        }),
+        recipesSaved: [],
+        recipesSharedByOthers: 0,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
+      },
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error('Google auth error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
 });

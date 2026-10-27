@@ -20,13 +20,11 @@
     "signInButton": "Iniciar sesión",
     "signingIn": "Iniciando sesión...",
     "googleSignIn": "Iniciar sesión con Google",
-    "appleSignIn": "Iniciar sesión con Apple",
     "noAccount": "¿No tienes cuenta?",
     "signUpLink": "Regístrate",
     "or": "O",
     "loginFailed": "Error al iniciar sesión. Por favor, intenta de nuevo.",
     "googleLoginFailed": "Error al iniciar sesión con Google. Por favor, intenta de nuevo.",
-    "appleLoginFailed": "Error al iniciar sesión con Apple. Por favor, intenta de nuevo.",
     "emailPlaceholder": "tu@ejemplo.com"
   },
   "register": {

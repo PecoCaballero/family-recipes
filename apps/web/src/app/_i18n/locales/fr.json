@@ -20,13 +20,11 @@
     "signInButton": "Se connecter",
     "signingIn": "Connexion en cours...",
     "googleSignIn": "Se connecter avec Google",
-    "appleSignIn": "Se connecter avec Apple",
     "noAccount": "Vous n'avez pas de compte?",
     "signUpLink": "S'inscrire",
     "or": "Ou",
     "loginFailed": "Erreur de connexion. Veuillez réessayer.",
     "googleLoginFailed": "Erreur de connexion avec Google. Veuillez réessayer.",
-    "appleLoginFailed": "Erreur de connexion avec Apple. Veuillez réessayer.",
     "emailPlaceholder": "vous@exemple.com"
   },
   "register": {

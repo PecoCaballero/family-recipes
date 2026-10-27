@@ -3,7 +3,12 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import type { User, TokenPair } from '@family-recipe/shared';
 import { PpWC } from '@/app/_types/types';
-import { useLoginMutation, useRegisterMutation, useLogoutMutation } from '@/app/_hooks/auth';
+import {
+  useLoginMutation,
+  useRegisterMutation,
+  useLogoutMutation,
+  useGoogleLoginMutation,
+} from '@/app/_hooks/auth';
 import i18n from '@/app/_i18n/config';
 
 type AuthContextType = {
@@ -12,6 +17,7 @@ type AuthContextType = {
   refreshToken: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (idToken: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   setTokens: (tokens: TokenPair) => void;
@@ -47,6 +53,7 @@ export function AuthProvider({ children }: PpWC) {
   const { mutateAsync: loginAsync } = useLoginMutation();
   const { mutateAsync: registerAsync } = useRegisterMutation();
   const { mutateAsync: logoutAsync } = useLogoutMutation();
+  const { mutateAsync: googleLoginAsync } = useGoogleLoginMutation();
 
   const persistTokens = useCallback((tokens: TokenPair, userData: User) => {
     sessionStorage.setItem('accessToken', tokens.accessToken);
@@ -75,6 +82,14 @@ export function AuthProvider({ children }: PpWC) {
       persistTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken }, data.user);
     },
     [registerAsync, persistTokens],
+  );
+
+  const loginWithGoogle = useCallback(
+    async (idToken: string) => {
+      const data = await googleLoginAsync({ idToken });
+      persistTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken }, data.user);
+    },
+    [googleLoginAsync, persistTokens],
   );
 
   const logout = useCallback(async () => {
@@ -112,6 +127,7 @@ export function AuthProvider({ children }: PpWC) {
         refreshToken,
         isAuthenticated: !!user && !!accessToken,
         login,
+        loginWithGoogle,
         register,
         logout,
         setTokens: setTokensValue,

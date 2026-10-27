@@ -20,13 +20,11 @@
     "signInButton": "Entrar",
     "signingIn": "Entrando...",
     "googleSignIn": "Entrar com Google",
-    "appleSignIn": "Entrar com Apple",
     "noAccount": "Não tem uma conta?",
     "signUpLink": "Cadastre-se",
     "or": "Ou",
     "loginFailed": "Erro ao fazer login. Por favor, tente novamente.",
     "googleLoginFailed": "Erro ao fazer login com Google. Por favor, tente novamente.",
-    "appleLoginFailed": "Erro ao fazer login com Apple. Por favor, tente novamente.",
     "emailPlaceholder": "voce@exemplo.com"
   },
   "register": {

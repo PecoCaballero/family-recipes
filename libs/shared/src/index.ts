@@ -148,6 +148,11 @@ export const registerInputSchema = z.object({
 });
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 
+export const googleAuthInputSchema = z.object({
+  idToken: z.string().min(1),
+});
+export type GoogleAuthInput = z.infer<typeof googleAuthInputSchema>;
+
 export const tokenPairSchema = z.object({
   accessToken: z.string(),
   refreshToken: z.string(),

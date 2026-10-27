@@ -1,6 +1,19 @@
-import 'dotenv/config';
+import { config as loadEnv } from 'dotenv';
+import fs from 'node:fs';
+import path from 'node:path';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/client';
+
+// Load `apps/api/.env` regardless of the process cwd (nx serve runs from the
+// workspace root, while the e2e/manual entrypoints run from `apps/api`).
+for (const file of [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), 'apps/api/.env'),
+]) {
+  if (fs.existsSync(file)) {
+    loadEnv({ path: file });
+  }
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

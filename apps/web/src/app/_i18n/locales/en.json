@@ -20,13 +20,11 @@
     "signInButton": "Sign In",
     "signingIn": "Signing in...",
     "googleSignIn": "Sign in with Google",
-    "appleSignIn": "Sign in with Apple",
     "noAccount": "Don't have an account?",
     "signUpLink": "Sign up",
     "or": "Or",
     "loginFailed": "Login failed. Please try again.",
     "googleLoginFailed": "Google login failed. Please try again.",
-    "appleLoginFailed": "Apple login failed. Please try again.",
     "emailPlaceholder": "you@example.com"
   },
   "register": {

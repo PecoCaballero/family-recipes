@@ -83,6 +83,26 @@ USER_B=$(curl -sf -X POST "${BASE}/v1/auth/register" -H 'Content-Type: applicati
 TOKEN_B=$(echo "${USER_B}" | json "['accessToken']")
 USER_B_ID=$(echo "${USER_B}" | json "['user']['id']")
 
+echo "--- Google OAuth: missing token rejected (expect 400) ---"
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "${BASE}/v1/auth/google" \
+  -H 'Content-Type: application/json' -d '{}')
+[[ "${CODE}" == "400" ]] || fail "expected 400 for missing google token, got ${CODE}"
+echo "✓ missing token rejected"
+
+echo "--- Google OAuth: invalid token rejected (expect 401) ---"
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "${BASE}/v1/auth/google" \
+  -H 'Content-Type: application/json' -d '{"idToken":"not-a-real-google-token"}')
+[[ "${CODE}" == "401" ]] || fail "expected 401 for invalid google token, got ${CODE}"
+echo "✓ invalid token rejected"
+
+echo "--- Google-only (passwordless) account cannot password-login (expect 401) ---"
+GOOGLE_EMAIL="e2e-google-${TS}@test.com"
+psql_admin -d "${DB_NAME}" -c "INSERT INTO \"User\" (\"id\",\"name\",\"email\",\"passwordHash\",\"provider\",\"providerId\",\"createdAt\",\"updatedAt\") VALUES ('google-only-${TS}','Google Only','${GOOGLE_EMAIL}',NULL,'google','google-sub-${TS}',now(),now());" >/dev/null
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "${BASE}/v1/auth/login" \
+  -H 'Content-Type: application/json' -d "{\"email\":\"${GOOGLE_EMAIL}\",\"password\":\"test1234\"}")
+[[ "${CODE}" == "401" ]] || fail "expected 401 for passwordless login, got ${CODE}"
+echo "✓ passwordless login blocked"
+
 echo "--- A creates a group ---"
 GROUP=$(curl -sf -X POST "${BASE}/v1/groups" -H 'Content-Type: application/json' \
   -H "Authorization: Bearer ${TOKEN_A}" -d '{"name":"E2E Group","description":"e2e"}')

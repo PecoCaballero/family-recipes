@@ -20,13 +20,11 @@
     "signInButton": "Anmelden",
     "signingIn": "Anmeldung läuft...",
     "googleSignIn": "Mit Google anmelden",
-    "appleSignIn": "Mit Apple anmelden",
     "noAccount": "Haben Sie noch kein Konto?",
     "signUpLink": "Registrieren",
     "or": "Oder",
     "loginFailed": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "googleLoginFailed": "Google-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
-    "appleLoginFailed": "Apple-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "emailPlaceholder": "sie@beispiel.de"
   },
   "register": {

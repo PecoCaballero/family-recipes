@@ -159,6 +159,10 @@ usersRouter.post('/me/password', async (req, res) => {
     const user = await prisma.user.findUnique({ where: { id: req.userId } });
     if (!user) return res.status(404).json({ error: 'user_not_found' });
 
+    if (!user.passwordHash) {
+      return res.status(401).json({ error: 'invalid_current_password' });
+    }
+
     const valid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!valid) {
       return res.status(401).json({ error: 'invalid_current_password' });
