@@ -227,6 +227,20 @@
     "recent": "Recent",
     "recentEmpty": "Recipes you open will appear here."
   },
+  "pantry": {
+    "title": "Pantry",
+    "addPlaceholder": "Add an ingredient...",
+    "add": "Add",
+    "remove": "Remove ingredient",
+    "empty": "Your pantry is empty. Add ingredients you have at home.",
+    "findRecipes": "Find recipes",
+    "youCanMake": "You can make",
+    "almostThere": "Almost there",
+    "missing_one": "Missing: {{missing}}",
+    "missing_other": "Missing: {{missing}}",
+    "noSuggestions": "Add ingredients to see recipes you can make.",
+    "removeConfirm": "Remove this ingredient from your pantry?"
+  },
   "error": {
     "title": "Something went wrong",
     "description": "We encountered an unexpected error. Please try again or contact support if the problem persists.",

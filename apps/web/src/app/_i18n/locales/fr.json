@@ -227,6 +227,20 @@
     "recent": "Récentes",
     "recentEmpty": "Les recettes que vous ouvrez apparaîtront ici."
   },
+  "pantry": {
+    "title": "Garde-manger",
+    "addPlaceholder": "Ajouter un ingrédient...",
+    "add": "Ajouter",
+    "remove": "Retirer l'ingrédient",
+    "empty": "Votre garde-manger est vide. Ajoutez les ingrédients que vous avez à la maison.",
+    "findRecipes": "Trouver des recettes",
+    "youCanMake": "Vous pouvez faire",
+    "almostThere": "Presque",
+    "missing_one": "Manque : {{missing}}",
+    "missing_other": "Manquent : {{missing}}",
+    "noSuggestions": "Ajoutez des ingrédients pour voir les recettes que vous pouvez faire.",
+    "removeConfirm": "Retirer cet ingrédient de votre garde-manger ?"
+  },
   "error": {
     "title": "Une erreur est survenue",
     "description": "Nous avons rencontré une erreur inattendue. Veuillez réessayer ou contacter le support si le problème persiste.",

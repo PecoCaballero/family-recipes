@@ -239,3 +239,27 @@ export const pendingInvitationSchema = z.object({
   expiresAt: z.string(),
 });
 export type PendingInvitation = z.infer<typeof pendingInvitationSchema>;
+
+export const pantryItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+export type PantryItem = z.infer<typeof pantryItemSchema>;
+
+export const addPantryItemInputSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+});
+export type AddPantryItemInput = z.infer<typeof addPantryItemInputSchema>;
+
+export const pantrySuggestionSchema = z.object({
+  recipe: recipeSchema,
+  status: z.enum(['canMake', 'almost']),
+  missingCount: z.number().int(),
+  missingIngredients: z.array(z.string()),
+});
+export type PantrySuggestion = z.infer<typeof pantrySuggestionSchema>;
+
+export const pantrySuggestResponseSchema = z.object({
+  suggestions: z.array(pantrySuggestionSchema),
+});
+export type PantrySuggestResponse = z.infer<typeof pantrySuggestResponseSchema>;

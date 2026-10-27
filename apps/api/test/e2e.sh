@@ -144,5 +144,43 @@ CODE=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer ${TOKEN_
 [[ "${CODE}" == "404" ]] || fail "expected 404 for deleted group, got ${CODE}"
 echo "✓ group deleted"
 
+echo "--- A adds a pantry item ---"
+PANTRY_ITEM=$(curl -sf -X POST "${BASE}/v1/pantry" -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer ${TOKEN_A}" -d '{"name":"flour"}')
+PANTRY_ITEM_ID=$(echo "${PANTRY_ITEM}" | json "['id']")
+[[ -n "${PANTRY_ITEM_ID}" ]] || fail "pantry item not created"
+
+echo "--- duplicate pantry item rejected (expect 409) ---"
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "${BASE}/v1/pantry" \
+  -H 'Content-Type: application/json' -H "Authorization: Bearer ${TOKEN_A}" -d '{"name":"FLOUR"}')
+[[ "${CODE}" == "409" ]] || fail "expected 409 for duplicate pantry item, got ${CODE}"
+
+echo "--- blank pantry item rejected (expect 400) ---"
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "${BASE}/v1/pantry" \
+  -H 'Content-Type: application/json' -H "Authorization: Bearer ${TOKEN_A}" -d '{"name":"   "}')
+[[ "${CODE}" == "400" ]] || fail "expected 400 for blank pantry item, got ${CODE}"
+
+echo "--- unauthenticated pantry access rejected (expect 401) ---"
+CODE=$(curl -s -o /dev/null -w '%{http_code}' "${BASE}/v1/pantry")
+[[ "${CODE}" == "401" ]] || fail "expected 401 for unauthenticated pantry, got ${CODE}"
+
+echo "--- A's pantry lists only their item ---"
+PANTRY_COUNT=$(curl -sf -H "Authorization: Bearer ${TOKEN_A}" "${BASE}/v1/pantry" | json "['items'].__len__()")
+[[ "${PANTRY_COUNT}" -eq 1 ]] || fail "expected 1 pantry item for A, got ${PANTRY_COUNT}"
+
+echo "--- suggest covers A's flour recipe as canMake ---"
+SUGGESTIONS=$(curl -sf -H "Authorization: Bearer ${TOKEN_A}" "${BASE}/v1/pantry/suggest")
+CANMAKE=$(echo "${SUGGESTIONS}" | python3 -c "import sys,json; d=json.load(sys.stdin); print(any(s['status']=='canMake' for s in d['suggestions']))")
+[[ "${CANMAKE}" == "True" ]] || fail "expected a canMake suggestion"
+
+echo "--- remove pantry item (expect 204, then 404) ---"
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "${BASE}/v1/pantry/${PANTRY_ITEM_ID}" \
+  -H "Authorization: Bearer ${TOKEN_A}")
+[[ "${CODE}" == "204" ]] || fail "expected 204 on pantry item delete, got ${CODE}"
+CODE=$(curl -s -o /dev/null -w '%{http_code}' -X DELETE "${BASE}/v1/pantry/${PANTRY_ITEM_ID}" \
+  -H "Authorization: Bearer ${TOKEN_A}")
+[[ "${CODE}" == "404" ]] || fail "expected 404 for deleted pantry item, got ${CODE}"
+echo "✓ pantry flow passed"
+
 echo ""
 echo "=== e2e PASSED ==="

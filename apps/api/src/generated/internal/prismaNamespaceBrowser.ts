@@ -52,6 +52,7 @@ export const ModelName = {
   Recipe: 'Recipe',
   Ingredient: 'Ingredient',
   SavedRecipe: 'SavedRecipe',
+  PantryItem: 'PantryItem',
   RefreshToken: 'RefreshToken',
   Group: 'Group',
   GroupMember: 'GroupMember',
@@ -134,6 +135,17 @@ export const SavedRecipeScalarFieldEnum = {
 
 export type SavedRecipeScalarFieldEnum =
   (typeof SavedRecipeScalarFieldEnum)[keyof typeof SavedRecipeScalarFieldEnum];
+
+export const PantryItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type PantryItemScalarFieldEnum =
+  (typeof PantryItemScalarFieldEnum)[keyof typeof PantryItemScalarFieldEnum];
 
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',

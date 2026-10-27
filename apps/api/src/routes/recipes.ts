@@ -28,7 +28,7 @@ const recipeDbSchema = z.object({
   ingredients: z.array(prismaIngredientSchema),
 });
 
-async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
+export async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
   const dbRecipe = recipeDbSchema.parse(raw);
 
   const isAuthor = dbRecipe.authorId === userId;

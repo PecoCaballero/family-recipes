@@ -8,6 +8,10 @@ import {
   googleAuthInputSchema,
   batchAddRecipesSchema,
   updateProfileSchema,
+  pantryItemSchema,
+  addPantryItemInputSchema,
+  pantrySuggestionSchema,
+  pantrySuggestResponseSchema,
 } from './index';
 
 describe('shared schemas', () => {
@@ -172,6 +176,93 @@ describe('shared schemas', () => {
     it('requires at least one field', () => {
       expect(updateProfileSchema.safeParse({}).success).toBe(false);
       expect(updateProfileSchema.safeParse({ name: 'Alice' }).success).toBe(true);
+    });
+  });
+
+  describe('pantryItemSchema', () => {
+    it('accepts an id and name', () => {
+      expect(pantryItemSchema.parse({ id: 'p1', name: 'onion' })).toEqual({
+        id: 'p1',
+        name: 'onion',
+      });
+    });
+
+    it('rejects a missing name', () => {
+      expect(pantryItemSchema.safeParse({ id: 'p1' }).success).toBe(false);
+    });
+  });
+
+  describe('addPantryItemInputSchema', () => {
+    it('accepts a valid name and trims whitespace', () => {
+      expect(addPantryItemInputSchema.parse({ name: '  onion  ' }).name).toBe('onion');
+    });
+
+    it('rejects an empty name', () => {
+      expect(addPantryItemInputSchema.safeParse({ name: '' }).success).toBe(false);
+    });
+
+    it('rejects a whitespace-only name', () => {
+      expect(addPantryItemInputSchema.safeParse({ name: '   ' }).success).toBe(false);
+    });
+
+    it('rejects a name longer than 100 chars', () => {
+      expect(addPantryItemInputSchema.safeParse({ name: 'x'.repeat(101) }).success).toBe(false);
+    });
+  });
+
+  describe('pantrySuggestionSchema', () => {
+    const recipe = {
+      id: 'r1',
+      authorId: 'u1',
+      author: 'Alice',
+      name: 'Pancakes',
+      description: 'Fluffy',
+      ingredients: [],
+      instructions: 'Mix',
+      lastUpdated: new Date().toISOString(),
+      groupIds: [],
+      savedByIds: [],
+    };
+
+    it('accepts a canMake suggestion', () => {
+      const parsed = pantrySuggestionSchema.safeParse({
+        recipe,
+        status: 'canMake',
+        missingCount: 0,
+        missingIngredients: [],
+      });
+      expect(parsed.success).toBe(true);
+    });
+
+    it('accepts an almost suggestion with missing ingredients', () => {
+      const parsed = pantrySuggestionSchema.safeParse({
+        recipe,
+        status: 'almost',
+        missingCount: 1,
+        missingIngredients: ['garlic'],
+      });
+      expect(parsed.success).toBe(true);
+    });
+
+    it('rejects an unknown status', () => {
+      expect(
+        pantrySuggestionSchema.safeParse({
+          recipe,
+          status: 'maybe',
+          missingCount: 1,
+          missingIngredients: ['garlic'],
+        }).success,
+      ).toBe(false);
+    });
+  });
+
+  describe('pantrySuggestResponseSchema', () => {
+    it('accepts a list of suggestions', () => {
+      expect(pantrySuggestResponseSchema.safeParse({ suggestions: [] }).success).toBe(true);
+    });
+
+    it('rejects a missing suggestions array', () => {
+      expect(pantrySuggestResponseSchema.safeParse({}).success).toBe(false);
     });
   });
 });

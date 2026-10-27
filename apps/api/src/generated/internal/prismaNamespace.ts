@@ -395,6 +395,7 @@ export const ModelName = {
   Recipe: 'Recipe',
   Ingredient: 'Ingredient',
   SavedRecipe: 'SavedRecipe',
+  PantryItem: 'PantryItem',
   RefreshToken: 'RefreshToken',
   Group: 'Group',
   GroupMember: 'GroupMember',
@@ -425,6 +426,7 @@ export type TypeMap<
       | 'recipe'
       | 'ingredient'
       | 'savedRecipe'
+      | 'pantryItem'
       | 'refreshToken'
       | 'group'
       | 'groupMember'
@@ -727,6 +729,80 @@ export type TypeMap<
         count: {
           args: Prisma.SavedRecipeCountArgs<ExtArgs>;
           result: runtime.Types.Utils.Optional<Prisma.SavedRecipeCountAggregateOutputType> | number;
+        };
+      };
+    };
+    PantryItem: {
+      payload: Prisma.$PantryItemPayload<ExtArgs>;
+      fields: Prisma.PantryItemFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.PantryItemFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.PantryItemFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        findFirst: {
+          args: Prisma.PantryItemFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.PantryItemFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        findMany: {
+          args: Prisma.PantryItemFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>[];
+        };
+        create: {
+          args: Prisma.PantryItemCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        createMany: {
+          args: Prisma.PantryItemCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.PantryItemCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>[];
+        };
+        delete: {
+          args: Prisma.PantryItemDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        update: {
+          args: Prisma.PantryItemUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        deleteMany: {
+          args: Prisma.PantryItemDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.PantryItemUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.PantryItemUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>[];
+        };
+        upsert: {
+          args: Prisma.PantryItemUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        aggregate: {
+          args: Prisma.PantryItemAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePantryItem>;
+        };
+        groupBy: {
+          args: Prisma.PantryItemGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.PantryItemGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.PantryItemCountArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.PantryItemCountAggregateOutputType> | number;
         };
       };
     };
@@ -1274,6 +1350,17 @@ export const SavedRecipeScalarFieldEnum = {
 export type SavedRecipeScalarFieldEnum =
   (typeof SavedRecipeScalarFieldEnum)[keyof typeof SavedRecipeScalarFieldEnum];
 
+export const PantryItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type PantryItemScalarFieldEnum =
+  (typeof PantryItemScalarFieldEnum)[keyof typeof PantryItemScalarFieldEnum];
+
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
@@ -1582,6 +1669,7 @@ export type GlobalOmitConfig = {
   recipe?: Prisma.RecipeOmit;
   ingredient?: Prisma.IngredientOmit;
   savedRecipe?: Prisma.SavedRecipeOmit;
+  pantryItem?: Prisma.PantryItemOmit;
   refreshToken?: Prisma.RefreshTokenOmit;
   group?: Prisma.GroupOmit;
   groupMember?: Prisma.GroupMemberOmit;

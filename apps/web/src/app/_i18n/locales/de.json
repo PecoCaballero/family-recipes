@@ -227,6 +227,20 @@
     "recent": "Zuletzt",
     "recentEmpty": "Rezepte, die du öffnest, erscheinen hier."
   },
+  "pantry": {
+    "title": "Vorratsschrank",
+    "addPlaceholder": "Zutat hinzufügen...",
+    "add": "Hinzufügen",
+    "remove": "Zutat entfernen",
+    "empty": "Dein Vorratsschrank ist leer. Füge Zutaten hinzu, die du zu Hause hast.",
+    "findRecipes": "Rezepte finden",
+    "youCanMake": "Du kannst kochen",
+    "almostThere": "Fast geschafft",
+    "missing_one": "Fehlt: {{missing}}",
+    "missing_other": "Fehlen: {{missing}}",
+    "noSuggestions": "Füge Zutaten hinzu, um Rezepte zu sehen, die du kochen kannst.",
+    "removeConfirm": "Diese Zutat aus deinem Vorratsschrank entfernen?"
+  },
   "error": {
     "title": "Etwas ist schiefgelaufen",
     "description": "Es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support, wenn das Problem weiterhin besteht.",

@@ -227,6 +227,20 @@
     "recent": "Recientes",
     "recentEmpty": "Las recetas que abras aparecerán aquí."
   },
+  "pantry": {
+    "title": "Despensa",
+    "addPlaceholder": "Añade un ingrediente...",
+    "add": "Añadir",
+    "remove": "Quitar ingrediente",
+    "empty": "Tu despensa está vacía. Añade los ingredientes que tienes en casa.",
+    "findRecipes": "Buscar recetas",
+    "youCanMake": "Puedes hacer",
+    "almostThere": "Casi lo tienes",
+    "missing_one": "Falta: {{missing}}",
+    "missing_other": "Faltan: {{missing}}",
+    "noSuggestions": "Añade ingredientes para ver recetas que puedes hacer.",
+    "removeConfirm": "¿Quitar este ingrediente de tu despensa?"
+  },
   "error": {
     "title": "Algo salió mal",
     "description": "Encontramos un error inesperado. Inténtalo de nuevo o contacta con soporte si el problema persiste.",
