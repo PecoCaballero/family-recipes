@@ -87,7 +87,8 @@
     "passwordsMismatchError": "As novas senhas não correspondem",
     "deleteWarning": "Esta ação é irreversível. Todas as suas receitas, grupos e dados serão excluídos permanentemente.",
     "deleteConfirmPrompt": "Digite seu e-mail para confirmar:",
-    "unknownUser": "Usuário"
+    "unknownUser": "Usuário",
+    "avatarMenu": "Opções de avatar"
   },
   "recipes": {
     "title": "Receitas",
@@ -131,7 +132,17 @@
     "quantity": "Quantidade",
     "unit": "Unidade",
     "addIngredient": "Adicionar ingrediente",
-    "fabCreateTooltip": "Criar receita"
+    "fabCreateTooltip": "Criar receita",
+    "descriptionPlaceholder": "Descreva sua receita...",
+    "imagePlaceholder": "https://example.com/image.jpg",
+    "instructionsPlaceholder": "Instruções passo a passo...",
+    "quantityPlaceholder": "ex. 2, 1/2, 3,5",
+    "unitPlaceholder": "ex. xícara, colher de sopa, g",
+    "fieldRequired": "{{field}} é obrigatório",
+    "ingredientsRequired": "Todos os ingredientes devem ter um nome",
+    "editIngredient": "Editar ingrediente",
+    "deleteIngredient": "Excluir ingrediente",
+    "moreOptions": "Mais opções"
   },
   "groups": {
     "title": "Grupos",
@@ -181,8 +192,6 @@
     "members": "Membros",
     "addMember": "Adicionar membro",
     "removeMember": "Remover membro",
-    "leaveGroup": "Sair do grupo",
-    "deleteGroup": "Excluir grupo",
     "nameLabel": "Nome do grupo",
     "descriptionLabel": "Descrição",
     "iconLabel": "Ícone (emoji ou URL)",
@@ -190,9 +199,6 @@
     "noGroups": "Nenhum grupo encontrado",
     "noGroupsYet": "Você ainda não tem grupos. Comece criando um!",
     "createdBy": "Criado por",
-    "leaveConfirm": "Tem certeza que deseja sair deste grupo?",
-    "deleteConfirm": "Tem certeza que deseja excluir este grupo?",
-    "deleteConfirmMessage": "Esta ação não pode ser desfeita. Todos os dados do grupo e associações de membros serão removidos permanentemente.",
     "addMemberTitle": "Adicionar membro",
     "inviteMember": "Convidar membro",
     "inviteMemberTitle": "Convidar membro",
@@ -220,5 +226,16 @@
     "results": "Resultados",
     "recent": "Recentes",
     "recentEmpty": "As receitas que abrires aparecerão aqui."
+  },
+  "error": {
+    "title": "Algo deu errado",
+    "description": "Encontramos um erro inesperado. Tente novamente ou entre em contato com o suporte se o problema persistir.",
+    "retry": "Tentar novamente",
+    "home": "Ir para o início",
+    "notFoundTitle": "Página não encontrada",
+    "notFoundDescription": "A página que você procura não existe ou foi movida."
+  },
+  "a11y": {
+    "skipToContent": "Pular para o conteúdo"
   }
 }

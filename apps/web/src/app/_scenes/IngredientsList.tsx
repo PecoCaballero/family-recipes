@@ -89,7 +89,7 @@ export function IngredientsList({
       </Typography>
       {errors && (
         <Typography color="error" variant="caption" sx={{ display: 'block', mb: 1 }}>
-          All ingredients must have a name
+          {t('recipes.ingredientsRequired')}
         </Typography>
       )}
 
@@ -115,11 +115,21 @@ export function IngredientsList({
                 </Typography>
               </Box>
               <Stack direction="row" gap={0.5}>
-                <IconButton onClick={() => handleOpenDialog(index)} size="small" color="primary">
+                <IconButton
+                  aria-label={t('recipes.editIngredient')}
+                  onClick={() => handleOpenDialog(index)}
+                  size="small"
+                  color="primary"
+                >
                   <EditIcon fontSize="small" />
                 </IconButton>
                 {ingredients.length > 1 && (
-                  <IconButton onClick={() => onIngredientRemove(index)} size="small" color="error">
+                  <IconButton
+                    aria-label={t('recipes.deleteIngredient')}
+                    onClick={() => onIngredientRemove(index)}
+                    size="small"
+                    color="error"
+                  >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 )}
@@ -153,7 +163,7 @@ export function IngredientsList({
             error={!formData.name.trim() && formData.name !== ''}
             helperText={
               !formData.name.trim() && formData.name !== ''
-                ? `${t('recipes.ingredientName')} is required`
+                ? t('recipes.fieldRequired', { field: t('recipes.ingredientName') })
                 : ''
             }
           />
@@ -162,14 +172,14 @@ export function IngredientsList({
             label={t('recipes.quantity')}
             value={formData.quantity}
             onChange={handleInputChange('quantity')}
-            placeholder="e.g., 2, 1/2, 3.5"
+            placeholder={t('recipes.quantityPlaceholder')}
           />
           <TextField
             fullWidth
             label={t('recipes.unit')}
             value={formData.unit}
             onChange={handleInputChange('unit')}
-            placeholder="e.g., cup, tbsp, g"
+            placeholder={t('recipes.unitPlaceholder')}
           />
         </DialogContent>
         <DialogActions>

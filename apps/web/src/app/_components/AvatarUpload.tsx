@@ -16,6 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import UploadIcon from '@mui/icons-material/Upload';
 import { useRef, useState, type ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { resolveAvatarUrl } from '@/app/_utils/avatarUrl';
 
 interface AvatarUploadProps extends Omit<AvatarProps, 'src' | 'children'> {
@@ -37,14 +38,16 @@ export function AvatarUpload({
   sx,
   ...props
 }: AvatarUploadProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(src ?? null);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const displaySrc = previewUrl && !previewUrl.startsWith('blob:')
-    ? resolveAvatarUrl(previewUrl)
-    : previewUrl || undefined;
+  const displaySrc =
+    previewUrl && !previewUrl.startsWith('blob:')
+      ? resolveAvatarUrl(previewUrl)
+      : previewUrl || undefined;
   const hasAvatar = !!previewUrl;
   const menuOpen = Boolean(menuAnchor);
 
@@ -104,6 +107,7 @@ export function AvatarUpload({
           ) : hasAvatar ? (
             <IconButton
               size="small"
+              aria-label={t('account.avatarMenu')}
               sx={{
                 bgcolor: 'grey.600',
                 color: 'white',
@@ -116,6 +120,7 @@ export function AvatarUpload({
           ) : (
             <IconButton
               size="small"
+              aria-label={uploadLabel}
               sx={{
                 bgcolor: 'primary.main',
                 color: 'white',
@@ -160,13 +165,7 @@ export function AvatarUpload({
         )}
       </Menu>
 
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={handleFileChange}
-      />
+      <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleFileChange} />
     </>
   );
 }

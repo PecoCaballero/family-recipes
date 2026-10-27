@@ -187,7 +187,9 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         value={formData.name}
         onChange={handleInputChange('name')}
         error={!!errors.name}
-        helperText={errors.name ? `${t('recipes.recipeName')} is required` : ''}
+        helperText={
+          errors.name ? t('recipes.fieldRequired', { field: t('recipes.recipeName') }) : ''
+        }
         margin="normal"
         required
       />
@@ -200,7 +202,7 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         margin="normal"
         multiline
         rows={3}
-        placeholder="Describe your recipe..."
+        placeholder={t('recipes.descriptionPlaceholder')}
       />
 
       <TextField
@@ -209,7 +211,7 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         value={formData.image}
         onChange={handleInputChange('image')}
         margin="normal"
-        placeholder="https://example.com/image.jpg"
+        placeholder={t('recipes.imagePlaceholder')}
         type="url"
       />
 
@@ -255,12 +257,16 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         value={formData.instructions}
         onChange={handleInputChange('instructions')}
         error={!!errors.instructions}
-        helperText={errors.instructions ? `${t('recipes.instructions')} is required` : ''}
+        helperText={
+          errors.instructions
+            ? t('recipes.fieldRequired', { field: t('recipes.instructions') })
+            : ''
+        }
         margin="normal"
         multiline
         rows={6}
         required
-        placeholder="Step-by-step instructions..."
+        placeholder={t('recipes.instructionsPlaceholder')}
       />
 
       <Accordion elevation={0} sx={{ mt: 2 }}>

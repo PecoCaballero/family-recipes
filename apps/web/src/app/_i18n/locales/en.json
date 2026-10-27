@@ -87,7 +87,8 @@
     "passwordsMismatchError": "New passwords do not match",
     "deleteWarning": "This action is irreversible. All your recipes, groups, and data will be permanently deleted.",
     "deleteConfirmPrompt": "Type your email address to confirm:",
-    "unknownUser": "User"
+    "unknownUser": "User",
+    "avatarMenu": "Avatar options"
   },
   "recipes": {
     "title": "Recipes",
@@ -131,7 +132,17 @@
     "quantity": "Quantity",
     "unit": "Unit",
     "addIngredient": "Add Ingredient",
-    "fabCreateTooltip": "Create Recipe"
+    "fabCreateTooltip": "Create Recipe",
+    "descriptionPlaceholder": "Describe your recipe...",
+    "imagePlaceholder": "https://example.com/image.jpg",
+    "instructionsPlaceholder": "Step-by-step instructions...",
+    "quantityPlaceholder": "e.g., 2, 1/2, 3.5",
+    "unitPlaceholder": "e.g., cup, tbsp, g",
+    "fieldRequired": "{{field}} is required",
+    "ingredientsRequired": "All ingredients must have a name",
+    "editIngredient": "Edit ingredient",
+    "deleteIngredient": "Delete ingredient",
+    "moreOptions": "More options"
   },
   "groups": {
     "title": "Groups",
@@ -181,8 +192,6 @@
     "members": "Members",
     "addMember": "Add Member",
     "removeMember": "Remove Member",
-    "leaveGroup": "Leave Group",
-    "deleteGroup": "Delete Group",
     "nameLabel": "Group Name",
     "descriptionLabel": "Description",
     "iconLabel": "Icon (emoji or URL)",
@@ -190,9 +199,6 @@
     "noGroups": "No groups found",
     "noGroupsYet": "You don't have any groups yet. Start by creating one!",
     "createdBy": "Created by",
-    "leaveConfirm": "Are you sure you want to leave this group?",
-    "deleteConfirm": "Are you sure you want to delete this group?",
-    "deleteConfirmMessage": "This action cannot be undone. All group data and member associations will be permanently removed.",
     "addMemberTitle": "Add Member",
     "inviteMember": "Invite member",
     "inviteMemberTitle": "Invite member",
@@ -220,5 +226,16 @@
     "results": "Results",
     "recent": "Recent",
     "recentEmpty": "Recipes you open will appear here."
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "We encountered an unexpected error. Please try again or contact support if the problem persists.",
+    "retry": "Try Again",
+    "home": "Go Home",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you are looking for doesn't exist or has moved."
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
   }
 }

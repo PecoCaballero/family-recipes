@@ -17,6 +17,7 @@ import { EditProfileDialog } from '../_components/EditProfileDialog';
 import { ChangePasswordDialog } from '../_components/ChangePasswordDialog';
 import { DeleteAccountDialog } from '../_components/DeleteAccountDialog';
 import { useAuth } from '../_providers/AuthContext';
+import { LOCALES } from '../_i18n/config';
 import { useTheme } from '../_providers/themeContext';
 import type { ThemeMode } from '../_providers/themeContext';
 import {
@@ -134,12 +135,7 @@ export function AccountScene() {
     }
   };
 
-  const languageOptions = [
-    { label: 'English', value: 'en' },
-    { label: 'Español', value: 'es' },
-    { label: 'Français', value: 'fr' },
-    { label: 'Português', value: 'pt' },
-  ];
+  const languageOptions = LOCALES.map(({ code, label }) => ({ label, value: code }));
 
   const themeOptions = [
     { label: t('account.themeLight'), value: 'light' },

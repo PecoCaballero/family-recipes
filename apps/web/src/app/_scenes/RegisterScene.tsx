@@ -51,8 +51,8 @@ export function RegisterScene() {
       await register(fullName, formData.email, formData.password);
       router.push('/recipes');
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('register.registerFailed');
-      setError(message);
+      console.error(err);
+      setError(t('register.registerFailed'));
     } finally {
       setLoading(false);
     }

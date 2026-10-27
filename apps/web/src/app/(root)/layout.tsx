@@ -7,6 +7,7 @@ import { PpWC } from '../_types/types';
 import { Box } from '@mui/material';
 import { useAuth } from '../_providers/AuthContext';
 import { LoadingPage } from '../_scenes/LoadingPage';
+import { SkipLink } from '../_components/SkipLink';
 
 export default function RootLayout({ children }: PpWC) {
   const { isAuthenticated } = useAuth();
@@ -24,7 +25,10 @@ export default function RootLayout({ children }: PpWC) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <main style={{ flex: 1, paddingBottom: '64px' }}>{children}</main>
+      <SkipLink />
+      <main id="main-content" tabIndex={-1} style={{ flex: 1, paddingBottom: '64px' }}>
+        {children}
+      </main>
       <BottomNavigation />
     </Box>
   );

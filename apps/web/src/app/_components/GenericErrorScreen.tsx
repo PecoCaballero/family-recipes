@@ -10,12 +10,16 @@ interface GenericErrorScreenProps {
   error?: Error & { digest?: string };
   reset?: () => void;
   isDevelopment?: boolean;
+  title?: string;
+  description?: string;
 }
 
 export function GenericErrorScreen({
   error,
   reset,
   isDevelopment = false,
+  title,
+  description,
 }: GenericErrorScreenProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -36,15 +40,12 @@ export function GenericErrorScreen({
             <ErrorOutlineIcon sx={{ fontSize: 80, color: 'error.main' }} />
 
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-              {t('error.title', 'Something went wrong')}
+              {title ?? t('error.title')}
             </Typography>
           </Stack>
 
           <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-            {t(
-              'error.description',
-              'We encountered an unexpected error. Please try again or contact support if the problem persists.',
-            )}
+            {description ?? t('error.description')}
           </Typography>
 
           {isDevelopment && error && (
@@ -74,12 +75,12 @@ export function GenericErrorScreen({
           <Stack direction="row" spacing={2} sx={{ justifyContent: 'center' }}>
             {reset && (
               <Button onClick={reset} variant="contained">
-                {t('error.retry', 'Try Again')}
+                {t('error.retry')}
               </Button>
             )}
 
             <Button onClick={() => router.push('/')} variant="outlined">
-              {t('error.home', 'Go Home')}
+              {t('error.home')}
             </Button>
           </Stack>
         </Stack>

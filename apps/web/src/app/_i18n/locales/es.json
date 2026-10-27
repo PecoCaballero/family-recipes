@@ -65,7 +65,30 @@
     "themeAuto": "Automático",
     "privacyPrivate": "Privado",
     "privacyFamily": "Solo familia",
-    "privacyPublic": "Público"
+    "privacyPublic": "Público",
+    "editProfile": "Editar perfil",
+    "changePassword": "Cambiar contraseña",
+    "deleteAccount": "Eliminar cuenta",
+    "editProfileTitle": "Editar perfil",
+    "changePasswordTitle": "Cambiar contraseña",
+    "deleteAccountTitle": "Eliminar cuenta",
+    "uploadAvatar": "Subir foto de perfil",
+    "deleteAvatar": "Eliminar foto de perfil",
+    "nameLabel": "Nombre",
+    "emailLabel": "Correo electrónico",
+    "currentPasswordLabel": "Contraseña actual",
+    "newPasswordLabel": "Nueva contraseña",
+    "confirmPasswordLabel": "Confirmar nueva contraseña",
+    "saveLabel": "Guardar",
+    "deleteLabel": "Eliminar mi cuenta",
+    "fieldRequiredError": "Al menos un campo debe cambiarse",
+    "invalidEmailError": "Correo electrónico no válido",
+    "passwordTooShortError": "La nueva contraseña debe tener al menos 6 caracteres",
+    "passwordsMismatchError": "Las nuevas contraseñas no coinciden",
+    "deleteWarning": "Esta acción es irreversible. Todas tus recetas, grupos y datos se eliminarán permanentemente.",
+    "deleteConfirmPrompt": "Escribe tu correo electrónico para confirmar:",
+    "unknownUser": "Usuario",
+    "avatarMenu": "Opciones de avatar"
   },
   "recipes": {
     "title": "Recetas",
@@ -109,7 +132,17 @@
     "quantity": "Cantidad",
     "unit": "Unidad",
     "addIngredient": "Agregar ingrediente",
-    "fabCreateTooltip": "Crear receta"
+    "fabCreateTooltip": "Crear receta",
+    "descriptionPlaceholder": "Describe tu receta...",
+    "imagePlaceholder": "https://example.com/image.jpg",
+    "instructionsPlaceholder": "Instrucciones paso a paso...",
+    "quantityPlaceholder": "p. ej., 2, 1/2, 3,5",
+    "unitPlaceholder": "p. ej., taza, cda, g",
+    "fieldRequired": "{{field}} es obligatorio",
+    "ingredientsRequired": "Todos los ingredientes deben tener un nombre",
+    "editIngredient": "Editar ingrediente",
+    "deleteIngredient": "Eliminar ingrediente",
+    "moreOptions": "Más opciones"
   },
   "groups": {
     "title": "Grupos",
@@ -159,8 +192,6 @@
     "members": "Miembros",
     "addMember": "Agregar miembro",
     "removeMember": "Eliminar miembro",
-    "leaveGroup": "Salir del grupo",
-    "deleteGroup": "Eliminar grupo",
     "nameLabel": "Nombre del grupo",
     "descriptionLabel": "Descripción",
     "iconLabel": "Icono (emoji o URL)",
@@ -168,9 +199,6 @@
     "noGroups": "No se encontraron grupos",
     "noGroupsYet": "Aún no tienes grupos. ¡Crea uno para empezar!",
     "createdBy": "Creado por",
-    "leaveConfirm": "¿Estás seguro de que deseas salir de este grupo?",
-    "deleteConfirm": "¿Estás seguro de que deseas eliminar este grupo?",
-    "deleteConfirmMessage": "Esta acción no se puede deshacer. Todos los datos del grupo y las asociaciones de miembros se eliminarán permanentemente.",
     "addMemberTitle": "Agregar miembro",
     "inviteMember": "Invitar miembro",
     "inviteMemberTitle": "Invitar miembro",
@@ -198,5 +226,16 @@
     "results": "Resultados",
     "recent": "Recientes",
     "recentEmpty": "Las recetas que abras aparecerán aquí."
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "description": "Encontramos un error inesperado. Inténtalo de nuevo o contacta con soporte si el problema persiste.",
+    "retry": "Reintentar",
+    "home": "Ir al inicio",
+    "notFoundTitle": "Página no encontrada",
+    "notFoundDescription": "La página que buscas no existe o ha cambiado de lugar."
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido"
   }
 }

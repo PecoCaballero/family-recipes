@@ -26,8 +26,8 @@ export function LoginScene() {
       await login(email, password);
       router.push('/recipes');
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('login.loginFailed');
-      setError(message);
+      console.error(err);
+      setError(t('login.loginFailed'));
     } finally {
       setLoading(false);
     }

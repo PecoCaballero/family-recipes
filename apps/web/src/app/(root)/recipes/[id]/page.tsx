@@ -88,6 +88,7 @@ export default function RecipePage() {
         endSlot={
           <IconButton
             id="long-button"
+            aria-label={t('recipes.moreOptions')}
             aria-controls={openMenu ? 'long-menu' : undefined}
             aria-expanded={openMenu ? 'true' : undefined}
             aria-haspopup="true"

@@ -46,6 +46,10 @@ export const getTheme = (mode: PaletteMode): Theme => {
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
           },
+          ':focus-visible': {
+            outline: `2px solid ${isDark ? brand.green : brand.greenDark}`,
+            outlineOffset: 2,
+          },
         },
       },
       MuiButton: {
