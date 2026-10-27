@@ -48,9 +48,10 @@ export default function RecipesPage() {
           options={chipOptions}
           selectedOption={selectedChip}
           onSelect={setSelectedChip}
+          variant="solid"
         />
       </Header>
-      <SceneContent>
+      <SceneContent sx={{ pt: 2 }}>
         {isLoading && recipes.length === 0 ? (
           <ContentSkeleton variant="rows" />
         ) : chipFilteredData.length > 0 ? (

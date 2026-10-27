@@ -73,7 +73,7 @@ export default function RecipePage() {
     return (
       <Scene>
         <Header goBack title={t('recipes.notFound')} />
-        <SceneContent>
+        <SceneContent sx={{ pt: 2 }}>
           <EmptyRecipeState message={t('recipes.notFound')} />
         </SceneContent>
       </Scene>
@@ -97,7 +97,7 @@ export default function RecipePage() {
           </IconButton>
         }
       />
-      <SceneContent>
+      <SceneContent sx={{ pt: 2 }}>
         <Typography variant="caption" textAlign="center">
           {recipe.author} • {t('recipes.lastUpdated')}:{' '}
           {new Date(recipe.lastUpdated).toLocaleDateString()}

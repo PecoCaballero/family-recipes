@@ -72,6 +72,9 @@ export function RecipeList({ recipes, onRemove, removeLabel }: PpRecipeList) {
                   >
                     {recipe.description}
                   </Typography>
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    {recipe.author}
+                  </Typography>
                 </Stack>
               </Stack>
             </CardActionArea>

@@ -30,7 +30,9 @@ export default function GroupPage() {
   const params = useParams<{ id: string }>();
   const { data, isLoading } = useGroupQuery(params.id);
   const removeRecipe = useRemoveRecipeFromGroup();
-  const [selectedChip, setSelectedChip] = useState<ChipOption | undefined>();
+  const [selectedChip, setSelectedChip] = useState<ChipOption | undefined>({
+    label: t('groups.view.allRecipes'),
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [shareOpen, setShareOpen] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<Recipe | null>(null);
@@ -39,15 +41,20 @@ export default function GroupPage() {
   const recipes = useMemo(() => data?.recipes ?? [], [data?.recipes]);
   const group = data?.group;
 
+  const activeMembers = useMemo(
+    () => members.filter((m: MemberWithCount) => m.recipeCount > 0),
+    [members],
+  );
+
   const chipOptions: ChipOption[] = useMemo(() => {
     return [
       { label: t('groups.view.allRecipes') },
-      ...members.map((m: MemberWithCount) => ({
+      ...activeMembers.map((m: MemberWithCount) => ({
         label: m.name,
         avatar: resolveAvatarUrl(m.avatar),
       })),
     ];
-  }, [members, t]);
+  }, [activeMembers, t]);
 
   const filteredRecipes = useMemo(() => {
     const searched = filterRecipesByQuery(recipes, searchQuery);
@@ -100,29 +107,43 @@ export default function GroupPage() {
           </IconButton>
         }
       />
-      <Box sx={{ px: 2, pt: 1 }}>
+      <Box
+        sx={{
+          px: 2,
+          pt: 1,
+          pb: 1,
+          position: 'sticky',
+          top: 80,
+          zIndex: 998,
+          bgcolor: 'background.default',
+        }}
+      >
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t('search.searchPlaceholder')}
         />
       </Box>
-      {members.length > 1 && (
+      {activeMembers.length > 0 && (
         <ChipFilter
           options={chipOptions}
           selectedOption={selectedChip}
           onSelect={setSelectedChip}
         />
       )}
-      {filteredRecipes.length > 0 ? (
-        <RecipeList
-          recipes={filteredRecipes}
-          onRemove={data.isAdmin ? setRemoveTarget : undefined}
-          removeLabel={t('groups.removeRecipe')}
-        />
-      ) : (
-        <EmptyRecipeState message={searchQuery ? t('search.noResults') : t('recipes.noRecipes')} />
-      )}
+      <Box sx={{ px: 2, pt: 1 }}>
+        {filteredRecipes.length > 0 ? (
+          <RecipeList
+            recipes={filteredRecipes}
+            onRemove={data.isAdmin ? setRemoveTarget : undefined}
+            removeLabel={t('groups.removeRecipe')}
+          />
+        ) : (
+          <EmptyRecipeState
+            message={searchQuery ? t('search.noResults') : t('recipes.noRecipes')}
+          />
+        )}
+      </Box>
       <FloatingActionButton
         icon={<Share />}
         onClick={() => setShareOpen(true)}

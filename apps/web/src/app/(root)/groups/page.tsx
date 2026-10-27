@@ -32,7 +32,7 @@ export default function GroupsPage() {
             placeholder={t('groups.searchPlaceholder')}
           />
         </Header>
-        <SceneContent>
+        <SceneContent sx={{ pt: 2 }}>
           <ContentSkeleton variant="rows" />
         </SceneContent>
         <FloatingActionButton
@@ -59,7 +59,7 @@ export default function GroupsPage() {
           actionLabel={t('groups.newGroup')}
           actionHref={routes.groups.create.path}
         />
-        <SceneContent>
+        <SceneContent sx={{ pt: 2 }}>
           {pendingInvitations.map((invitation) => (
             <InvitationBanner key={invitation.id} invitation={invitation} />
           ))}
@@ -82,7 +82,7 @@ export default function GroupsPage() {
           placeholder={t('groups.searchPlaceholder')}
         />
       </Header>
-      <SceneContent>
+      <SceneContent sx={{ pt: 2 }}>
         <Stack spacing={1}>
           {pendingInvitations.map((invitation) => (
             <InvitationBanner key={invitation.id} invitation={invitation} />

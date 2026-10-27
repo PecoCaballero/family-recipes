@@ -38,4 +38,18 @@ describe('RecipeList', () => {
     expect(screen.getByText('Tacos')).toBeInTheDocument();
     expect(screen.getByText('Fluffy')).toBeInTheDocument();
   });
+
+  it('shows the author on every recipe card', () => {
+    render(
+      <RecipeList
+        recipes={[
+          makeRecipe({ id: 'r1', author: 'Alice' }),
+          makeRecipe({ id: 'r2', author: 'Bob' }),
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('Alice')).toBeInTheDocument();
+    expect(screen.getByText('Bob')).toBeInTheDocument();
+  });
 });

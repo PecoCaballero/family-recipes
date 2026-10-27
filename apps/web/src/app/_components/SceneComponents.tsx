@@ -1,10 +1,10 @@
 'use client';
 
-import { Container, Stack } from '@mui/material';
+import { Container, Stack, type SxProps, type Theme } from '@mui/material';
 import { PpWC } from '../_types/types';
 
-export function SceneContent({ children }: PpWC): React.ReactElement {
-  return <Stack sx={{ maxWidth: '1200px' }}>{children}</Stack>;
+export function SceneContent({ children, sx }: PpWC & { sx?: SxProps<Theme> }): React.ReactElement {
+  return <Stack sx={{ maxWidth: '1200px', ...sx }}>{children}</Stack>;
 }
 
 export function Scene({ children }: PpWC): React.ReactElement {
