@@ -55,3 +55,6 @@ next-env.d.ts
 
 # generated build artifacts
 /tmp/
+
+# runtime uploads (local avatar storage)
+/uploads/
