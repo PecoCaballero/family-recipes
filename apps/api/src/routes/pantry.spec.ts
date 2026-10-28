@@ -63,9 +63,10 @@ describe('pantry name matching', () => {
     expect(isCovered(['Onion'], 'ONION')).toBe(true);
   });
 
-  it('covers when one name is a substring of the other', () => {
-    expect(isCovered(['tomato'], 'tomatoes')).toBe(true);
-    expect(isCovered(['tomatoes'], 'tomato')).toBe(true);
+  it('does not cover substring or partial matches', () => {
+    expect(isCovered(['egg'], 'eggplant')).toBe(false);
+    expect(isCovered(['milk'], 'chocolate milk')).toBe(false);
+    expect(isCovered(['tomato'], 'tomatoes')).toBe(false);
   });
 
   it('does not cover unrelated names', () => {

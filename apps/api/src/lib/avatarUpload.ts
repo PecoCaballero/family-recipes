@@ -15,3 +15,18 @@ const upload = multer({
 });
 
 export const avatarUploadMiddleware = upload.single('avatar');
+
+const MIME_TO_EXT: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+};
+
+/**
+ * Maps a validated `image/*` MIME type to a safe extension. Never derives the
+ * extension from client-supplied filenames (path traversal risk).
+ */
+export function extensionForMimeType(mimetype: string): string {
+  return MIME_TO_EXT[mimetype] ?? 'png';
+}

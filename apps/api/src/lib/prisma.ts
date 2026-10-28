@@ -28,7 +28,7 @@ const adapter = new PrismaPg({
   user: url.username,
   password: url.password,
   database: url.pathname.replace('/', ''),
-  ...(shouldUseTls(databaseUrl) ? { ssl: { rejectUnauthorized: false } } : {}),
+  ...(shouldUseTls(databaseUrl) ? { ssl: { rejectUnauthorized: true } } : {}),
 });
 
 const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });

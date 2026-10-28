@@ -11,10 +11,8 @@ export function normalizeName(name: string): string {
 
 export function isCovered(pantryNames: string[], ingredientName: string): boolean {
   const target = normalizeName(ingredientName);
-  return pantryNames.some((pantry) => {
-    const normalized = normalizeName(pantry);
-    return normalized === target || normalized.includes(target) || target.includes(normalized);
-  });
+  if (!target) return false;
+  return pantryNames.some((pantry) => normalizeName(pantry) === target);
 }
 
 export function scoreRecipeCoverage(

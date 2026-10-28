@@ -5,10 +5,12 @@ import {
   updateProfileSchema,
   changePasswordSchema,
   userSearchQuerySchema,
+  userSettingsUpdateSchema,
 } from '@family-recipe/shared';
 import type { User } from '@family-recipe/shared';
 import { createStorageProvider } from '../lib/storage';
-import { avatarUploadMiddleware } from '../lib/avatarUpload';
+import { avatarUploadMiddleware, extensionForMimeType } from '../lib/avatarUpload';
+import { hashToken } from '../utils/jwt';
 
 export const usersRouter = Router();
 const storage = createStorageProvider();
@@ -88,7 +90,14 @@ usersRouter.get('/search', async (req, res) => {
 
 usersRouter.patch('/me/settings', async (req, res) => {
   try {
-    const { language, privacyLevel, notifications, theme } = req.body;
+    const parsed = userSettingsUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { language, privacyLevel, notifications, theme } = parsed.data;
 
     const user = await prisma.user.update({
       where: { id: req.userId },
@@ -197,7 +206,7 @@ usersRouter.post('/me/avatar', avatarUploadMiddleware as any, async (req, res) =
       await storage.delete(user.avatar);
     }
 
-    const ext = req.file.originalname.split('.').pop() ?? 'png';
+    const ext = extensionForMimeType(req.file.mimetype);
     const timestamp = Date.now();
     const filename = `${req.userId}_${timestamp}.${ext}`;
 
@@ -323,7 +332,7 @@ usersRouter.post('/me/logout', async (req, res) => {
     const { refreshToken } = req.body;
     if (refreshToken) {
       await prisma.refreshToken.deleteMany({
-        where: { token: refreshToken, userId: req.userId },
+        where: { token: hashToken(refreshToken), userId: req.userId },
       });
     }
     return res.status(200).json({ status: 'success' });
