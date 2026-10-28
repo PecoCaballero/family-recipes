@@ -7,11 +7,11 @@ import {
   userSearchQuerySchema,
 } from '@family-recipe/shared';
 import type { User } from '@family-recipe/shared';
-import { LocalStorageProvider } from '../lib/storage';
+import { createStorageProvider } from '../lib/storage';
 import { avatarUploadMiddleware } from '../lib/avatarUpload';
 
 export const usersRouter = Router();
-const storage = new LocalStorageProvider();
+const storage = createStorageProvider();
 const SALT_ROUNDS = 12;
 
 function userToResponse(user: {

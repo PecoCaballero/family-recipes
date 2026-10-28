@@ -3,12 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "seed": "npx prisma db seed"
+    "seed": "npx prisma db seed",
+    "start": "node dist/apps/api/apps/api/src/index.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1158.0",
     "@family-recipe/shared": "workspace:*",
     "@prisma/client": "^7.9.1",
     "bcrypt": "^6.0.0",
