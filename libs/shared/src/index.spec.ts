@@ -12,6 +12,9 @@ import {
   addPantryItemInputSchema,
   pantrySuggestionSchema,
   pantrySuggestResponseSchema,
+  recipeImportRequestSchema,
+  recipeImportDraftSchema,
+  recipeImportResponseSchema,
 } from './index';
 
 describe('shared schemas', () => {
@@ -263,6 +266,78 @@ describe('shared schemas', () => {
 
     it('rejects a missing suggestions array', () => {
       expect(pantrySuggestResponseSchema.safeParse({}).success).toBe(false);
+    });
+  });
+
+  describe('recipeImportRequestSchema', () => {
+    it('accepts a non-empty text body', () => {
+      expect(recipeImportRequestSchema.safeParse({ text: 'A pancake recipe' }).success).toBe(true);
+    });
+
+    it('rejects empty and whitespace-only text', () => {
+      expect(recipeImportRequestSchema.safeParse({ text: '' }).success).toBe(false);
+      expect(recipeImportRequestSchema.safeParse({ text: '   ' }).success).toBe(false);
+    });
+
+    it('rejects text longer than 20000 chars', () => {
+      expect(recipeImportRequestSchema.safeParse({ text: 'x'.repeat(20001) }).success).toBe(false);
+    });
+  });
+
+  describe('recipeImportDraftSchema', () => {
+    const validDraft = {
+      name: 'Pancakes',
+      description: 'Fluffy stacks',
+      ingredients: [{ name: 'Flour', quantity: '2', unit: 'cups' }],
+      instructions: 'Mix and fry',
+    };
+
+    it('accepts a submit-compatible draft', () => {
+      expect(recipeImportDraftSchema.safeParse(validDraft).success).toBe(true);
+    });
+
+    it('accepts optional metadata', () => {
+      const parsed = recipeImportDraftSchema.safeParse({
+        ...validDraft,
+        cuisine: 'American',
+        prepTime: 10,
+        difficulty: 'easy',
+      });
+      expect(parsed.success).toBe(true);
+    });
+
+    it('rejects a draft with no ingredients', () => {
+      expect(recipeImportDraftSchema.safeParse({ ...validDraft, ingredients: [] }).success).toBe(
+        false,
+      );
+    });
+
+    it('rejects an empty description', () => {
+      expect(recipeImportDraftSchema.safeParse({ ...validDraft, description: '' }).success).toBe(
+        false,
+      );
+    });
+
+    it('rejects an empty name', () => {
+      expect(recipeImportDraftSchema.safeParse({ ...validDraft, name: '' }).success).toBe(false);
+    });
+  });
+
+  describe('recipeImportResponseSchema', () => {
+    it('wraps a draft', () => {
+      const parsed = recipeImportResponseSchema.safeParse({
+        draft: {
+          name: 'Pancakes',
+          description: 'Fluffy stacks',
+          ingredients: [{ name: 'Flour', quantity: '2' }],
+          instructions: 'Mix',
+        },
+      });
+      expect(parsed.success).toBe(true);
+    });
+
+    it('rejects a missing draft', () => {
+      expect(recipeImportResponseSchema.safeParse({}).success).toBe(false);
     });
   });
 });

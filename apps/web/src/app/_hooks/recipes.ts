@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/app/_utils/apiClient';
-import type { Recipe, RecipeDifficulty } from '@family-recipe/shared';
+import type { Recipe, RecipeDifficulty, RecipeImportDraft } from '@family-recipe/shared';
 
 export function useRecipesQuery(search?: string, enabled = true) {
   return useQuery({
@@ -50,6 +50,17 @@ export function useCreateRecipe() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
+    },
+  });
+}
+
+export function useImportRecipe() {
+  return useMutation({
+    mutationFn: async (text: string) => {
+      const res = await apiClient.post<{ draft: RecipeImportDraft }>('/v1/recipes/import', {
+        text,
+      });
+      return res.data.draft;
     },
   });
 }

@@ -39,7 +39,7 @@ export type RecipeSummary = z.infer<typeof recipeSummarySchema>;
 export const recipeDifficultySchema = z.enum(['easy', 'medium', 'hard']);
 export type RecipeDifficulty = z.infer<typeof recipeDifficultySchema>;
 
-const recipeMetadataSchema = {
+export const recipeMetadataSchema = {
   cuisine: z.string().optional(),
   prepTime: z.number().int().positive().optional(),
   cookTime: z.number().int().positive().optional(),
@@ -78,6 +78,25 @@ export const createRecipeInputSchema = z.object({
   ...recipeMetadataSchema,
 });
 export type CreateRecipeInput = z.infer<typeof createRecipeInputSchema>;
+
+export const recipeImportRequestSchema = z.object({
+  text: z.string().trim().min(1).max(20000),
+});
+export type RecipeImportRequest = z.infer<typeof recipeImportRequestSchema>;
+
+export const recipeImportDraftSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().min(1),
+  ingredients: z.array(ingredientSchema).min(1),
+  instructions: z.string().min(1),
+  ...recipeMetadataSchema,
+});
+export type RecipeImportDraft = z.infer<typeof recipeImportDraftSchema>;
+
+export const recipeImportResponseSchema = z.object({
+  draft: recipeImportDraftSchema,
+});
+export type RecipeImportResponse = z.infer<typeof recipeImportResponseSchema>;
 
 export const updateRecipeInputSchema = z.object({
   name: z.string().optional(),

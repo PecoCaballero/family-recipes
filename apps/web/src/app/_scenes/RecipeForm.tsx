@@ -16,7 +16,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IngredientsList } from './IngredientsList';
 import { useRecipesQuery } from '../_hooks/recipes';
@@ -41,10 +41,19 @@ type TpNumberField = 'prepTime' | 'cookTime' | 'servings';
 type PpRecipeForm = {
   recipe: Recipe;
   isEditing?: boolean;
+  initialData?: Partial<TpRecipeFormData>;
+  hideActions?: boolean;
   onSubmit?: (data: TpRecipeFormData) => Promise<void>;
 };
 
-export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm) {
+export type RecipeFormHandle = {
+  submitForm: () => void;
+};
+
+export const RecipeForm = forwardRef<RecipeFormHandle, PpRecipeForm>(function RecipeForm(
+  { recipe, isEditing = false, initialData, hideActions = false, onSubmit },
+  ref,
+) {
   const { t } = useTranslation();
   const router = useRouter();
   const { data: allRecipes = [] } = useRecipesQuery();
@@ -67,12 +76,20 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
       };
     }
     return {
-      name: '',
-      description: '',
-      image: '',
-      ingredients: [{ name: '', quantity: '', unit: '' }],
-      instructions: '',
-      parentRecipeId: undefined,
+      name: initialData?.name ?? '',
+      description: initialData?.description ?? '',
+      image: initialData?.image ?? '',
+      ingredients:
+        initialData?.ingredients && initialData.ingredients.length > 0
+          ? initialData.ingredients
+          : [{ name: '', quantity: '', unit: '' }],
+      instructions: initialData?.instructions ?? '',
+      parentRecipeId: initialData?.parentRecipeId,
+      cuisine: initialData?.cuisine,
+      prepTime: initialData?.prepTime,
+      cookTime: initialData?.cookTime,
+      servings: initialData?.servings,
+      difficulty: initialData?.difficulty,
     };
   };
 
@@ -158,9 +175,7 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const doSubmit = async () => {
     if (!validateForm()) {
       return;
     }
@@ -177,6 +192,17 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
     } finally {
       setLoading(false);
     }
+  };
+
+  useImperativeHandle(ref, () => ({
+    submitForm: () => {
+      void doSubmit();
+    },
+  }));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void doSubmit();
   };
 
   return (
@@ -327,20 +353,22 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         </AccordionDetails>
       </Accordion>
 
-      <Stack direction="row" gap={2} sx={{ mt: 4, mb: 2 }}>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={loading}
-          sx={{ flex: 1 }}
-        >
-          {isEditing ? t('common.edit') : t('recipes.saveRecipe')}
-        </Button>
-        <Button variant="outlined" onClick={() => router.push('/recipes')} disabled={loading}>
-          {t('common.cancel')}
-        </Button>
-      </Stack>
+      {!hideActions && (
+        <Stack direction="row" gap={2} sx={{ mt: 4, mb: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={loading}
+            sx={{ flex: 1 }}
+          >
+            {isEditing ? t('common.edit') : t('recipes.saveRecipe')}
+          </Button>
+          <Button variant="outlined" onClick={() => router.push('/recipes')} disabled={loading}>
+            {t('common.cancel')}
+          </Button>
+        </Stack>
+      )}
     </Box>
   );
-}
+});

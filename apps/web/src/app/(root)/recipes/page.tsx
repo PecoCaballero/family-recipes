@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Add } from '@mui/icons-material';
+import { Add, FileUpload } from '@mui/icons-material';
 import { ChipFilter, type ChipOption } from '@/app/_components/ChipFilter';
 import { Header } from '@/app/_components/Header';
 import { RecipeList } from '@/app/_components/RecipeList';
@@ -67,6 +67,12 @@ export default function RecipesPage() {
         icon={<Add />}
         href={routes.recipes.create.path}
         label={t('recipes.fabCreateTooltip')}
+      />
+      <FloatingActionButton
+        icon={<FileUpload />}
+        href={`${routes.recipes.create.path}?import=1`}
+        label={t('recipes.fabImportTooltip')}
+        sx={{ bottom: 144 }}
       />
     </Scene>
   );

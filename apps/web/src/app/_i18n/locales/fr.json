@@ -142,7 +142,17 @@
     "ingredientsRequired": "Tous les ingrédients doivent avoir un nom",
     "editIngredient": "Modifier l'ingrédient",
     "deleteIngredient": "Supprimer l'ingrédient",
-    "moreOptions": "Plus d'options"
+    "moreOptions": "Plus d'options",
+    "importRecipe": "Importer une recette",
+    "importPastePrompt": "Collez le texte de votre recette...",
+    "importParse": "Analyser",
+    "importParsing": "Analyse en cours...",
+    "importPreview": "Aperçu",
+    "importError": "Impossible d'importer la recette. Veuillez réessayer.",
+    "importUnparseable": "Impossible d'extraire une recette de ce texte.",
+    "importNotConfigured": "L'importation de recettes n'est pas disponible pour le moment.",
+    "importPrivacyNote": "Le texte de la recette est envoyé à un fournisseur d'IA pour analyse.",
+    "fabImportTooltip": "Importer une recette"
   },
   "groups": {
     "title": "Groupes",

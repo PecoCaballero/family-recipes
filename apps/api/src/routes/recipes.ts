@@ -5,8 +5,10 @@ import {
   prismaIngredientSchema,
   createRecipeInputSchema,
   updateRecipeInputSchema,
+  recipeImportRequestSchema,
 } from '@family-recipe/shared';
 import type { Recipe, Ingredient } from '@family-recipe/shared';
+import { importRecipeDraft, ImportError } from '../lib/recipeImport';
 
 export const recipeRouter = Router();
 
@@ -137,6 +139,32 @@ recipeRouter.get('/', async (req, res) => {
     return res.status(200).json({ recipes: items });
   } catch (error) {
     console.error('List recipes error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+recipeRouter.post('/import', async (req, res) => {
+  const parsed = recipeImportRequestSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: 'validation_error',
+      details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+    });
+  }
+
+  try {
+    const draft = await importRecipeDraft(parsed.data.text);
+    return res.status(200).json({ draft });
+  } catch (error) {
+    if (error instanceof ImportError) {
+      const status = {
+        ai_not_configured: 503,
+        ai_upstream_error: 502,
+        import_unparseable: 422,
+      }[error.code];
+      return res.status(status).json({ error: error.code });
+    }
+    console.error('Import recipe error:', error);
     return res.status(500).json({ error: 'internal_error' });
   }
 });

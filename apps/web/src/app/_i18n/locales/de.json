@@ -142,7 +142,17 @@
     "ingredientsRequired": "Alle Zutaten müssen einen Namen haben",
     "editIngredient": "Zutat bearbeiten",
     "deleteIngredient": "Zutat löschen",
-    "moreOptions": "Weitere Optionen"
+    "moreOptions": "Weitere Optionen",
+    "importRecipe": "Rezept importieren",
+    "importPastePrompt": "Fügen Sie Ihren Rezepttext ein...",
+    "importParse": "Analysieren",
+    "importParsing": "Wird analysiert...",
+    "importPreview": "Vorschau",
+    "importError": "Das Rezept konnte nicht importiert werden. Bitte versuchen Sie es erneut.",
+    "importUnparseable": "Aus diesem Text konnte kein Rezept extrahiert werden.",
+    "importNotConfigured": "Der Rezeptimport ist derzeit nicht verfügbar.",
+    "importPrivacyNote": "Der Rezepttext wird zur Analyse an einen KI-Anbieter gesendet.",
+    "fabImportTooltip": "Rezept importieren"
   },
   "groups": {
     "title": "Gruppen",
