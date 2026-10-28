@@ -26,9 +26,9 @@ required. The recipe contract already lives in `libs/shared/src/index.ts`
 
 - No image/photo import or OCR (defer as a follow-up).
 - No auto-save: the user must review and submit before anything persists.
-- No multi-provider abstraction in MVP — the provider is reached via a single
-  env-configured endpoint; the specific provider is decided at implementation
-  time (see Open Questions), not locked here.
+- No multi-provider abstraction in MVP — the provider is OpenAI, reached via its
+  chat-completions endpoint; `AI_API_BASE_URL`/`AI_API_MODEL` allow swapping to
+  another OpenAI-compatible endpoint later without code changes.
 - No persistence of raw pasted text or drafts.
 
 ## Decisions
@@ -43,21 +43,26 @@ optional metadata — directly compatible with `createRecipeInputSchema` (minus
 browser — rejected (leaks the key, adds CORS, and makes the prompt trivially
 inspectable).
 
-**D2. Provider is abstracted behind env-configured endpoint; choice TBD.**
-`apps/api/src/lib/recipeImport.ts` builds the provider request using global
-`fetch`, configured by `AI_API_KEY` (required) and `AI_API_BASE_URL` /
-`AI_API_MODEL` (optional). The concrete provider (OpenAI, Anthropic, local, …)
-and its wire format are an open decision — we explore options at implementation
-time and keep the call isolated in `recipeImport.ts` so a swap is contained. The
-prompt instructs the model to return a JSON object matching the draft shape, and
-the response is schema-validated (D3). Alternative: a provider SDK — deferred;
-global `fetch` avoids a dependency until the provider is chosen.
+**D2. Provider is OpenAI, reached via its chat-completions API.**
+`apps/api/src/lib/recipeImport.ts` builds the request using global `fetch`
+against OpenAI's `/chat/completions` endpoint, configured by `AI_API_KEY`
+(required) and `AI_API_BASE_URL` / `AI_API_MODEL` (optional; defaults
+`https://api.openai.com/v1` and `gpt-4o-mini`). `response_format: json_object`
+forces JSON output. The call is isolated in `recipeImport.ts`, so swapping to
+another OpenAI-compatible endpoint (OpenRouter, Ollama, …) later is an env-only
+change. No provider SDK dependency — global `fetch` + an HTTP request body.
 
-**D3. Validate the AI output server-side; fail explicitly.**
-The response is parsed and validated against `recipeImportDraftSchema`. A
-missing `AI_API_KEY` returns `503 ai_not_configured`; a provider/network failure
-returns `502 ai_upstream_error`; output that fails parsing or schema validation
-(including an empty or non-recipe result) returns `422 import_unparseable`.
+**D3. Normalize the AI output, then validate; fail explicitly.**
+Raw model JSON is unreliable (numbers as strings, `"30 minutes"` for `prepTime`,
+wrong enum casing, ingredients as plain strings). The importer first parses the
+response (strip code fences, find the first `{`), then normalizes: coerce numeric
+fields to numbers, strip units from times, lowercase the `difficulty` enum, and
+map string ingredients to `{ name, quantity, unit? }`. The normalized object is
+validated against `recipeImportDraftSchema`. A missing `AI_API_KEY` returns
+`503 ai_not_configured`; a provider/network failure or timeout returns
+`502 ai_upstream_error`; output that fails parsing, normalization, or schema
+validation (including an empty or non-recipe result) returns
+`422 import_unparseable`. The provider request uses `AbortSignal.timeout(15000)`.
 The importer never fabricates a recipe, so an unparseable input is an error the
 user can act on (edit/retry), not a guessed result.
 
@@ -68,19 +73,20 @@ description to the extracted `name`, keeping the pre-filled form submittable.
 Ingredients/instructions that are empty cause the draft to be rejected as
 unparseable (they are the essence of a recipe).
 
-**D5. Reuse `RecipeForm` via an optional `initialData` pre-fill.**
-`RecipeForm` gains an optional `initialData` prop (a partial draft) used to seed
-`formData` on create. `RecipeFormScene` accepts and forwards the draft. The new
-`RecipeImportScene` (`/recipes/import`) holds a textarea → "Parse" (calls
-`useImportRecipe`) → parsed preview → "Use this recipe", which hands the draft
-to the create scene. Transport of the draft between the two routes is via
-`sessionStorage` (draft cleared on submit); see Open Questions.
+**D5. Reuse `RecipeForm` via an optional `initialData` pre-fill; import is a
+step inside the create route.** `RecipeForm` gains an optional `initialData`
+prop (a partial draft) used to seed `formData` on create. The create route
+(`/recipes/create`) shows an import step first when opened via the Import entry
+point: a textarea → "Parse" (calls `useImportRecipe`) → two top tabs, Preview
+(read-only summary) and Edit (the pre-filled `RecipeForm`). Both live in the
+same scene (local state, no cross-route transport). No sessionStorage; the
+draft lives in scene state until the user submits or cancels.
 
 **D6. Entry point on the recipes page.**
 A secondary action (an "Import" FAB/icon button) on
 `apps/web/src/app/(root)/recipes/page.tsx` alongside the existing create FAB,
-navigating to `/recipes/import` (new `recipes.import` route in
-`apps/web/src/app/_utils/routes.ts`). Keeps create unchanged; import is opt-in.
+navigating to `/recipes/create?import=1` (reuses the existing create route; no
+new route). Keeps create unchanged; import is opt-in.
 
 ## Risks / Trade-offs
 
@@ -105,7 +111,7 @@ navigating to `/recipes/import` (new `recipes.import` route in
    `POST /recipes/import` route; add `AI_*` vars to `.env.example`.
 3. Add `useImportRecipe` mutation to `apps/web/src/app/_hooks/recipes.ts`.
 4. Add `initialData` to `RecipeForm`/`RecipeFormScene`.
-5. Add `RecipeImportScene` + `recipes.import` route + recipes-page entry point.
+5. Add the import step to the create route + recipes-page Import entry point.
 6. Add i18n keys to all five locales.
 7. `yarn verify` (and `yarn verify:full` for the API behavior).
 
@@ -114,14 +120,11 @@ Rollback: revert code; no schema/migration to reverse. Disable by unsetting
 
 ## Open Questions
 
-- **Draft transport between Import and Create scenes**: default `sessionStorage`;
-  alternatives (URL param, module store) are fine if they clear after submit.
-- **Privacy notice**: pasted recipe text leaves the server and goes to the
-  provider — do we need a one-line disclosure in the import UI? Default: yes,
-  a short "sent to AI provider" note.
+- **Privacy notice**: pasted recipe text leaves the server and goes to OpenAI —
+  do we need a one-line disclosure in the import UI? Default: yes, a short
+  "sent to AI provider" note.
 - **Rate limiting / cost cap** on the import endpoint (e.g. per-user daily cap)?
   Default: none in MVP; revisit if abuse/cost becomes a concern.
-- **Which AI provider and model** — deferred: explore options (OpenAI, Anthropic,
-  open/local models) at implementation time and pick based on cost, quality, and
-  privacy. Default for now: env-driven `AI_API_BASE_URL`/`AI_API_MODEL` with no
-  provider lock-in.
+
+Resolved: provider = OpenAI (chat-completions, `json_object`); transport =
+in-route local state (no sessionStorage); provider timeout = 15s.

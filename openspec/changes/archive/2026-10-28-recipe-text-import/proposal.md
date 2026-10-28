@@ -18,9 +18,9 @@ gets created.
   `instructions`, and any extractable `cuisine`/`prepTime`/`cookTime`/`servings`/
   `difficulty`) shaped to pre-fill `createRecipeInputSchema`. The AI call runs
   server-side (provider key never reaches the client).
-- Drive the extraction with an AI provider configured purely via environment
-  variables (`AI_API_KEY`, `AI_API_BASE_URL`, `AI_API_MODEL`); the specific
-  provider is chosen at implementation time, not fixed in this spec.
+- Drive the extraction with OpenAI (chat-completions) configured via environment
+  variables (`AI_API_KEY`, `AI_API_BASE_URL`, `AI_API_MODEL`), defaulting to
+  `https://api.openai.com/v1` and `gpt-4o-mini`.
 - Fail deterministically: missing config, provider errors, and unparseable
   output all return explicit errors — never a silent guess.
 - Add shared Zod schemas for the import request/response so web and api agree on
@@ -50,13 +50,11 @@ gets created.
 - **Code**: `libs/shared/src/index.ts` (new `recipeImportRequestSchema`,
   `recipeImportDraftSchema`, `recipeImportResponseSchema`),
   `apps/api/src/routes/recipes.ts` (new `POST /import` route) plus a new
-  AI-client module (e.g. `apps/api/src/lib/recipeImport.ts`),
+  AI-client module (`apps/api/src/lib/recipeImport.ts`),
   `apps/web/src/app/_hooks/recipes.ts` (new `useImportRecipe` mutation),
   `apps/web/src/app/_scenes/RecipeForm.tsx` + `RecipeFormScene.tsx` (optional
-  `initialData` pre-fill), a new import scene
-  (`apps/web/src/app/_scenes/RecipeImportScene.tsx`), and
-  `apps/web/src/app/(root)/recipes/page.tsx` + `_utils/routes.ts` (entry point
-  and route).
+  `initialData` pre-fill + inline import step), and
+  `apps/web/src/app/(root)/recipes/page.tsx` (Import entry point).
 - **Config/env**: new `AI_API_KEY` (required), `AI_API_BASE_URL` and
   `AI_API_MODEL` (optional); document in `.env.example`.
 - **No schema/migration change** — import never persists; it only returns a

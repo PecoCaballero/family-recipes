@@ -1,4 +1,10 @@
-## ADDED Requirements
+# recipe-text-import Specification
+
+## Purpose
+
+TBD - created by archiving change recipe-text-import. Update Purpose after archive.
+
+## Requirements
 
 ### Requirement: Authenticated user can import a recipe from pasted text
 
@@ -114,9 +120,9 @@ be reused, not duplicated.
 - **THEN** a preview of the extracted name, ingredients, instructions, and
   metadata is shown
 
-#### Scenario: Continue pre-fills the create form
+#### Scenario: Switch to the edit tab to pre-fill the create form
 
-- **WHEN** a user taps "Use this recipe" on the preview
+- **WHEN** a user switches to the "Edit" tab on the import screen
 - **THEN** the create-recipe form opens pre-filled with the draft, and the user
   can edit and submit it through the normal create flow
 
