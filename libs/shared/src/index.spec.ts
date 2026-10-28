@@ -8,6 +8,7 @@ import {
   googleAuthInputSchema,
   batchAddRecipesSchema,
   updateProfileSchema,
+  userSearchQuerySchema,
   pantryItemSchema,
   addPantryItemInputSchema,
   pantrySuggestionSchema,
@@ -179,6 +180,17 @@ describe('shared schemas', () => {
     it('requires at least one field', () => {
       expect(updateProfileSchema.safeParse({}).success).toBe(false);
       expect(updateProfileSchema.safeParse({ name: 'Alice' }).success).toBe(true);
+    });
+  });
+
+  describe('userSearchQuerySchema', () => {
+    it('rejects queries shorter than 3 characters', () => {
+      expect(userSearchQuerySchema.safeParse({ email: 'a' }).success).toBe(false);
+      expect(userSearchQuerySchema.safeParse({ email: 'ab' }).success).toBe(false);
+    });
+
+    it('accepts queries of 3 or more characters', () => {
+      expect(userSearchQuerySchema.safeParse({ email: 'ali' }).success).toBe(true);
     });
   });
 

@@ -10472,6 +10472,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-security@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "eslint-plugin-security@npm:4.2.0"
+  dependencies:
+    safe-regex: "npm:^2.1.1"
+  checksum: 10c0/7c47bb486ece3d784936d96148074d8e1f3878b51a4050694d2457a8555847be33cec223ba6d8ed5de5697d276c959ddeb7ac2ba7087742c02d4b15ddf091810
+  languageName: node
+  linkType: hard
+
 "eslint-scope@npm:5.1.1":
   version: 5.1.1
   resolution: "eslint-scope@npm:5.1.1"
@@ -10816,6 +10825,7 @@ __metadata:
     eslint: "npm:^9"
     eslint-config-next: "npm:15.1.8"
     eslint-plugin-react-hooks: "npm:^7.1.1"
+    eslint-plugin-security: "npm:^4.2.0"
     husky: "npm:^9.1.7"
     i18next: "npm:^26.0.3"
     i18next-browser-languagedetector: "npm:^8.2.1"
@@ -16846,6 +16856,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"regexp-tree@npm:~0.1.1":
+  version: 0.1.27
+  resolution: "regexp-tree@npm:0.1.27"
+  bin:
+    regexp-tree: bin/regexp-tree
+  checksum: 10c0/f636f44b4a0d93d7d6926585ecd81f63e4ce2ac895bc417b2ead0874cd36b337dcc3d0fedc63f69bf5aaeaa4340f36ca7e750c9687cceaf8087374e5284e843c
+  languageName: node
+  linkType: hard
+
 "regexp.prototype.flags@npm:^1.5.3, regexp.prototype.flags@npm:^1.5.4":
   version: 1.5.4
   resolution: "regexp.prototype.flags@npm:1.5.4"
@@ -17320,6 +17339,15 @@ __metadata:
   bin:
     safe-regex2: bin/safe-regex2.js
   checksum: 10c0/65c59fb33de8e500fa1d7254cc7f9b6b8b932f925bcfc8d92273ec024c259052a2b3c975bbf5a9f9dd49cd3b0fa394fb56f36d6b10e394404056edfd1223fd17
+  languageName: node
+  linkType: hard
+
+"safe-regex@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "safe-regex@npm:2.1.1"
+  dependencies:
+    regexp-tree: "npm:~0.1.1"
+  checksum: 10c0/53eb5d3ecf4b3c0954dff465eb179af4d2f5f77f74ba7b57489adbc4fa44454c3d391f37379cd28722d9ac6fa5b70be3f4645d4bd25df395fd99b934f6ec9265
   languageName: node
   linkType: hard
 

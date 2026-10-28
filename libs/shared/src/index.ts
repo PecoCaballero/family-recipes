@@ -233,7 +233,7 @@ export const createInvitationSchema = z.object({
 export type CreateInvitationInput = z.infer<typeof createInvitationSchema>;
 
 export const userSearchQuerySchema = z.object({
-  email: z.string().min(1),
+  email: z.string().min(3),
 });
 export type UserSearchQuery = z.infer<typeof userSearchQuerySchema>;
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma';
+import { canViewRecipe } from '../lib/recipeAccess';
 import {
   createGroupInputSchema,
   updateGroupInputSchema,
@@ -112,7 +113,10 @@ groupRouter.get('/:id', async (req, res) => {
     const adminIds = group.admins.map((a: { userId: string }) => a.userId);
 
     const members = group.members.map(
-      (m: { userId: string; user: { id: string; name: string; email: string; avatar: string | null } }) => {
+      (m: {
+        userId: string;
+        user: { id: string; name: string; email: string; avatar: string | null };
+      }) => {
         const recipeCount = recipes.filter(
           (r: Record<string, unknown>) => r.authorId === m.userId,
         ).length;
@@ -254,6 +258,10 @@ groupRouter.post('/:id/recipes', async (req, res) => {
       return res.status(404).json({ error: 'recipe_not_found' });
     }
 
+    if (!(await canViewRecipe(req.userId!, recipeId))) {
+      return res.status(404).json({ error: 'recipe_not_found' });
+    }
+
     const group = await prisma.group.findUnique({ where: { id: req.params.id } });
 
     await prisma.recipeGroup.upsert({
@@ -295,6 +303,22 @@ groupRouter.post('/:id/recipes/batch', async (req, res) => {
     const group = await prisma.group.findUnique({ where: { id: req.params.id } });
     if (!group) {
       return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const uniqueIds = [...new Set(recipeIds)];
+    const visible = await prisma.recipe.findMany({
+      where: {
+        id: { in: uniqueIds },
+        OR: [
+          { authorId: req.userId },
+          { visibility: 'public' },
+          { recipeGroups: { some: { group: { members: { some: { userId: req.userId! } } } } } },
+        ],
+      },
+      select: { id: true },
+    });
+    if (visible.length !== uniqueIds.length) {
+      return res.status(404).json({ error: 'recipe_not_found' });
     }
 
     const existing = await prisma.recipeGroup.findMany({

@@ -47,6 +47,11 @@ invitationRouter.post('/', async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'forbidden' });
     }
 
+    const invitee = await prisma.user.findUnique({ where: { id: inviteeUserId } });
+    if (!invitee) {
+      return res.status(404).json({ error: 'user_not_found' });
+    }
+
     const existingMember = await prisma.groupMember.findUnique({
       where: { groupId_userId: { groupId, userId: inviteeUserId } },
     });

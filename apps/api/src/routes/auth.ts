@@ -2,7 +2,12 @@ import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../lib/prisma';
-import { generateAccessToken, generateRefreshToken, getRefreshTokenExpiry } from '../utils/jwt';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  getRefreshTokenExpiry,
+  hashToken,
+} from '../utils/jwt';
 import { authMiddleware } from '../middleware/auth';
 import {
   userSettingsSchema,
@@ -48,7 +53,7 @@ authRouter.post('/login', async (req, res) => {
 
     await prisma.refreshToken.create({
       data: {
-        token: refreshToken,
+        token: hashToken(refreshToken),
         userId: user.id,
         expiresAt,
       },
@@ -114,7 +119,7 @@ authRouter.post('/register', async (req, res) => {
 
     await prisma.refreshToken.create({
       data: {
-        token: refreshToken,
+        token: hashToken(refreshToken),
         userId: user.id,
         expiresAt,
       },
@@ -158,7 +163,7 @@ authRouter.post('/refresh', async (req, res) => {
     }
 
     const storedToken = await prisma.refreshToken.findUnique({
-      where: { token: refreshToken },
+      where: { token: hashToken(refreshToken) },
     });
 
     if (!storedToken) {
@@ -179,7 +184,7 @@ authRouter.post('/refresh', async (req, res) => {
 
     await prisma.refreshToken.create({
       data: {
-        token: newRefreshToken,
+        token: hashToken(newRefreshToken),
         userId: storedToken.userId,
         expiresAt,
       },
@@ -200,7 +205,7 @@ authRouter.post('/logout', authMiddleware, async (req, res) => {
     const { refreshToken } = req.body;
     if (refreshToken) {
       await prisma.refreshToken.deleteMany({
-        where: { token: refreshToken, userId: req.userId },
+        where: { token: hashToken(refreshToken), userId: req.userId },
       });
     }
     return res.status(200).json({ status: 'success' });
@@ -242,7 +247,11 @@ authRouter.post('/google', async (req, res) => {
     let user = await prisma.user.findUnique({ where: { email } });
 
     if (user) {
-      if (user.provider !== 'google' || user.providerId !== sub) {
+      const alreadyLinked = user.provider === 'google' && user.providerId === sub;
+      if (!alreadyLinked && user.passwordHash) {
+        return res.status(409).json({ error: 'account_conflict' });
+      }
+      if (!alreadyLinked) {
         user = await prisma.user.update({
           where: { id: user.id },
           data: { provider: 'google', providerId: sub },
@@ -260,7 +269,7 @@ authRouter.post('/google', async (req, res) => {
 
     await prisma.refreshToken.create({
       data: {
-        token: refreshToken,
+        token: hashToken(refreshToken),
         userId: user.id,
         expiresAt,
       },

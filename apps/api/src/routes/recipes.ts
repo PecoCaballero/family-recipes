@@ -9,6 +9,7 @@ import {
 } from '@family-recipe/shared';
 import type { Recipe, Ingredient } from '@family-recipe/shared';
 import { importRecipeDraft, ImportError } from '../lib/recipeImport';
+import { canViewRecipe } from '../lib/recipeAccess';
 
 export const recipeRouter = Router();
 
@@ -177,6 +178,10 @@ recipeRouter.get('/:id', async (req, res) => {
     });
 
     if (!recipe) {
+      return res.status(404).json({ error: 'recipe_not_found' });
+    }
+
+    if (!(await canViewRecipe(req.userId!, recipe.id))) {
       return res.status(404).json({ error: 'recipe_not_found' });
     }
 
@@ -421,9 +426,20 @@ recipeRouter.post('/:id/groups', async (req, res) => {
       return res.status(404).json({ error: 'recipe_not_found' });
     }
 
+    if (!(await canViewRecipe(req.userId!, recipe.id))) {
+      return res.status(404).json({ error: 'recipe_not_found' });
+    }
+
     const group = await prisma.group.findUnique({ where: { id: groupId } });
     if (!group) {
       return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const membership = await prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId: req.userId! } },
+    });
+    if (!membership) {
+      return res.status(403).json({ error: 'forbidden' });
     }
 
     await prisma.recipeGroup.upsert({
