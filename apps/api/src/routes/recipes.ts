@@ -2,12 +2,14 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import {
-  ingredientSchema,
   prismaIngredientSchema,
   createRecipeInputSchema,
   updateRecipeInputSchema,
+  recipeImportRequestSchema,
 } from '@family-recipe/shared';
 import type { Recipe, Ingredient } from '@family-recipe/shared';
+import { importRecipeDraft, ImportError } from '../lib/recipeImport';
+import { canViewRecipe } from '../lib/recipeAccess';
 
 export const recipeRouter = Router();
 
@@ -19,11 +21,17 @@ const recipeDbSchema = z.object({
   image: z.string().nullable(),
   description: z.string(),
   instructions: z.string(),
+  cuisine: z.string().nullable().optional(),
+  prepTime: z.number().int().nullable().optional(),
+  cookTime: z.number().int().nullable().optional(),
+  servings: z.number().int().nullable().optional(),
+  difficulty: z.string().nullable().optional(),
   lastUpdated: z.date(),
+  parentRecipeId: z.string().nullable().optional(),
   ingredients: z.array(prismaIngredientSchema),
 });
 
-async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
+export async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
   const dbRecipe = recipeDbSchema.parse(raw);
 
   const isAuthor = dbRecipe.authorId === userId;
@@ -34,6 +42,19 @@ async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
 
   const children = await prisma.recipe.findMany({
     where: { parentRecipeId: dbRecipe.id },
+    select: { id: true, name: true },
+  });
+
+  const parent = dbRecipe.parentRecipeId
+    ? await prisma.recipe.findUnique({
+        where: { id: dbRecipe.parentRecipeId },
+        select: { id: true, name: true },
+      })
+    : null;
+
+  const recipeGroups = await prisma.recipeGroup.findMany({
+    where: { recipeId: dbRecipe.id },
+    select: { groupId: true },
   });
 
   const ingredients: Ingredient[] = dbRecipe.ingredients.map((ing) => ({
@@ -51,9 +72,16 @@ async function formatRecipe(raw: unknown, userId: string): Promise<Recipe> {
     description: dbRecipe.description,
     ingredients,
     instructions: dbRecipe.instructions,
+    cuisine: dbRecipe.cuisine ?? undefined,
+    prepTime: dbRecipe.prepTime ?? undefined,
+    cookTime: dbRecipe.cookTime ?? undefined,
+    servings: dbRecipe.servings ?? undefined,
+    difficulty: (dbRecipe.difficulty ?? undefined) as Recipe['difficulty'],
     lastUpdated: dbRecipe.lastUpdated.toISOString(),
-    nestedRecipeIds: children.map((c: { id: string }) => c.id),
-    groupIds: [],
+    nestedRecipeIds: children.map((c) => c.id),
+    nestedRecipes: children.map((c) => ({ id: c.id, name: c.name })),
+    parentRecipe: parent ? { id: parent.id, name: parent.name } : undefined,
+    groupIds: recipeGroups.map((rg: { groupId: string }) => rg.groupId),
     savedByIds: [],
     isAuthor,
     isSaved: savedCount > 0,
@@ -64,15 +92,37 @@ recipeRouter.get('/', async (req, res) => {
   try {
     const query = String(req.query.search || '').trim();
 
-    const where: Record<string, unknown> = {};
+    const userGroups = await prisma.groupMember.findMany({
+      where: { userId: req.userId },
+      select: { groupId: true },
+    });
+    const groupIds = userGroups.map((g) => g.groupId);
+
+    const visibilityConditions: Record<string, unknown>[] = [
+      { authorId: req.userId },
+      { visibility: 'public' },
+    ];
+    if (groupIds.length > 0) {
+      visibilityConditions.push({
+        recipeGroups: { some: { groupId: { in: groupIds } } },
+      });
+    }
+
+    const where: Record<string, unknown> = {
+      OR: visibilityConditions,
+    };
     if (query) {
-      where['OR'] = [
-        { name: { contains: query, mode: 'insensitive' } },
-        { description: { contains: query, mode: 'insensitive' } },
+      where['AND'] = [
         {
-          ingredients: {
-            some: { name: { contains: query, mode: 'insensitive' } },
-          },
+          OR: [
+            { name: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+            {
+              ingredients: {
+                some: { name: { contains: query, mode: 'insensitive' } },
+              },
+            },
+          ],
         },
       ];
     }
@@ -94,6 +144,32 @@ recipeRouter.get('/', async (req, res) => {
   }
 });
 
+recipeRouter.post('/import', async (req, res) => {
+  const parsed = recipeImportRequestSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: 'validation_error',
+      details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+    });
+  }
+
+  try {
+    const draft = await importRecipeDraft(parsed.data.text);
+    return res.status(200).json({ draft });
+  } catch (error) {
+    if (error instanceof ImportError) {
+      const status = {
+        ai_not_configured: 503,
+        ai_upstream_error: 502,
+        import_unparseable: 422,
+      }[error.code];
+      return res.status(status).json({ error: error.code });
+    }
+    console.error('Import recipe error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
 recipeRouter.get('/:id', async (req, res) => {
   try {
     const recipe = await prisma.recipe.findUnique({
@@ -102,6 +178,10 @@ recipeRouter.get('/:id', async (req, res) => {
     });
 
     if (!recipe) {
+      return res.status(404).json({ error: 'recipe_not_found' });
+    }
+
+    if (!(await canViewRecipe(req.userId!, recipe.id))) {
       return res.status(404).json({ error: 'recipe_not_found' });
     }
 
@@ -124,6 +204,19 @@ recipeRouter.post('/', async (req, res) => {
     }
     const { name, description, image, ingredients, instructions, parentRecipeId } = parsed.data;
 
+    if (parentRecipeId) {
+      const parent = await prisma.recipe.findUnique({
+        where: { id: parentRecipeId },
+        select: { id: true },
+      });
+      if (!parent) {
+        return res.status(400).json({
+          error: 'validation_error',
+          details: ['parentRecipeId: parent recipe not found'],
+        });
+      }
+    }
+
     const user = await prisma.user.findUnique({ where: { id: req.userId } });
     const authorName = user?.name ?? 'Unknown';
 
@@ -135,6 +228,11 @@ recipeRouter.post('/', async (req, res) => {
         description,
         image: image || null,
         instructions,
+        cuisine: parsed.data.cuisine ?? null,
+        prepTime: parsed.data.prepTime ?? null,
+        cookTime: parsed.data.cookTime ?? null,
+        servings: parsed.data.servings ?? null,
+        difficulty: parsed.data.difficulty ?? null,
         parentRecipeId: parentRecipeId || null,
         ingredients: {
           create: ingredients.map((ing) => ({
@@ -178,6 +276,27 @@ recipeRouter.patch('/:id', async (req, res) => {
     }
     const { name, description, image, ingredients, instructions, parentRecipeId } = parsed.data;
 
+    if (parentRecipeId !== undefined) {
+      if (parentRecipeId === req.params.id) {
+        return res.status(400).json({
+          error: 'validation_error',
+          details: ['parentRecipeId: a recipe cannot be its own parent'],
+        });
+      }
+      if (parentRecipeId) {
+        const parent = await prisma.recipe.findUnique({
+          where: { id: parentRecipeId },
+          select: { id: true },
+        });
+        if (!parent) {
+          return res.status(400).json({
+            error: 'validation_error',
+            details: ['parentRecipeId: parent recipe not found'],
+          });
+        }
+      }
+    }
+
     await prisma.$transaction([
       prisma.recipe.update({
         where: { id: req.params.id },
@@ -187,6 +306,11 @@ recipeRouter.patch('/:id', async (req, res) => {
           ...(image !== undefined && { image }),
           ...(instructions !== undefined && { instructions }),
           ...(parentRecipeId !== undefined && { parentRecipeId }),
+          ...(parsed.data.cuisine !== undefined && { cuisine: parsed.data.cuisine }),
+          ...(parsed.data.prepTime !== undefined && { prepTime: parsed.data.prepTime }),
+          ...(parsed.data.cookTime !== undefined && { cookTime: parsed.data.cookTime }),
+          ...(parsed.data.servings !== undefined && { servings: parsed.data.servings }),
+          ...(parsed.data.difficulty !== undefined && { difficulty: parsed.data.difficulty }),
           lastUpdated: new Date(),
         },
         include: { ingredients: true },
@@ -302,9 +426,20 @@ recipeRouter.post('/:id/groups', async (req, res) => {
       return res.status(404).json({ error: 'recipe_not_found' });
     }
 
+    if (!(await canViewRecipe(req.userId!, recipe.id))) {
+      return res.status(404).json({ error: 'recipe_not_found' });
+    }
+
     const group = await prisma.group.findUnique({ where: { id: groupId } });
     if (!group) {
       return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const membership = await prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId: req.userId! } },
+    });
+    if (!membership) {
+      return res.status(403).json({ error: 'forbidden' });
     }
 
     await prisma.recipeGroup.upsert({

@@ -52,10 +52,13 @@ export const ModelName = {
   Recipe: 'Recipe',
   Ingredient: 'Ingredient',
   SavedRecipe: 'SavedRecipe',
+  PantryItem: 'PantryItem',
   RefreshToken: 'RefreshToken',
   Group: 'Group',
   GroupMember: 'GroupMember',
+  GroupAdmin: 'GroupAdmin',
   RecipeGroup: 'RecipeGroup',
+  Invitation: 'Invitation',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -79,6 +82,8 @@ export const UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   passwordHash: 'passwordHash',
+  provider: 'provider',
+  providerId: 'providerId',
   avatar: 'avatar',
   language: 'language',
   privacyLevel: 'privacyLevel',
@@ -98,6 +103,11 @@ export const RecipeScalarFieldEnum = {
   image: 'image',
   description: 'description',
   instructions: 'instructions',
+  cuisine: 'cuisine',
+  prepTime: 'prepTime',
+  cookTime: 'cookTime',
+  servings: 'servings',
+  difficulty: 'difficulty',
   visibility: 'visibility',
   lastUpdated: 'lastUpdated',
   createdAt: 'createdAt',
@@ -126,6 +136,17 @@ export const SavedRecipeScalarFieldEnum = {
 export type SavedRecipeScalarFieldEnum =
   (typeof SavedRecipeScalarFieldEnum)[keyof typeof SavedRecipeScalarFieldEnum];
 
+export const PantryItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type PantryItemScalarFieldEnum =
+  (typeof PantryItemScalarFieldEnum)[keyof typeof PantryItemScalarFieldEnum];
+
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
@@ -143,7 +164,6 @@ export const GroupScalarFieldEnum = {
   description: 'description',
   lastUpdated: 'lastUpdated',
   icon: 'icon',
-  ownerId: 'ownerId',
 } as const;
 
 export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum];
@@ -156,6 +176,14 @@ export const GroupMemberScalarFieldEnum = {
 export type GroupMemberScalarFieldEnum =
   (typeof GroupMemberScalarFieldEnum)[keyof typeof GroupMemberScalarFieldEnum];
 
+export const GroupAdminScalarFieldEnum = {
+  groupId: 'groupId',
+  userId: 'userId',
+} as const;
+
+export type GroupAdminScalarFieldEnum =
+  (typeof GroupAdminScalarFieldEnum)[keyof typeof GroupAdminScalarFieldEnum];
+
 export const RecipeGroupScalarFieldEnum = {
   recipeId: 'recipeId',
   groupId: 'groupId',
@@ -163,6 +191,21 @@ export const RecipeGroupScalarFieldEnum = {
 
 export type RecipeGroupScalarFieldEnum =
   (typeof RecipeGroupScalarFieldEnum)[keyof typeof RecipeGroupScalarFieldEnum];
+
+export const InvitationScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  groupId: 'groupId',
+  inviterId: 'inviterId',
+  inviteeUserId: 'inviteeUserId',
+  status: 'status',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type InvitationScalarFieldEnum =
+  (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum];
 
 export const SortOrder = {
   asc: 'asc',

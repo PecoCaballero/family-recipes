@@ -3,18 +3,24 @@ import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 import { PpWOC } from '../_types/types';
+import { surfaces } from '../_theme/tokens';
 
-const StyledStack = styled(Stack)(({ theme }) => ({
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  position: 'sticky',
-  top: 0,
-  left: 0,
-  right: 0,
-  backgroundColor: theme.palette.background.paper,
-  padding: 2,
-  zIndex: 999,
-}));
+const StyledStack = styled(Stack)(({ theme }) => {
+  const surface = surfaces[theme.palette.mode];
+  return {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    position: 'sticky',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: surface.header,
+    color: surface.headerText,
+    padding: 2,
+    boxShadow: theme.shadows[2],
+    zIndex: 999,
+  };
+});
 
 type PpHeader = { title?: string; endSlot?: React.ReactNode; goBack?: boolean } & PpWOC;
 
@@ -24,7 +30,7 @@ export function Header({ title, endSlot, goBack = false, children }: PpHeader): 
   return (
     <StyledStack direction="row">
       {goBack && (
-        <IconButton aria-label="back" onClick={() => router.back()}>
+        <IconButton aria-label="back" color="inherit" onClick={() => router.back()}>
           <ArrowBack />
         </IconButton>
       )}
@@ -35,6 +41,7 @@ export function Header({ title, endSlot, goBack = false, children }: PpHeader): 
         <Typography
           variant="h6"
           component="h1"
+          color="inherit"
           sx={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',

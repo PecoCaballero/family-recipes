@@ -28,6 +28,8 @@ export type UserMinAggregateOutputType = {
   name: string | null;
   email: string | null;
   passwordHash: string | null;
+  provider: string | null;
+  providerId: string | null;
   avatar: string | null;
   language: string | null;
   privacyLevel: string | null;
@@ -42,6 +44,8 @@ export type UserMaxAggregateOutputType = {
   name: string | null;
   email: string | null;
   passwordHash: string | null;
+  provider: string | null;
+  providerId: string | null;
   avatar: string | null;
   language: string | null;
   privacyLevel: string | null;
@@ -56,6 +60,8 @@ export type UserCountAggregateOutputType = {
   name: number;
   email: number;
   passwordHash: number;
+  provider: number;
+  providerId: number;
   avatar: number;
   language: number;
   privacyLevel: number;
@@ -71,6 +77,8 @@ export type UserMinAggregateInputType = {
   name?: true;
   email?: true;
   passwordHash?: true;
+  provider?: true;
+  providerId?: true;
   avatar?: true;
   language?: true;
   privacyLevel?: true;
@@ -85,6 +93,8 @@ export type UserMaxAggregateInputType = {
   name?: true;
   email?: true;
   passwordHash?: true;
+  provider?: true;
+  providerId?: true;
   avatar?: true;
   language?: true;
   privacyLevel?: true;
@@ -99,6 +109,8 @@ export type UserCountAggregateInputType = {
   name?: true;
   email?: true;
   passwordHash?: true;
+  provider?: true;
+  providerId?: true;
   avatar?: true;
   language?: true;
   privacyLevel?: true;
@@ -186,7 +198,9 @@ export type UserGroupByOutputType = {
   id: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash: string | null;
+  provider: string | null;
+  providerId: string | null;
   avatar: string | null;
   language: string;
   privacyLevel: string;
@@ -218,7 +232,9 @@ export type UserWhereInput = {
   id?: Prisma.StringFilter<'User'> | string;
   name?: Prisma.StringFilter<'User'> | string;
   email?: Prisma.StringFilter<'User'> | string;
-  passwordHash?: Prisma.StringFilter<'User'> | string;
+  passwordHash?: Prisma.StringNullableFilter<'User'> | string | null;
+  provider?: Prisma.StringNullableFilter<'User'> | string | null;
+  providerId?: Prisma.StringNullableFilter<'User'> | string | null;
   avatar?: Prisma.StringNullableFilter<'User'> | string | null;
   language?: Prisma.StringFilter<'User'> | string;
   privacyLevel?: Prisma.StringFilter<'User'> | string;
@@ -230,14 +246,19 @@ export type UserWhereInput = {
   savedRecipes?: Prisma.SavedRecipeListRelationFilter;
   refreshTokens?: Prisma.RefreshTokenListRelationFilter;
   groupMemberships?: Prisma.GroupMemberListRelationFilter;
-  ownedGroups?: Prisma.GroupListRelationFilter;
+  adminGroups?: Prisma.GroupAdminListRelationFilter;
+  sentInvitations?: Prisma.InvitationListRelationFilter;
+  receivedInvitations?: Prisma.InvitationListRelationFilter;
+  pantryItems?: Prisma.PantryItemListRelationFilter;
 };
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
   email?: Prisma.SortOrder;
-  passwordHash?: Prisma.SortOrder;
+  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder;
+  provider?: Prisma.SortOrderInput | Prisma.SortOrder;
+  providerId?: Prisma.SortOrderInput | Prisma.SortOrder;
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder;
   language?: Prisma.SortOrder;
   privacyLevel?: Prisma.SortOrder;
@@ -249,18 +270,24 @@ export type UserOrderByWithRelationInput = {
   savedRecipes?: Prisma.SavedRecipeOrderByRelationAggregateInput;
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput;
   groupMemberships?: Prisma.GroupMemberOrderByRelationAggregateInput;
-  ownedGroups?: Prisma.GroupOrderByRelationAggregateInput;
+  adminGroups?: Prisma.GroupAdminOrderByRelationAggregateInput;
+  sentInvitations?: Prisma.InvitationOrderByRelationAggregateInput;
+  receivedInvitations?: Prisma.InvitationOrderByRelationAggregateInput;
+  pantryItems?: Prisma.PantryItemOrderByRelationAggregateInput;
 };
 
 export type UserWhereUniqueInput = Prisma.AtLeast<
   {
     id?: string;
     email?: string;
+    provider_providerId?: Prisma.UserProviderProviderIdCompoundUniqueInput;
     AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[];
     OR?: Prisma.UserWhereInput[];
     NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[];
     name?: Prisma.StringFilter<'User'> | string;
-    passwordHash?: Prisma.StringFilter<'User'> | string;
+    passwordHash?: Prisma.StringNullableFilter<'User'> | string | null;
+    provider?: Prisma.StringNullableFilter<'User'> | string | null;
+    providerId?: Prisma.StringNullableFilter<'User'> | string | null;
     avatar?: Prisma.StringNullableFilter<'User'> | string | null;
     language?: Prisma.StringFilter<'User'> | string;
     privacyLevel?: Prisma.StringFilter<'User'> | string;
@@ -272,16 +299,21 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     savedRecipes?: Prisma.SavedRecipeListRelationFilter;
     refreshTokens?: Prisma.RefreshTokenListRelationFilter;
     groupMemberships?: Prisma.GroupMemberListRelationFilter;
-    ownedGroups?: Prisma.GroupListRelationFilter;
+    adminGroups?: Prisma.GroupAdminListRelationFilter;
+    sentInvitations?: Prisma.InvitationListRelationFilter;
+    receivedInvitations?: Prisma.InvitationListRelationFilter;
+    pantryItems?: Prisma.PantryItemListRelationFilter;
   },
-  'id' | 'email'
+  'id' | 'email' | 'provider_providerId'
 >;
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
   email?: Prisma.SortOrder;
-  passwordHash?: Prisma.SortOrder;
+  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder;
+  provider?: Prisma.SortOrderInput | Prisma.SortOrder;
+  providerId?: Prisma.SortOrderInput | Prisma.SortOrder;
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder;
   language?: Prisma.SortOrder;
   privacyLevel?: Prisma.SortOrder;
@@ -301,7 +333,9 @@ export type UserScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<'User'> | string;
   name?: Prisma.StringWithAggregatesFilter<'User'> | string;
   email?: Prisma.StringWithAggregatesFilter<'User'> | string;
-  passwordHash?: Prisma.StringWithAggregatesFilter<'User'> | string;
+  passwordHash?: Prisma.StringNullableWithAggregatesFilter<'User'> | string | null;
+  provider?: Prisma.StringNullableWithAggregatesFilter<'User'> | string | null;
+  providerId?: Prisma.StringNullableWithAggregatesFilter<'User'> | string | null;
   avatar?: Prisma.StringNullableWithAggregatesFilter<'User'> | string | null;
   language?: Prisma.StringWithAggregatesFilter<'User'> | string;
   privacyLevel?: Prisma.StringWithAggregatesFilter<'User'> | string;
@@ -315,7 +349,9 @@ export type UserCreateInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -327,14 +363,19 @@ export type UserCreateInput = {
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemCreateNestedManyWithoutUserInput;
 };
 
 export type UserUncheckedCreateInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -346,14 +387,19 @@ export type UserUncheckedCreateInput = {
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemUncheckedCreateNestedManyWithoutUserInput;
 };
 
 export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -365,14 +411,19 @@ export type UserUpdateInput = {
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUpdateManyWithoutUserNestedInput;
 };
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -384,14 +435,19 @@ export type UserUncheckedUpdateInput = {
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUncheckedUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUncheckedUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUncheckedUpdateManyWithoutUserNestedInput;
 };
 
 export type UserCreateManyInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -405,7 +461,9 @@ export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -419,7 +477,9 @@ export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -429,11 +489,18 @@ export type UserUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
+export type UserProviderProviderIdCompoundUniqueInput = {
+  provider: string;
+  providerId: string;
+};
+
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
   email?: Prisma.SortOrder;
   passwordHash?: Prisma.SortOrder;
+  provider?: Prisma.SortOrder;
+  providerId?: Prisma.SortOrder;
   avatar?: Prisma.SortOrder;
   language?: Prisma.SortOrder;
   privacyLevel?: Prisma.SortOrder;
@@ -448,6 +515,8 @@ export type UserMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder;
   email?: Prisma.SortOrder;
   passwordHash?: Prisma.SortOrder;
+  provider?: Prisma.SortOrder;
+  providerId?: Prisma.SortOrder;
   avatar?: Prisma.SortOrder;
   language?: Prisma.SortOrder;
   privacyLevel?: Prisma.SortOrder;
@@ -462,6 +531,8 @@ export type UserMinOrderByAggregateInput = {
   name?: Prisma.SortOrder;
   email?: Prisma.SortOrder;
   passwordHash?: Prisma.SortOrder;
+  provider?: Prisma.SortOrder;
+  providerId?: Prisma.SortOrder;
   avatar?: Prisma.SortOrder;
   language?: Prisma.SortOrder;
   privacyLevel?: Prisma.SortOrder;
@@ -544,6 +615,32 @@ export type UserUpdateOneRequiredWithoutSavedRecipesNestedInput = {
   >;
 };
 
+export type UserCreateNestedOneWithoutPantryItemsInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutPantryItemsInput,
+    Prisma.UserUncheckedCreateWithoutPantryItemsInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPantryItemsInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutPantryItemsNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutPantryItemsInput,
+    Prisma.UserUncheckedCreateWithoutPantryItemsInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPantryItemsInput;
+  upsert?: Prisma.UserUpsertWithoutPantryItemsInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutPantryItemsInput,
+      Prisma.UserUpdateWithoutPantryItemsInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutPantryItemsInput
+  >;
+};
+
 export type UserCreateNestedOneWithoutRefreshTokensInput = {
   create?: Prisma.XOR<
     Prisma.UserCreateWithoutRefreshTokensInput,
@@ -567,32 +664,6 @@ export type UserUpdateOneRequiredWithoutRefreshTokensNestedInput = {
       Prisma.UserUpdateWithoutRefreshTokensInput
     >,
     Prisma.UserUncheckedUpdateWithoutRefreshTokensInput
-  >;
-};
-
-export type UserCreateNestedOneWithoutOwnedGroupsInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutOwnedGroupsInput,
-    Prisma.UserUncheckedCreateWithoutOwnedGroupsInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedGroupsInput;
-  connect?: Prisma.UserWhereUniqueInput;
-};
-
-export type UserUpdateOneRequiredWithoutOwnedGroupsNestedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutOwnedGroupsInput,
-    Prisma.UserUncheckedCreateWithoutOwnedGroupsInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedGroupsInput;
-  upsert?: Prisma.UserUpsertWithoutOwnedGroupsInput;
-  connect?: Prisma.UserWhereUniqueInput;
-  update?: Prisma.XOR<
-    Prisma.XOR<
-      Prisma.UserUpdateToOneWithWhereWithoutOwnedGroupsInput,
-      Prisma.UserUpdateWithoutOwnedGroupsInput
-    >,
-    Prisma.UserUncheckedUpdateWithoutOwnedGroupsInput
   >;
 };
 
@@ -622,11 +693,91 @@ export type UserUpdateOneRequiredWithoutGroupMembershipsNestedInput = {
   >;
 };
 
+export type UserCreateNestedOneWithoutAdminGroupsInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutAdminGroupsInput,
+    Prisma.UserUncheckedCreateWithoutAdminGroupsInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAdminGroupsInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutAdminGroupsNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutAdminGroupsInput,
+    Prisma.UserUncheckedCreateWithoutAdminGroupsInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAdminGroupsInput;
+  upsert?: Prisma.UserUpsertWithoutAdminGroupsInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutAdminGroupsInput,
+      Prisma.UserUpdateWithoutAdminGroupsInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutAdminGroupsInput
+  >;
+};
+
+export type UserCreateNestedOneWithoutSentInvitationsInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutSentInvitationsInput,
+    Prisma.UserUncheckedCreateWithoutSentInvitationsInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSentInvitationsInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserCreateNestedOneWithoutReceivedInvitationsInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutReceivedInvitationsInput,
+    Prisma.UserUncheckedCreateWithoutReceivedInvitationsInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReceivedInvitationsInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutSentInvitationsNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutSentInvitationsInput,
+    Prisma.UserUncheckedCreateWithoutSentInvitationsInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSentInvitationsInput;
+  upsert?: Prisma.UserUpsertWithoutSentInvitationsInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutSentInvitationsInput,
+      Prisma.UserUpdateWithoutSentInvitationsInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutSentInvitationsInput
+  >;
+};
+
+export type UserUpdateOneRequiredWithoutReceivedInvitationsNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutReceivedInvitationsInput,
+    Prisma.UserUncheckedCreateWithoutReceivedInvitationsInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReceivedInvitationsInput;
+  upsert?: Prisma.UserUpsertWithoutReceivedInvitationsInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutReceivedInvitationsInput,
+      Prisma.UserUpdateWithoutReceivedInvitationsInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutReceivedInvitationsInput
+  >;
+};
+
 export type UserCreateWithoutRecipesInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -637,14 +788,19 @@ export type UserCreateWithoutRecipesInput = {
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemCreateNestedManyWithoutUserInput;
 };
 
 export type UserUncheckedCreateWithoutRecipesInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -655,7 +811,10 @@ export type UserUncheckedCreateWithoutRecipesInput = {
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemUncheckedCreateNestedManyWithoutUserInput;
 };
 
 export type UserCreateOrConnectWithoutRecipesInput = {
@@ -690,7 +849,9 @@ export type UserUpdateWithoutRecipesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -701,14 +862,19 @@ export type UserUpdateWithoutRecipesInput = {
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUpdateManyWithoutUserNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutRecipesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -719,14 +885,19 @@ export type UserUncheckedUpdateWithoutRecipesInput = {
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUncheckedUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUncheckedUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUncheckedUpdateManyWithoutUserNestedInput;
 };
 
 export type UserCreateWithoutSavedRecipesInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -737,14 +908,19 @@ export type UserCreateWithoutSavedRecipesInput = {
   recipes?: Prisma.RecipeCreateNestedManyWithoutAuthorUserInput;
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemCreateNestedManyWithoutUserInput;
 };
 
 export type UserUncheckedCreateWithoutSavedRecipesInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -755,7 +931,10 @@ export type UserUncheckedCreateWithoutSavedRecipesInput = {
   recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutAuthorUserInput;
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemUncheckedCreateNestedManyWithoutUserInput;
 };
 
 export type UserCreateOrConnectWithoutSavedRecipesInput = {
@@ -790,7 +969,9 @@ export type UserUpdateWithoutSavedRecipesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -801,14 +982,19 @@ export type UserUpdateWithoutSavedRecipesInput = {
   recipes?: Prisma.RecipeUpdateManyWithoutAuthorUserNestedInput;
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUpdateManyWithoutUserNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSavedRecipesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -819,14 +1005,139 @@ export type UserUncheckedUpdateWithoutSavedRecipesInput = {
   recipes?: Prisma.RecipeUncheckedUpdateManyWithoutAuthorUserNestedInput;
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUncheckedUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUncheckedUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUncheckedUpdateManyWithoutUserNestedInput;
+};
+
+export type UserCreateWithoutPantryItemsInput = {
+  id?: string;
+  name: string;
+  email: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  avatar?: string | null;
+  language?: string;
+  privacyLevel?: string;
+  notifications?: boolean;
+  theme?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  recipes?: Prisma.RecipeCreateNestedManyWithoutAuthorUserInput;
+  savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
+  adminGroups?: Prisma.GroupAdminCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationCreateNestedManyWithoutInviteeInput;
+};
+
+export type UserUncheckedCreateWithoutPantryItemsInput = {
+  id?: string;
+  name: string;
+  email: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  avatar?: string | null;
+  language?: string;
+  privacyLevel?: string;
+  notifications?: boolean;
+  theme?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutAuthorUserInput;
+  savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
+  adminGroups?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput;
+};
+
+export type UserCreateOrConnectWithoutPantryItemsInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutPantryItemsInput,
+    Prisma.UserUncheckedCreateWithoutPantryItemsInput
+  >;
+};
+
+export type UserUpsertWithoutPantryItemsInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutPantryItemsInput,
+    Prisma.UserUncheckedUpdateWithoutPantryItemsInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutPantryItemsInput,
+    Prisma.UserUncheckedCreateWithoutPantryItemsInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutPantryItemsInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutPantryItemsInput,
+    Prisma.UserUncheckedUpdateWithoutPantryItemsInput
+  >;
+};
+
+export type UserUpdateWithoutPantryItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  language?: Prisma.StringFieldUpdateOperationsInput | string;
+  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
+  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  theme?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  recipes?: Prisma.RecipeUpdateManyWithoutAuthorUserNestedInput;
+  savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
+  adminGroups?: Prisma.GroupAdminUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutPantryItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  language?: Prisma.StringFieldUpdateOperationsInput | string;
+  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
+  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  theme?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutAuthorUserNestedInput;
+  savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
+  adminGroups?: Prisma.GroupAdminUncheckedUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput;
 };
 
 export type UserCreateWithoutRefreshTokensInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -837,14 +1148,19 @@ export type UserCreateWithoutRefreshTokensInput = {
   recipes?: Prisma.RecipeCreateNestedManyWithoutAuthorUserInput;
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemCreateNestedManyWithoutUserInput;
 };
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -855,7 +1171,10 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutAuthorUserInput;
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemUncheckedCreateNestedManyWithoutUserInput;
 };
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -890,7 +1209,9 @@ export type UserUpdateWithoutRefreshTokensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -901,14 +1222,19 @@ export type UserUpdateWithoutRefreshTokensInput = {
   recipes?: Prisma.RecipeUpdateManyWithoutAuthorUserNestedInput;
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUpdateManyWithoutUserNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -919,114 +1245,19 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   recipes?: Prisma.RecipeUncheckedUpdateManyWithoutAuthorUserNestedInput;
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUncheckedUpdateManyWithoutOwnerNestedInput;
-};
-
-export type UserCreateWithoutOwnedGroupsInput = {
-  id?: string;
-  name: string;
-  email: string;
-  passwordHash: string;
-  avatar?: string | null;
-  language?: string;
-  privacyLevel?: string;
-  notifications?: boolean;
-  theme?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  recipes?: Prisma.RecipeCreateNestedManyWithoutAuthorUserInput;
-  savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
-  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
-  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
-};
-
-export type UserUncheckedCreateWithoutOwnedGroupsInput = {
-  id?: string;
-  name: string;
-  email: string;
-  passwordHash: string;
-  avatar?: string | null;
-  language?: string;
-  privacyLevel?: string;
-  notifications?: boolean;
-  theme?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutAuthorUserInput;
-  savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
-  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
-  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
-};
-
-export type UserCreateOrConnectWithoutOwnedGroupsInput = {
-  where: Prisma.UserWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutOwnedGroupsInput,
-    Prisma.UserUncheckedCreateWithoutOwnedGroupsInput
-  >;
-};
-
-export type UserUpsertWithoutOwnedGroupsInput = {
-  update: Prisma.XOR<
-    Prisma.UserUpdateWithoutOwnedGroupsInput,
-    Prisma.UserUncheckedUpdateWithoutOwnedGroupsInput
-  >;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutOwnedGroupsInput,
-    Prisma.UserUncheckedCreateWithoutOwnedGroupsInput
-  >;
-  where?: Prisma.UserWhereInput;
-};
-
-export type UserUpdateToOneWithWhereWithoutOwnedGroupsInput = {
-  where?: Prisma.UserWhereInput;
-  data: Prisma.XOR<
-    Prisma.UserUpdateWithoutOwnedGroupsInput,
-    Prisma.UserUncheckedUpdateWithoutOwnedGroupsInput
-  >;
-};
-
-export type UserUpdateWithoutOwnedGroupsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  name?: Prisma.StringFieldUpdateOperationsInput | string;
-  email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
-  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  language?: Prisma.StringFieldUpdateOperationsInput | string;
-  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
-  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  theme?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  recipes?: Prisma.RecipeUpdateManyWithoutAuthorUserNestedInput;
-  savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
-  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
-  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
-};
-
-export type UserUncheckedUpdateWithoutOwnedGroupsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  name?: Prisma.StringFieldUpdateOperationsInput | string;
-  email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
-  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  language?: Prisma.StringFieldUpdateOperationsInput | string;
-  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
-  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  theme?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutAuthorUserNestedInput;
-  savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
-  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
-  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
+  adminGroups?: Prisma.GroupAdminUncheckedUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUncheckedUpdateManyWithoutUserNestedInput;
 };
 
 export type UserCreateWithoutGroupMembershipsInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -1037,14 +1268,19 @@ export type UserCreateWithoutGroupMembershipsInput = {
   recipes?: Prisma.RecipeCreateNestedManyWithoutAuthorUserInput;
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemCreateNestedManyWithoutUserInput;
 };
 
 export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
   avatar?: string | null;
   language?: string;
   privacyLevel?: string;
@@ -1055,7 +1291,10 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutAuthorUserInput;
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
-  ownedGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutOwnerInput;
+  adminGroups?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemUncheckedCreateNestedManyWithoutUserInput;
 };
 
 export type UserCreateOrConnectWithoutGroupMembershipsInput = {
@@ -1090,7 +1329,9 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -1101,14 +1342,19 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   recipes?: Prisma.RecipeUpdateManyWithoutAuthorUserNestedInput;
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUpdateManyWithoutUserNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
   email?: Prisma.StringFieldUpdateOperationsInput | string;
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   language?: Prisma.StringFieldUpdateOperationsInput | string;
   privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -1119,7 +1365,370 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   recipes?: Prisma.RecipeUncheckedUpdateManyWithoutAuthorUserNestedInput;
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
-  ownedGroups?: Prisma.GroupUncheckedUpdateManyWithoutOwnerNestedInput;
+  adminGroups?: Prisma.GroupAdminUncheckedUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUncheckedUpdateManyWithoutUserNestedInput;
+};
+
+export type UserCreateWithoutAdminGroupsInput = {
+  id?: string;
+  name: string;
+  email: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  avatar?: string | null;
+  language?: string;
+  privacyLevel?: string;
+  notifications?: boolean;
+  theme?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  recipes?: Prisma.RecipeCreateNestedManyWithoutAuthorUserInput;
+  savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemCreateNestedManyWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutAdminGroupsInput = {
+  id?: string;
+  name: string;
+  email: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  avatar?: string | null;
+  language?: string;
+  privacyLevel?: string;
+  notifications?: boolean;
+  theme?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutAuthorUserInput;
+  savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput;
+  receivedInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemUncheckedCreateNestedManyWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutAdminGroupsInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutAdminGroupsInput,
+    Prisma.UserUncheckedCreateWithoutAdminGroupsInput
+  >;
+};
+
+export type UserUpsertWithoutAdminGroupsInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutAdminGroupsInput,
+    Prisma.UserUncheckedUpdateWithoutAdminGroupsInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutAdminGroupsInput,
+    Prisma.UserUncheckedCreateWithoutAdminGroupsInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutAdminGroupsInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutAdminGroupsInput,
+    Prisma.UserUncheckedUpdateWithoutAdminGroupsInput
+  >;
+};
+
+export type UserUpdateWithoutAdminGroupsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  language?: Prisma.StringFieldUpdateOperationsInput | string;
+  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
+  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  theme?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  recipes?: Prisma.RecipeUpdateManyWithoutAuthorUserNestedInput;
+  savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUpdateManyWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutAdminGroupsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  language?: Prisma.StringFieldUpdateOperationsInput | string;
+  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
+  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  theme?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutAuthorUserNestedInput;
+  savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput;
+  receivedInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUncheckedUpdateManyWithoutUserNestedInput;
+};
+
+export type UserCreateWithoutSentInvitationsInput = {
+  id?: string;
+  name: string;
+  email: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  avatar?: string | null;
+  language?: string;
+  privacyLevel?: string;
+  notifications?: boolean;
+  theme?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  recipes?: Prisma.RecipeCreateNestedManyWithoutAuthorUserInput;
+  savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
+  adminGroups?: Prisma.GroupAdminCreateNestedManyWithoutUserInput;
+  receivedInvitations?: Prisma.InvitationCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemCreateNestedManyWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutSentInvitationsInput = {
+  id?: string;
+  name: string;
+  email: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  avatar?: string | null;
+  language?: string;
+  privacyLevel?: string;
+  notifications?: boolean;
+  theme?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutAuthorUserInput;
+  savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
+  adminGroups?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutUserInput;
+  receivedInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviteeInput;
+  pantryItems?: Prisma.PantryItemUncheckedCreateNestedManyWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutSentInvitationsInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutSentInvitationsInput,
+    Prisma.UserUncheckedCreateWithoutSentInvitationsInput
+  >;
+};
+
+export type UserCreateWithoutReceivedInvitationsInput = {
+  id?: string;
+  name: string;
+  email: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  avatar?: string | null;
+  language?: string;
+  privacyLevel?: string;
+  notifications?: boolean;
+  theme?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  recipes?: Prisma.RecipeCreateNestedManyWithoutAuthorUserInput;
+  savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput;
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput;
+  adminGroups?: Prisma.GroupAdminCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationCreateNestedManyWithoutInviterInput;
+  pantryItems?: Prisma.PantryItemCreateNestedManyWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutReceivedInvitationsInput = {
+  id?: string;
+  name: string;
+  email: string;
+  passwordHash?: string | null;
+  provider?: string | null;
+  providerId?: string | null;
+  avatar?: string | null;
+  language?: string;
+  privacyLevel?: string;
+  notifications?: boolean;
+  theme?: string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutAuthorUserInput;
+  savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput;
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput;
+  adminGroups?: Prisma.GroupAdminUncheckedCreateNestedManyWithoutUserInput;
+  sentInvitations?: Prisma.InvitationUncheckedCreateNestedManyWithoutInviterInput;
+  pantryItems?: Prisma.PantryItemUncheckedCreateNestedManyWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutReceivedInvitationsInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutReceivedInvitationsInput,
+    Prisma.UserUncheckedCreateWithoutReceivedInvitationsInput
+  >;
+};
+
+export type UserUpsertWithoutSentInvitationsInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutSentInvitationsInput,
+    Prisma.UserUncheckedUpdateWithoutSentInvitationsInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutSentInvitationsInput,
+    Prisma.UserUncheckedCreateWithoutSentInvitationsInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutSentInvitationsInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutSentInvitationsInput,
+    Prisma.UserUncheckedUpdateWithoutSentInvitationsInput
+  >;
+};
+
+export type UserUpdateWithoutSentInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  language?: Prisma.StringFieldUpdateOperationsInput | string;
+  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
+  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  theme?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  recipes?: Prisma.RecipeUpdateManyWithoutAuthorUserNestedInput;
+  savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
+  adminGroups?: Prisma.GroupAdminUpdateManyWithoutUserNestedInput;
+  receivedInvitations?: Prisma.InvitationUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUpdateManyWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutSentInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  language?: Prisma.StringFieldUpdateOperationsInput | string;
+  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
+  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  theme?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutAuthorUserNestedInput;
+  savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
+  adminGroups?: Prisma.GroupAdminUncheckedUpdateManyWithoutUserNestedInput;
+  receivedInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviteeNestedInput;
+  pantryItems?: Prisma.PantryItemUncheckedUpdateManyWithoutUserNestedInput;
+};
+
+export type UserUpsertWithoutReceivedInvitationsInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutReceivedInvitationsInput,
+    Prisma.UserUncheckedUpdateWithoutReceivedInvitationsInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutReceivedInvitationsInput,
+    Prisma.UserUncheckedCreateWithoutReceivedInvitationsInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutReceivedInvitationsInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutReceivedInvitationsInput,
+    Prisma.UserUncheckedUpdateWithoutReceivedInvitationsInput
+  >;
+};
+
+export type UserUpdateWithoutReceivedInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  language?: Prisma.StringFieldUpdateOperationsInput | string;
+  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
+  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  theme?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  recipes?: Prisma.RecipeUpdateManyWithoutAuthorUserNestedInput;
+  savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput;
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput;
+  adminGroups?: Prisma.GroupAdminUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUpdateManyWithoutInviterNestedInput;
+  pantryItems?: Prisma.PantryItemUpdateManyWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutReceivedInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  language?: Prisma.StringFieldUpdateOperationsInput | string;
+  privacyLevel?: Prisma.StringFieldUpdateOperationsInput | string;
+  notifications?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  theme?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutAuthorUserNestedInput;
+  savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput;
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput;
+  adminGroups?: Prisma.GroupAdminUncheckedUpdateManyWithoutUserNestedInput;
+  sentInvitations?: Prisma.InvitationUncheckedUpdateManyWithoutInviterNestedInput;
+  pantryItems?: Prisma.PantryItemUncheckedUpdateManyWithoutUserNestedInput;
 };
 
 /**
@@ -1131,7 +1740,10 @@ export type UserCountOutputType = {
   savedRecipes: number;
   refreshTokens: number;
   groupMemberships: number;
-  ownedGroups: number;
+  adminGroups: number;
+  sentInvitations: number;
+  receivedInvitations: number;
+  pantryItems: number;
 };
 
 export type UserCountOutputTypeSelect<
@@ -1141,7 +1753,10 @@ export type UserCountOutputTypeSelect<
   savedRecipes?: boolean | UserCountOutputTypeCountSavedRecipesArgs;
   refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs;
   groupMemberships?: boolean | UserCountOutputTypeCountGroupMembershipsArgs;
-  ownedGroups?: boolean | UserCountOutputTypeCountOwnedGroupsArgs;
+  adminGroups?: boolean | UserCountOutputTypeCountAdminGroupsArgs;
+  sentInvitations?: boolean | UserCountOutputTypeCountSentInvitationsArgs;
+  receivedInvitations?: boolean | UserCountOutputTypeCountReceivedInvitationsArgs;
+  pantryItems?: boolean | UserCountOutputTypeCountPantryItemsArgs;
 };
 
 /**
@@ -1195,10 +1810,37 @@ export type UserCountOutputTypeCountGroupMembershipsArgs<
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountOwnedGroupsArgs<
+export type UserCountOutputTypeCountAdminGroupsArgs<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-  where?: Prisma.GroupWhereInput;
+  where?: Prisma.GroupAdminWhereInput;
+};
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSentInvitationsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.InvitationWhereInput;
+};
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReceivedInvitationsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.InvitationWhereInput;
+};
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPantryItemsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.PantryItemWhereInput;
 };
 
 export type UserSelect<
@@ -1209,6 +1851,8 @@ export type UserSelect<
     name?: boolean;
     email?: boolean;
     passwordHash?: boolean;
+    provider?: boolean;
+    providerId?: boolean;
     avatar?: boolean;
     language?: boolean;
     privacyLevel?: boolean;
@@ -1220,7 +1864,10 @@ export type UserSelect<
     savedRecipes?: boolean | Prisma.User$savedRecipesArgs<ExtArgs>;
     refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>;
     groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>;
-    ownedGroups?: boolean | Prisma.User$ownedGroupsArgs<ExtArgs>;
+    adminGroups?: boolean | Prisma.User$adminGroupsArgs<ExtArgs>;
+    sentInvitations?: boolean | Prisma.User$sentInvitationsArgs<ExtArgs>;
+    receivedInvitations?: boolean | Prisma.User$receivedInvitationsArgs<ExtArgs>;
+    pantryItems?: boolean | Prisma.User$pantryItemsArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['user']
@@ -1234,6 +1881,8 @@ export type UserSelectCreateManyAndReturn<
     name?: boolean;
     email?: boolean;
     passwordHash?: boolean;
+    provider?: boolean;
+    providerId?: boolean;
     avatar?: boolean;
     language?: boolean;
     privacyLevel?: boolean;
@@ -1253,6 +1902,8 @@ export type UserSelectUpdateManyAndReturn<
     name?: boolean;
     email?: boolean;
     passwordHash?: boolean;
+    provider?: boolean;
+    providerId?: boolean;
     avatar?: boolean;
     language?: boolean;
     privacyLevel?: boolean;
@@ -1269,6 +1920,8 @@ export type UserSelectScalar = {
   name?: boolean;
   email?: boolean;
   passwordHash?: boolean;
+  provider?: boolean;
+  providerId?: boolean;
   avatar?: boolean;
   language?: boolean;
   privacyLevel?: boolean;
@@ -1285,6 +1938,8 @@ export type UserOmit<
   | 'name'
   | 'email'
   | 'passwordHash'
+  | 'provider'
+  | 'providerId'
   | 'avatar'
   | 'language'
   | 'privacyLevel'
@@ -1301,7 +1956,10 @@ export type UserInclude<
   savedRecipes?: boolean | Prisma.User$savedRecipesArgs<ExtArgs>;
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>;
   groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>;
-  ownedGroups?: boolean | Prisma.User$ownedGroupsArgs<ExtArgs>;
+  adminGroups?: boolean | Prisma.User$adminGroupsArgs<ExtArgs>;
+  sentInvitations?: boolean | Prisma.User$sentInvitationsArgs<ExtArgs>;
+  receivedInvitations?: boolean | Prisma.User$receivedInvitationsArgs<ExtArgs>;
+  pantryItems?: boolean | Prisma.User$pantryItemsArgs<ExtArgs>;
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type UserIncludeCreateManyAndReturn<
@@ -1320,14 +1978,19 @@ export type $UserPayload<
     savedRecipes: Prisma.$SavedRecipePayload<ExtArgs>[];
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[];
     groupMemberships: Prisma.$GroupMemberPayload<ExtArgs>[];
-    ownedGroups: Prisma.$GroupPayload<ExtArgs>[];
+    adminGroups: Prisma.$GroupAdminPayload<ExtArgs>[];
+    sentInvitations: Prisma.$InvitationPayload<ExtArgs>[];
+    receivedInvitations: Prisma.$InvitationPayload<ExtArgs>[];
+    pantryItems: Prisma.$PantryItemPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
       id: string;
       name: string;
       email: string;
-      passwordHash: string;
+      passwordHash: string | null;
+      provider: string | null;
+      providerId: string | null;
       avatar: string | null;
       language: string;
       privacyLevel: string;
@@ -1889,11 +2552,44 @@ export interface Prisma__UserClient<
       >
     | Null
   >;
-  ownedGroups<T extends Prisma.User$ownedGroupsArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.User$ownedGroupsArgs<ExtArgs>>,
+  adminGroups<T extends Prisma.User$adminGroupsArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$adminGroupsArgs<ExtArgs>>,
   ): Prisma.PrismaPromise<
     | runtime.Types.Result.GetResult<
-        Prisma.$GroupPayload<ExtArgs>,
+        Prisma.$GroupAdminPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  sentInvitations<T extends Prisma.User$sentInvitationsArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$sentInvitationsArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$InvitationPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  receivedInvitations<T extends Prisma.User$receivedInvitationsArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$receivedInvitationsArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$InvitationPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  pantryItems<T extends Prisma.User$pantryItemsArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$pantryItemsArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$PantryItemPayload<ExtArgs>,
         T,
         'findMany',
         GlobalOmitOptions
@@ -1935,6 +2631,8 @@ export interface UserFieldRefs {
   readonly name: Prisma.FieldRef<'User', 'String'>;
   readonly email: Prisma.FieldRef<'User', 'String'>;
   readonly passwordHash: Prisma.FieldRef<'User', 'String'>;
+  readonly provider: Prisma.FieldRef<'User', 'String'>;
+  readonly providerId: Prisma.FieldRef<'User', 'String'>;
   readonly avatar: Prisma.FieldRef<'User', 'String'>;
   readonly language: Prisma.FieldRef<'User', 'String'>;
   readonly privacyLevel: Prisma.FieldRef<'User', 'String'>;
@@ -2472,29 +3170,107 @@ export type User$groupMembershipsArgs<
 };
 
 /**
- * User.ownedGroups
+ * User.adminGroups
  */
-export type User$ownedGroupsArgs<
+export type User$adminGroupsArgs<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
   /**
-   * Select specific fields to fetch from the Group
+   * Select specific fields to fetch from the GroupAdmin
    */
-  select?: Prisma.GroupSelect<ExtArgs> | null;
+  select?: Prisma.GroupAdminSelect<ExtArgs> | null;
   /**
-   * Omit specific fields from the Group
+   * Omit specific fields from the GroupAdmin
    */
-  omit?: Prisma.GroupOmit<ExtArgs> | null;
+  omit?: Prisma.GroupAdminOmit<ExtArgs> | null;
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.GroupInclude<ExtArgs> | null;
-  where?: Prisma.GroupWhereInput;
-  orderBy?: Prisma.GroupOrderByWithRelationInput | Prisma.GroupOrderByWithRelationInput[];
-  cursor?: Prisma.GroupWhereUniqueInput;
+  include?: Prisma.GroupAdminInclude<ExtArgs> | null;
+  where?: Prisma.GroupAdminWhereInput;
+  orderBy?: Prisma.GroupAdminOrderByWithRelationInput | Prisma.GroupAdminOrderByWithRelationInput[];
+  cursor?: Prisma.GroupAdminWhereUniqueInput;
   take?: number;
   skip?: number;
-  distinct?: Prisma.GroupScalarFieldEnum | Prisma.GroupScalarFieldEnum[];
+  distinct?: Prisma.GroupAdminScalarFieldEnum | Prisma.GroupAdminScalarFieldEnum[];
+};
+
+/**
+ * User.sentInvitations
+ */
+export type User$sentInvitationsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Invitation
+   */
+  select?: Prisma.InvitationSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Invitation
+   */
+  omit?: Prisma.InvitationOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvitationInclude<ExtArgs> | null;
+  where?: Prisma.InvitationWhereInput;
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[];
+  cursor?: Prisma.InvitationWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[];
+};
+
+/**
+ * User.receivedInvitations
+ */
+export type User$receivedInvitationsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Invitation
+   */
+  select?: Prisma.InvitationSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Invitation
+   */
+  omit?: Prisma.InvitationOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvitationInclude<ExtArgs> | null;
+  where?: Prisma.InvitationWhereInput;
+  orderBy?: Prisma.InvitationOrderByWithRelationInput | Prisma.InvitationOrderByWithRelationInput[];
+  cursor?: Prisma.InvitationWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.InvitationScalarFieldEnum | Prisma.InvitationScalarFieldEnum[];
+};
+
+/**
+ * User.pantryItems
+ */
+export type User$pantryItemsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the PantryItem
+   */
+  select?: Prisma.PantryItemSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the PantryItem
+   */
+  omit?: Prisma.PantryItemOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PantryItemInclude<ExtArgs> | null;
+  where?: Prisma.PantryItemWhereInput;
+  orderBy?: Prisma.PantryItemOrderByWithRelationInput | Prisma.PantryItemOrderByWithRelationInput[];
+  cursor?: Prisma.PantryItemWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.PantryItemScalarFieldEnum | Prisma.PantryItemScalarFieldEnum[];
 };
 
 /**

@@ -1,12 +1,25 @@
 'use client';
 
-import type { Ingredient, Recipe } from '@family-recipe/shared';
-import { Button, Box, Stack, TextField } from '@mui/material';
+import type { Ingredient, Recipe, RecipeDifficulty } from '@family-recipe/shared';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Autocomplete,
+  Button,
+  Box,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IngredientsList } from './IngredientsList';
+import { useRecipesQuery } from '../_hooks/recipes';
 
 type TpRecipeFormData = {
   name: string;
@@ -14,17 +27,37 @@ type TpRecipeFormData = {
   image?: string;
   ingredients: Ingredient[];
   instructions: string;
+  parentRecipeId?: string;
+  cuisine?: string;
+  prepTime?: number;
+  cookTime?: number;
+  servings?: number;
+  difficulty?: RecipeDifficulty;
 };
+
+type TpStringField = 'name' | 'description' | 'image' | 'instructions' | 'cuisine';
+type TpNumberField = 'prepTime' | 'cookTime' | 'servings';
 
 type PpRecipeForm = {
   recipe: Recipe;
   isEditing?: boolean;
+  initialData?: Partial<TpRecipeFormData>;
+  hideActions?: boolean;
   onSubmit?: (data: TpRecipeFormData) => Promise<void>;
 };
 
-export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm) {
+export type RecipeFormHandle = {
+  submitForm: () => void;
+};
+
+export const RecipeForm = forwardRef<RecipeFormHandle, PpRecipeForm>(function RecipeForm(
+  { recipe, isEditing = false, initialData, hideActions = false, onSubmit },
+  ref,
+) {
   const { t } = useTranslation();
   const router = useRouter();
+  const { data: allRecipes = [] } = useRecipesQuery();
+  const parentOptions = allRecipes.filter((option) => option.id !== recipe.id);
 
   const initialFormData = (): TpRecipeFormData => {
     if (isEditing && recipe) {
@@ -34,20 +67,38 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         image: recipe.image,
         ingredients: recipe.ingredients,
         instructions: recipe.instructions,
+        parentRecipeId: recipe.parentRecipe?.id,
+        cuisine: recipe.cuisine,
+        prepTime: recipe.prepTime,
+        cookTime: recipe.cookTime,
+        servings: recipe.servings,
+        difficulty: recipe.difficulty,
       };
     }
     return {
-      name: '',
-      description: '',
-      image: '',
-      ingredients: [{ name: '', quantity: '', unit: '' }],
-      instructions: '',
+      name: initialData?.name ?? '',
+      description: initialData?.description ?? '',
+      image: initialData?.image ?? '',
+      ingredients:
+        initialData?.ingredients && initialData.ingredients.length > 0
+          ? initialData.ingredients
+          : [{ name: '', quantity: '', unit: '' }],
+      instructions: initialData?.instructions ?? '',
+      parentRecipeId: initialData?.parentRecipeId,
+      cuisine: initialData?.cuisine,
+      prepTime: initialData?.prepTime,
+      cookTime: initialData?.cookTime,
+      servings: initialData?.servings,
+      difficulty: initialData?.difficulty,
     };
   };
 
   const [formData, setFormData] = useState<TpRecipeFormData>(initialFormData());
   const [errors, setErrors] = useState<Partial<TpRecipeFormData>>({});
   const [loading, setLoading] = useState(false);
+
+  const selectedParent =
+    parentOptions.find((option) => option.id === formData.parentRecipeId) ?? null;
 
   const validateForm = (): boolean => {
     const newErrors: Partial<TpRecipeFormData> = {};
@@ -67,8 +118,7 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
   };
 
   const handleInputChange =
-    (field: keyof Omit<TpRecipeFormData, 'ingredients'>) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (field: TpStringField) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setFormData((prev) => ({
         ...prev,
         [field]: e.target.value,
@@ -79,6 +129,15 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
           [field]: undefined,
         }));
       }
+    };
+
+  const handleNumberChange =
+    (field: TpNumberField) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const raw = e.target.value;
+      setFormData((prev) => ({
+        ...prev,
+        [field]: raw === '' ? undefined : Number(raw),
+      }));
     };
 
   const handleIngredientAdd = (ingredient: Ingredient) => {
@@ -116,9 +175,7 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const doSubmit = async () => {
     if (!validateForm()) {
       return;
     }
@@ -127,11 +184,6 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
     try {
       if (onSubmit) {
         await onSubmit(formData);
-      } else {
-        // TODO: Replace with actual API call
-        console.log('Saving recipe:', formData);
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
       router.push('/recipes');
@@ -142,6 +194,17 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    submitForm: () => {
+      void doSubmit();
+    },
+  }));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void doSubmit();
+  };
+
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ py: 2, px: 2 }}>
       <TextField
@@ -150,7 +213,9 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         value={formData.name}
         onChange={handleInputChange('name')}
         error={!!errors.name}
-        helperText={errors.name ? `${t('recipes.recipeName')} is required` : ''}
+        helperText={
+          errors.name ? t('recipes.fieldRequired', { field: t('recipes.recipeName') }) : ''
+        }
         margin="normal"
         required
       />
@@ -163,7 +228,7 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         margin="normal"
         multiline
         rows={3}
-        placeholder="Describe your recipe..."
+        placeholder={t('recipes.descriptionPlaceholder')}
       />
 
       <TextField
@@ -172,7 +237,7 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         value={formData.image}
         onChange={handleInputChange('image')}
         margin="normal"
-        placeholder="https://example.com/image.jpg"
+        placeholder={t('recipes.imagePlaceholder')}
         type="url"
       />
 
@@ -191,6 +256,19 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         </Box>
       )}
 
+      <Autocomplete
+        options={parentOptions}
+        value={selectedParent}
+        getOptionLabel={(option) => option.name}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        onChange={(_event, value) =>
+          setFormData((prev) => ({ ...prev, parentRecipeId: value?.id }))
+        }
+        renderInput={(params) => (
+          <TextField {...params} label={t('recipes.basedOn')} margin="normal" />
+        )}
+      />
+
       <IngredientsList
         ingredients={formData.ingredients}
         errors={!!errors.ingredients}
@@ -205,28 +283,92 @@ export function RecipeForm({ recipe, isEditing = false, onSubmit }: PpRecipeForm
         value={formData.instructions}
         onChange={handleInputChange('instructions')}
         error={!!errors.instructions}
-        helperText={errors.instructions ? `${t('recipes.instructions')} is required` : ''}
+        helperText={
+          errors.instructions
+            ? t('recipes.fieldRequired', { field: t('recipes.instructions') })
+            : ''
+        }
         margin="normal"
         multiline
         rows={6}
         required
-        placeholder="Step-by-step instructions..."
+        placeholder={t('recipes.instructionsPlaceholder')}
       />
 
-      <Stack direction="row" gap={2} sx={{ mt: 4, mb: 2 }}>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={loading}
-          sx={{ flex: 1 }}
-        >
-          {isEditing ? t('common.edit') : t('recipes.saveRecipe')}
-        </Button>
-        <Button variant="outlined" onClick={() => router.push('/recipes')} disabled={loading}>
-          {t('common.cancel')}
-        </Button>
-      </Stack>
+      <Accordion elevation={0} sx={{ mt: 2 }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>{t('recipes.additionalDetails')}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Stack spacing={2}>
+            <TextField
+              fullWidth
+              label={t('recipes.cuisine')}
+              value={formData.cuisine ?? ''}
+              onChange={handleInputChange('cuisine')}
+            />
+            <TextField
+              fullWidth
+              type="number"
+              inputProps={{ min: 1 }}
+              label={t('recipes.prepTime')}
+              value={formData.prepTime ?? ''}
+              onChange={handleNumberChange('prepTime')}
+            />
+            <TextField
+              fullWidth
+              type="number"
+              inputProps={{ min: 1 }}
+              label={t('recipes.cookTime')}
+              value={formData.cookTime ?? ''}
+              onChange={handleNumberChange('cookTime')}
+            />
+            <TextField
+              fullWidth
+              type="number"
+              inputProps={{ min: 1 }}
+              label={t('recipes.servings')}
+              value={formData.servings ?? ''}
+              onChange={handleNumberChange('servings')}
+            />
+            <TextField
+              fullWidth
+              select
+              label={t('recipes.difficulty')}
+              value={formData.difficulty ?? ''}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  difficulty:
+                    e.target.value === '' ? undefined : (e.target.value as RecipeDifficulty),
+                }))
+              }
+            >
+              <MenuItem value="">—</MenuItem>
+              <MenuItem value="easy">{t('recipes.difficultyEasy')}</MenuItem>
+              <MenuItem value="medium">{t('recipes.difficultyMedium')}</MenuItem>
+              <MenuItem value="hard">{t('recipes.difficultyHard')}</MenuItem>
+            </TextField>
+          </Stack>
+        </AccordionDetails>
+      </Accordion>
+
+      {!hideActions && (
+        <Stack direction="row" gap={2} sx={{ mt: 4, mb: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={loading}
+            sx={{ flex: 1 }}
+          >
+            {isEditing ? t('common.edit') : t('recipes.saveRecipe')}
+          </Button>
+          <Button variant="outlined" onClick={() => router.push('/recipes')} disabled={loading}>
+            {t('common.cancel')}
+          </Button>
+        </Stack>
+      )}
     </Box>
   );
-}
+});

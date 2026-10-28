@@ -2,13 +2,23 @@
   "name": "family-recipes-api",
   "private": true,
   "version": "0.0.0",
+  "scripts": {
+    "seed": "npx prisma db seed",
+    "start": "node dist/apps/api/apps/api/src/index.js"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1158.0",
     "@family-recipe/shared": "workspace:*",
     "@prisma/client": "^7.9.1",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "express": "^4.22.1",
+    "google-auth-library": "^11.3.1",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
@@ -16,6 +26,8 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.25",
     "@types/jsonwebtoken": "^9",
-    "prisma": "^7.9.1"
+    "@types/multer": "^2.2.0",
+    "prisma": "^7.9.1",
+    "tsx": "^4.23.12"
   }
 }

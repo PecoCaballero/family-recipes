@@ -1,7 +1,50 @@
 import { Router } from 'express';
+import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
+import {
+  updateProfileSchema,
+  changePasswordSchema,
+  userSearchQuerySchema,
+  userSettingsUpdateSchema,
+} from '@family-recipe/shared';
+import type { User } from '@family-recipe/shared';
+import { createStorageProvider } from '../lib/storage';
+import { avatarUploadMiddleware, extensionForMimeType } from '../lib/avatarUpload';
+import { hashToken } from '../utils/jwt';
 
 export const usersRouter = Router();
+const storage = createStorageProvider();
+const SALT_ROUNDS = 12;
+
+function userToResponse(user: {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string | null;
+  language: string;
+  privacyLevel: string;
+  notifications: boolean;
+  theme: string;
+  createdAt: Date;
+  updatedAt: Date;
+}): User {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar ?? undefined,
+    settings: {
+      language: user.language as User['settings']['language'],
+      privacyLevel: user.privacyLevel as User['settings']['privacyLevel'],
+      notifications: user.notifications,
+      theme: user.theme as User['settings']['theme'],
+    },
+    recipesSaved: [],
+    recipesSharedByOthers: 0,
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
+  };
+}
 
 usersRouter.get('/me', async (req, res) => {
   try {
@@ -13,31 +56,48 @@ usersRouter.get('/me', async (req, res) => {
       return res.status(404).json({ error: 'user_not_found' });
     }
 
-    return res.status(200).json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      avatar: user.avatar,
-      settings: {
-        language: user.language,
-        privacyLevel: user.privacyLevel,
-        notifications: user.notifications,
-        theme: user.theme,
-      },
-      recipesSaved: [],
-      recipesSharedByOthers: 0,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    });
+    return res.status(200).json(userToResponse(user));
   } catch (error) {
     console.error('Get user error:', error);
     return res.status(500).json({ error: 'internal_error' });
   }
 });
 
+usersRouter.get('/search', async (req, res) => {
+  try {
+    const parsed = userSearchQuerySchema.safeParse({ email: String(req.query.email ?? '') });
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        email: { contains: parsed.data.email, mode: 'insensitive' },
+      },
+      select: { id: true, name: true, email: true, avatar: true },
+      take: 10,
+    });
+
+    return res.status(200).json({ users });
+  } catch (error) {
+    console.error('Search users error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
 usersRouter.patch('/me/settings', async (req, res) => {
   try {
-    const { language, privacyLevel, notifications, theme } = req.body;
+    const parsed = userSettingsUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { language, privacyLevel, notifications, theme } = parsed.data;
 
     const user = await prisma.user.update({
       where: { id: req.userId },
@@ -49,24 +109,220 @@ usersRouter.patch('/me/settings', async (req, res) => {
       },
     });
 
-    return res.status(200).json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      avatar: user.avatar,
-      settings: {
-        language: user.language,
-        privacyLevel: user.privacyLevel,
-        notifications: user.notifications,
-        theme: user.theme,
-      },
-      recipesSaved: [],
-      recipesSharedByOthers: 0,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    });
+    return res.status(200).json(userToResponse(user));
   } catch (error) {
     console.error('Update settings error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+usersRouter.patch('/me', async (req, res) => {
+  try {
+    const parsed = updateProfileSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { name, email } = parsed.data;
+
+    if (email !== undefined) {
+      const currentUser = await prisma.user.findUnique({ where: { id: req.userId } });
+      if (!currentUser) return res.status(404).json({ error: 'user_not_found' });
+
+      if (email !== currentUser.email) {
+        const existing = await prisma.user.findUnique({ where: { email } });
+        if (existing) {
+          return res.status(409).json({ error: 'email_already_exists' });
+        }
+      }
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.userId },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(email !== undefined && { email }),
+      },
+    });
+
+    return res.status(200).json(userToResponse(user));
+  } catch (error) {
+    console.error('Update profile error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+usersRouter.post('/me/password', async (req, res) => {
+  try {
+    const parsed = changePasswordSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { currentPassword, newPassword } = parsed.data;
+
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user) return res.status(404).json({ error: 'user_not_found' });
+
+    if (!user.passwordHash) {
+      return res.status(401).json({ error: 'invalid_current_password' });
+    }
+
+    const valid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!valid) {
+      return res.status(401).json({ error: 'invalid_current_password' });
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    await prisma.user.update({
+      where: { id: req.userId },
+      data: { passwordHash },
+    });
+
+    return res.status(200).json({ status: 'password_updated' });
+  } catch (error) {
+    console.error('Password change error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+usersRouter.post('/me/avatar', avatarUploadMiddleware as any, async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'validation_error', detail: 'No file uploaded' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user) return res.status(404).json({ error: 'user_not_found' });
+
+    // Delete old avatar file if exists
+    if (user.avatar) {
+      await storage.delete(user.avatar);
+    }
+
+    const ext = extensionForMimeType(req.file.mimetype);
+    const timestamp = Date.now();
+    const filename = `${req.userId}_${timestamp}.${ext}`;
+
+    const avatarUrl = await storage.save(filename, req.file.buffer, req.file.mimetype);
+
+    await prisma.user.update({
+      where: { id: req.userId },
+      data: { avatar: avatarUrl },
+    });
+
+    return res.status(200).json({ avatarUrl });
+  } catch (error) {
+    const err = error as { message?: string; code?: string };
+    if (err.message?.includes('Only image files')) {
+      return res.status(400).json({ error: 'invalid_file_type', detail: err.message });
+    }
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(413).json({ error: 'file_too_large', detail: 'Maximum file size is 5 MB' });
+    }
+    console.error('Avatar upload error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+usersRouter.delete('/me/avatar', async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    if (!user) return res.status(404).json({ error: 'user_not_found' });
+
+    if (user.avatar) {
+      await storage.delete(user.avatar);
+    }
+
+    await prisma.user.update({
+      where: { id: req.userId },
+      data: { avatar: null },
+    });
+
+    return res.status(200).json({ avatarUrl: null });
+  } catch (error) {
+    console.error('Avatar delete error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+usersRouter.delete('/me', async (req, res) => {
+  try {
+    // Guard: check if user is sole admin of any group
+    const adminGroups = await prisma.groupAdmin.findMany({
+      where: { userId: req.userId },
+      include: {
+        group: {
+          include: {
+            admins: { select: { userId: true } },
+          },
+        },
+      },
+    });
+
+    const soleAdminGroups = adminGroups.filter((ag) => ag.group.admins.length === 1);
+
+    if (soleAdminGroups.length > 0) {
+      return res.status(409).json({
+        error: 'sole_admin',
+        detail: `You are the sole admin of ${soleAdminGroups.length} group(s). Promote another admin or delete the group(s) before deleting your account.`,
+        groups: soleAdminGroups.map((ag) => ({
+          id: ag.group.id,
+          name: ag.group.name ?? 'Unknown',
+        })),
+      });
+    }
+
+    // Delete avatar file
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: { avatar: true },
+    });
+    if (user?.avatar) {
+      await storage.delete(user.avatar);
+    }
+
+    // Cascade delete in transaction
+    await prisma.$transaction(async (tx) => {
+      // Refresh tokens (also covered by onDelete: Cascade, but explicit for clarity)
+      await tx.refreshToken.deleteMany({ where: { userId: req.userId } });
+
+      // Saved recipes
+      await tx.savedRecipe.deleteMany({ where: { userId: req.userId } });
+
+      // Group memberships
+      await tx.groupMember.deleteMany({ where: { userId: req.userId } });
+
+      // Recipes authored by user: cascade ingredients and recipe groups first
+      const userRecipes = await tx.recipe.findMany({
+        where: { authorId: req.userId },
+        select: { id: true },
+      });
+      const recipeIds = userRecipes.map((r) => r.id);
+
+      if (recipeIds.length > 0) {
+        await tx.recipeGroup.deleteMany({ where: { recipeId: { in: recipeIds } } });
+        await tx.ingredient.deleteMany({ where: { recipeId: { in: recipeIds } } });
+        await tx.savedRecipe.deleteMany({ where: { recipeId: { in: recipeIds } } });
+        await tx.recipe.deleteMany({ where: { id: { in: recipeIds } } });
+      }
+
+      // Groups owned by user — delete GroupAdmin rows (group continues if other admins exist)
+      await tx.groupAdmin.deleteMany({ where: { userId: req.userId } });
+
+      // User row
+      await tx.user.delete({ where: { id: req.userId } });
+    });
+
+    return res.status(200).json({ status: 'deleted' });
+  } catch (error) {
+    console.error('Account deletion error:', error);
     return res.status(500).json({ error: 'internal_error' });
   }
 });
@@ -76,7 +332,7 @@ usersRouter.post('/me/logout', async (req, res) => {
     const { refreshToken } = req.body;
     if (refreshToken) {
       await prisma.refreshToken.deleteMany({
-        where: { token: refreshToken, userId: req.userId },
+        where: { token: hashToken(refreshToken), userId: req.userId },
       });
     }
     return res.status(200).json({ status: 'success' });

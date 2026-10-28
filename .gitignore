@@ -36,9 +36,13 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
+
+# neon
+.neon
 
 # typescript
 *.tsbuildinfo
@@ -52,3 +56,9 @@ next-env.d.ts
 # AI tooling (personal/local configs)
 .claude/
 .cursor/
+
+# generated build artifacts
+/tmp/
+
+# runtime uploads (local avatar storage)
+/uploads/

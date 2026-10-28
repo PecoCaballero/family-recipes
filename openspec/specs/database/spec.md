@@ -99,12 +99,46 @@ The database SHALL contain a `RefreshToken` table with fields: `id` (UUID, PK), 
 - **WHEN** a cleanup job runs
 - **THEN** all rows where `expiresAt < now()` are deleted
 
-### Requirement: Group table and junction tables exist for future phases
+### Requirement: Group table stores group data
 
-The database SHALL contain `Group`, `GroupMember`, and `RecipeGroup` tables as placeholders matching the existing `Group` type structure, with minimal foreign key relations. These tables SHALL NOT be used by routes in this phase.
+The database SHALL contain a `Group` table with fields: `id` (UUID, PK), `name` (string), `description` (string), `lastUpdated` (datetime, default now), `icon` (string), `ownerId` (UUID, FK → User). The Group table SHALL be the parent entity for group membership and recipe-sharing associations.
 
-#### Scenario: Group tables exist for forward compatibility
+#### Scenario: Group is created with owner
 
-- **WHEN** the Prisma migration runs
-- **THEN** Group, GroupMember, and RecipeGroup tables are created
-- **THEN** the API routes in this phase do not reference these tables
+- **WHEN** a group is created
+- **THEN** a new row is inserted into the Group table with `ownerId` set to the creating user's UUID
+- **THEN** the owner is automatically added to the GroupMember table
+
+### Requirement: GroupMember table enforces membership-based authorization
+
+The GroupMember junction table (`groupId`, `userId` composite key) SHALL be used to determine group membership for both group visibility and recipe visibility gating. When listing groups for a user, only rows where the user has a GroupMember entry SHALL be returned. When listing recipes, recipes associated with groups the user belongs to SHALL be included.
+
+#### Scenario: Groups filtered by membership
+
+- **WHEN** the API queries groups for a user
+- **THEN** the query filters by GroupMember.userId matching the authenticated user
+- **THEN** groups where the user has no GroupMember row are excluded
+
+#### Scenario: Recipe visibility uses group membership
+
+- **WHEN** the API queries recipes visible to a user
+- **THEN** the query includes recipes whose RecipeGroup.groupId is in the user's GroupMember.groupId set
+
+### Requirement: Production database connections verify TLS
+
+The system SHALL verify the server certificate whenever it connects to
+PostgreSQL over TLS (DATABASE_URL with `sslmode=require`). It SHALL NOT disable
+certificate verification via `rejectUnauthorized: false`.
+
+#### Scenario: TLS with verification
+
+- **WHEN** the API connects to a hosted database with `sslmode=require`
+- **THEN** the connection verifies the server's certificate (equivalent to
+  `rejectUnauthorized: true`)
+- **THEN** a self-signed or mismatched certificate causes the connection to fail
+  rather than succeed silently
+
+#### Scenario: Local connections are unaffected
+
+- **WHEN** the DATABASE_URL has no `sslmode` (local development)
+- **THEN** the connection does not require TLS

@@ -30,6 +30,23 @@ export const userSettingsUpdateSchema = z.object({
 });
 export type UserSettingsUpdate = z.infer<typeof userSettingsUpdateSchema>;
 
+export const recipeSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+export type RecipeSummary = z.infer<typeof recipeSummarySchema>;
+
+export const recipeDifficultySchema = z.enum(['easy', 'medium', 'hard']);
+export type RecipeDifficulty = z.infer<typeof recipeDifficultySchema>;
+
+export const recipeMetadataSchema = {
+  cuisine: z.string().optional(),
+  prepTime: z.number().int().positive().optional(),
+  cookTime: z.number().int().positive().optional(),
+  servings: z.number().int().positive().optional(),
+  difficulty: recipeDifficultySchema.optional(),
+};
+
 export const recipeSchema = z.object({
   id: z.string(),
   authorId: z.string(),
@@ -40,7 +57,10 @@ export const recipeSchema = z.object({
   ingredients: z.array(ingredientSchema),
   instructions: z.string(),
   lastUpdated: z.string(),
+  ...recipeMetadataSchema,
   nestedRecipeIds: z.array(z.string()).optional(),
+  nestedRecipes: z.array(recipeSummarySchema).optional(),
+  parentRecipe: recipeSummarySchema.optional(),
   groupIds: z.array(z.string()),
   savedByIds: z.array(z.string()),
   isAuthor: z.boolean().optional(),
@@ -55,8 +75,28 @@ export const createRecipeInputSchema = z.object({
   ingredients: z.array(ingredientSchema),
   instructions: z.string().min(1),
   parentRecipeId: z.string().optional(),
+  ...recipeMetadataSchema,
 });
 export type CreateRecipeInput = z.infer<typeof createRecipeInputSchema>;
+
+export const recipeImportRequestSchema = z.object({
+  text: z.string().trim().min(1).max(20000),
+});
+export type RecipeImportRequest = z.infer<typeof recipeImportRequestSchema>;
+
+export const recipeImportDraftSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().min(1),
+  ingredients: z.array(ingredientSchema).min(1),
+  instructions: z.string().min(1),
+  ...recipeMetadataSchema,
+});
+export type RecipeImportDraft = z.infer<typeof recipeImportDraftSchema>;
+
+export const recipeImportResponseSchema = z.object({
+  draft: recipeImportDraftSchema,
+});
+export type RecipeImportResponse = z.infer<typeof recipeImportResponseSchema>;
 
 export const updateRecipeInputSchema = z.object({
   name: z.string().optional(),
@@ -65,6 +105,7 @@ export const updateRecipeInputSchema = z.object({
   ingredients: z.array(ingredientSchema).optional(),
   instructions: z.string().optional(),
   parentRecipeId: z.string().optional(),
+  ...recipeMetadataSchema,
 });
 export type UpdateRecipeInput = z.infer<typeof updateRecipeInputSchema>;
 
@@ -74,7 +115,7 @@ export const groupSchema = z.object({
   description: z.string(),
   lastUpdated: z.string(),
   icon: z.string().nullable(),
-  ownerId: z.string(),
+  adminIds: z.array(z.string()),
   recipeIds: z.array(z.string()),
 });
 export type Group = z.infer<typeof groupSchema>;
@@ -126,8 +167,118 @@ export const registerInputSchema = z.object({
 });
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 
+export const googleAuthInputSchema = z.object({
+  idToken: z.string().min(1),
+});
+export type GoogleAuthInput = z.infer<typeof googleAuthInputSchema>;
+
 export const tokenPairSchema = z.object({
   accessToken: z.string(),
   refreshToken: z.string(),
 });
 export type TokenPair = z.infer<typeof tokenPairSchema>;
+
+export const memberWithCountSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  avatar: z.string().optional(),
+  recipeCount: z.number(),
+});
+export type MemberWithCount = z.infer<typeof memberWithCountSchema>;
+
+export const groupDetailResponseSchema = z.object({
+  group: groupSchema,
+  recipes: z.array(recipeSchema),
+  isAdmin: z.boolean(),
+  members: z.array(memberWithCountSchema),
+});
+export type GroupDetailResponse = z.infer<typeof groupDetailResponseSchema>;
+
+export const quitGroupResponseSchema = z.object({
+  status: z.literal('left'),
+  groupDeleted: z.boolean().optional(),
+});
+export type QuitGroupResponse = z.infer<typeof quitGroupResponseSchema>;
+
+export const updateProfileSchema = z
+  .object({
+    name: z.string().min(1).optional(),
+    email: z.string().email().optional(),
+  })
+  .refine((data) => data.name !== undefined || data.email !== undefined, {
+    message: 'At least one field (name or email) must be provided',
+  });
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(6),
+  newPassword: z.string().min(6),
+});
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+
+export const addAdminSchema = z.object({
+  userId: z.string(),
+});
+export type AddAdminInput = z.infer<typeof addAdminSchema>;
+
+export const batchAddRecipesSchema = z.object({
+  recipeIds: z.array(z.string().uuid()).min(1).max(50),
+});
+export type BatchAddRecipesInput = z.infer<typeof batchAddRecipesSchema>;
+
+export const createInvitationSchema = z.object({
+  inviteeUserId: z.string().uuid(),
+});
+export type CreateInvitationInput = z.infer<typeof createInvitationSchema>;
+
+export const userSearchQuerySchema = z.object({
+  email: z.string().min(3),
+});
+export type UserSearchQuery = z.infer<typeof userSearchQuerySchema>;
+
+export const invitationStatusSchema = z.enum(['pending', 'accepted', 'rejected', 'expired']);
+export type InvitationStatus = z.infer<typeof invitationStatusSchema>;
+
+export const invitationSchema = z.object({
+  id: z.string(),
+  groupId: z.string(),
+  inviterId: z.string(),
+  inviteeUserId: z.string(),
+  status: invitationStatusSchema,
+  expiresAt: z.string(),
+});
+export type InvitationResponse = z.infer<typeof invitationSchema>;
+
+export const pendingInvitationSchema = z.object({
+  id: z.string(),
+  groupId: z.string(),
+  groupName: z.string(),
+  inviterName: z.string(),
+  expiresAt: z.string(),
+});
+export type PendingInvitation = z.infer<typeof pendingInvitationSchema>;
+
+export const pantryItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+export type PantryItem = z.infer<typeof pantryItemSchema>;
+
+export const addPantryItemInputSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+});
+export type AddPantryItemInput = z.infer<typeof addPantryItemInputSchema>;
+
+export const pantrySuggestionSchema = z.object({
+  recipe: recipeSchema,
+  status: z.enum(['canMake', 'almost']),
+  missingCount: z.number().int(),
+  missingIngredients: z.array(z.string()),
+});
+export type PantrySuggestion = z.infer<typeof pantrySuggestionSchema>;
+
+export const pantrySuggestResponseSchema = z.object({
+  suggestions: z.array(pantrySuggestionSchema),
+});
+export type PantrySuggestResponse = z.infer<typeof pantrySuggestResponseSchema>;

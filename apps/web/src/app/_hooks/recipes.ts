@@ -2,9 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/app/_utils/apiClient';
-import type { Recipe } from '@family-recipe/shared';
+import type { Recipe, RecipeDifficulty, RecipeImportDraft } from '@family-recipe/shared';
 
-export function useRecipesQuery(search?: string) {
+export function useRecipesQuery(search?: string, enabled = true) {
   return useQuery({
     queryKey: ['recipes', { search }],
     queryFn: async () => {
@@ -12,6 +12,7 @@ export function useRecipesQuery(search?: string) {
       const res = await apiClient.get<{ recipes: Recipe[] }>(url);
       return res.data.recipes ?? [];
     },
+    enabled,
   });
 }
 
@@ -32,6 +33,12 @@ type RecipeFormData = {
   image?: string;
   ingredients: { name: string; unit?: string; quantity: string }[];
   instructions: string;
+  parentRecipeId?: string;
+  cuisine?: string;
+  prepTime?: number;
+  cookTime?: number;
+  servings?: number;
+  difficulty?: RecipeDifficulty;
 };
 
 export function useCreateRecipe() {
@@ -43,6 +50,17 @@ export function useCreateRecipe() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
+    },
+  });
+}
+
+export function useImportRecipe() {
+  return useMutation({
+    mutationFn: async (text: string) => {
+      const res = await apiClient.post<{ draft: RecipeImportDraft }>('/v1/recipes/import', {
+        text,
+      });
+      return res.data.draft;
     },
   });
 }
@@ -69,6 +87,34 @@ export function useDeleteRecipe(id: string) {
       await apiClient.delete(`/v1/recipes/${id}`);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes'] });
+    },
+  });
+}
+
+export function useSaveRecipe(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await apiClient.post(`/v1/recipes/${id}/save`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes', id] });
+      queryClient.invalidateQueries({ queryKey: ['recipes'] });
+    },
+  });
+}
+
+export function useUnsaveRecipe(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await apiClient.post(`/v1/recipes/${id}/unsave`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes', id] });
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
     },
   });

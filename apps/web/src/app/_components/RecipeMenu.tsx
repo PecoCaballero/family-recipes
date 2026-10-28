@@ -8,6 +8,8 @@ import MenuItem from '@mui/material/MenuItem';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useAnchor } from '../_hooks/useAnchor';
+import { useSaveRecipe, useUnsaveRecipe } from '../_hooks/recipes';
+import { useToast } from '../_providers/ToastProvider';
 import { SendRecipeDrawer } from './SendRecipeDrawer';
 
 type PpRecipeMenu = {
@@ -15,16 +17,49 @@ type PpRecipeMenu = {
   open: boolean;
   onClose: () => void;
   recipe: Recipe;
+  onDelete?: () => void;
 };
 
-export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipeMenu) {
+export default function RecipeMenu({ anchorEl, open, onClose, recipe, onDelete }: PpRecipeMenu) {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const { handleClick, handleClose, open: shareGroupOpen } = useAnchor();
   const router = useRouter();
+  const saveRecipe = useSaveRecipe(recipe.id);
+  const unsaveRecipe = useUnsaveRecipe(recipe.id);
+
+  const handleSaveToggle = () => {
+    onClose();
+    if (recipe.isSaved) {
+      unsaveRecipe.mutate();
+    } else {
+      saveRecipe.mutate();
+    }
+  };
+
+  const handleShare = async () => {
+    onClose();
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: recipe.name, text: recipe.name, url });
+      } catch {
+        // user cancelled or the share target failed; no-op
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast(t('recipes.shareFallbackCopied'), 'success');
+      } catch (err) {
+        console.error('Copy to clipboard failed:', err);
+      }
+    }
+  };
+
   return (
     <>
       <Menu anchorEl={anchorEl} open={open} onClose={onClose}>
-        <MenuItem>
+        <MenuItem onClick={handleSaveToggle}>
           <ListItemIcon>
             {recipe.isSaved ? <Favorite fontSize="small" /> : <FavoriteBorder fontSize="small" />}
           </ListItemIcon>
@@ -40,7 +75,12 @@ export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipe
               </ListItemIcon>
               <ListItemText>{t('recipes.editRecipe')}</ListItemText>
             </MenuItem>
-            <MenuItem>
+            <MenuItem
+              onClick={() => {
+                onClose();
+                onDelete?.();
+              }}
+            >
               <ListItemIcon>
                 <Delete fontSize="small" />
               </ListItemIcon>
@@ -60,7 +100,7 @@ export default function RecipeMenu({ anchorEl, open, onClose, recipe }: PpRecipe
           </ListItemIcon>
           <ListItemText>{t('recipes.sendToGroup')}</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={handleShare}>
           <ListItemIcon>
             <Share fontSize="small" />
           </ListItemIcon>

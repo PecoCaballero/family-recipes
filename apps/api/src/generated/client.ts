@@ -63,6 +63,11 @@ export type Ingredient = Prisma.IngredientModel;
  */
 export type SavedRecipe = Prisma.SavedRecipeModel;
 /**
+ * Model PantryItem
+ *
+ */
+export type PantryItem = Prisma.PantryItemModel;
+/**
  * Model RefreshToken
  *
  */
@@ -78,7 +83,17 @@ export type Group = Prisma.GroupModel;
  */
 export type GroupMember = Prisma.GroupMemberModel;
 /**
+ * Model GroupAdmin
+ *
+ */
+export type GroupAdmin = Prisma.GroupAdminModel;
+/**
  * Model RecipeGroup
  *
  */
 export type RecipeGroup = Prisma.RecipeGroupModel;
+/**
+ * Model Invitation
+ *
+ */
+export type Invitation = Prisma.InvitationModel;

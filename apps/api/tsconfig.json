@@ -16,5 +16,13 @@
     "sourceMap": true,
     "noEmit": false
   },
-  "include": ["src/**/*", "../../libs/shared/src/**/*"]
+  "include": ["src/**/*", "../../libs/shared/src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "../../libs/shared/src/**/*.spec.ts",
+    "../../libs/shared/src/**/*.test.ts"
+  ]
 }

@@ -1,12 +1,11 @@
 'use client';
 
-import AppleIcon from '@mui/icons-material/Apple';
-import GoogleIcon from '@mui/icons-material/Google';
 import { Box, Button, Divider, Link as MuiLink, Stack, TextField, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CenteredFullPage } from '../_components/SceneComponents';
+import { GoogleSignInButton } from '../_components/GoogleSignInButton';
 import { useAuth } from '../_providers/AuthContext';
 
 export function LoginScene() {
@@ -16,7 +15,7 @@ export function LoginScene() {
   const [error, setError] = useState('');
   const { t } = useTranslation();
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,36 +26,23 @@ export function LoginScene() {
       await login(email, password);
       router.push('/recipes');
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('login.loginFailed');
-      setError(message);
+      console.error(err);
+      setError(t('login.loginFailed'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (idToken: string) => {
+    setLoading(true);
+    setError('');
+
     try {
-      // TODO: Replace with actual Google OAuth logic when backend implements OAuth
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setError('Google Sign In is not yet available');
+      await loginWithGoogle(idToken);
+      router.push('/recipes');
     } catch (err) {
+      console.error(err);
       setError(t('login.googleLoginFailed'));
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAppleLogin = async () => {
-    try {
-      // TODO: Replace with actual Apple OAuth logic when backend implements OAuth
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setError('Apple Sign In is not yet available');
-    } catch (err) {
-      setError(t('login.appleLoginFailed'));
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -117,27 +103,8 @@ export function LoginScene() {
 
       <Divider sx={{ my: 2 }}>{t('login.or')}</Divider>
 
-      <Stack spacing={1}>
-        <Button
-          variant="outlined"
-          size="large"
-          fullWidth
-          startIcon={<GoogleIcon />}
-          onClick={handleGoogleLogin}
-          disabled={loading}
-        >
-          {t('login.googleSignIn')}
-        </Button>
-        <Button
-          variant="outlined"
-          size="large"
-          fullWidth
-          startIcon={<AppleIcon />}
-          onClick={handleAppleLogin}
-          disabled={loading}
-        >
-          {t('login.appleSignIn')}
-        </Button>
+      <Stack spacing={1} alignItems="center">
+        <GoogleSignInButton onCredential={handleGoogleLogin} />
       </Stack>
 
       <Box sx={{ textAlign: 'center' }}>

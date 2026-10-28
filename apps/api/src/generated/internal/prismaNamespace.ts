@@ -395,10 +395,13 @@ export const ModelName = {
   Recipe: 'Recipe',
   Ingredient: 'Ingredient',
   SavedRecipe: 'SavedRecipe',
+  PantryItem: 'PantryItem',
   RefreshToken: 'RefreshToken',
   Group: 'Group',
   GroupMember: 'GroupMember',
+  GroupAdmin: 'GroupAdmin',
   RecipeGroup: 'RecipeGroup',
+  Invitation: 'Invitation',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -423,10 +426,13 @@ export type TypeMap<
       | 'recipe'
       | 'ingredient'
       | 'savedRecipe'
+      | 'pantryItem'
       | 'refreshToken'
       | 'group'
       | 'groupMember'
-      | 'recipeGroup';
+      | 'groupAdmin'
+      | 'recipeGroup'
+      | 'invitation';
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -726,6 +732,80 @@ export type TypeMap<
         };
       };
     };
+    PantryItem: {
+      payload: Prisma.$PantryItemPayload<ExtArgs>;
+      fields: Prisma.PantryItemFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.PantryItemFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.PantryItemFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        findFirst: {
+          args: Prisma.PantryItemFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.PantryItemFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        findMany: {
+          args: Prisma.PantryItemFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>[];
+        };
+        create: {
+          args: Prisma.PantryItemCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        createMany: {
+          args: Prisma.PantryItemCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.PantryItemCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>[];
+        };
+        delete: {
+          args: Prisma.PantryItemDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        update: {
+          args: Prisma.PantryItemUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        deleteMany: {
+          args: Prisma.PantryItemDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.PantryItemUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.PantryItemUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>[];
+        };
+        upsert: {
+          args: Prisma.PantryItemUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PantryItemPayload>;
+        };
+        aggregate: {
+          args: Prisma.PantryItemAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePantryItem>;
+        };
+        groupBy: {
+          args: Prisma.PantryItemGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.PantryItemGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.PantryItemCountArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.PantryItemCountAggregateOutputType> | number;
+        };
+      };
+    };
     RefreshToken: {
       payload: Prisma.$RefreshTokenPayload<ExtArgs>;
       fields: Prisma.RefreshTokenFieldRefs;
@@ -950,6 +1030,80 @@ export type TypeMap<
         };
       };
     };
+    GroupAdmin: {
+      payload: Prisma.$GroupAdminPayload<ExtArgs>;
+      fields: Prisma.GroupAdminFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.GroupAdminFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.GroupAdminFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>;
+        };
+        findFirst: {
+          args: Prisma.GroupAdminFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.GroupAdminFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>;
+        };
+        findMany: {
+          args: Prisma.GroupAdminFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>[];
+        };
+        create: {
+          args: Prisma.GroupAdminCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>;
+        };
+        createMany: {
+          args: Prisma.GroupAdminCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.GroupAdminCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>[];
+        };
+        delete: {
+          args: Prisma.GroupAdminDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>;
+        };
+        update: {
+          args: Prisma.GroupAdminUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>;
+        };
+        deleteMany: {
+          args: Prisma.GroupAdminDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.GroupAdminUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.GroupAdminUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>[];
+        };
+        upsert: {
+          args: Prisma.GroupAdminUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GroupAdminPayload>;
+        };
+        aggregate: {
+          args: Prisma.GroupAdminAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGroupAdmin>;
+        };
+        groupBy: {
+          args: Prisma.GroupAdminGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.GroupAdminGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.GroupAdminCountArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.GroupAdminCountAggregateOutputType> | number;
+        };
+      };
+    };
     RecipeGroup: {
       payload: Prisma.$RecipeGroupPayload<ExtArgs>;
       fields: Prisma.RecipeGroupFieldRefs;
@@ -1024,6 +1178,80 @@ export type TypeMap<
         };
       };
     };
+    Invitation: {
+      payload: Prisma.$InvitationPayload<ExtArgs>;
+      fields: Prisma.InvitationFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.InvitationFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.InvitationFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
+        };
+        findFirst: {
+          args: Prisma.InvitationFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.InvitationFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
+        };
+        findMany: {
+          args: Prisma.InvitationFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>[];
+        };
+        create: {
+          args: Prisma.InvitationCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
+        };
+        createMany: {
+          args: Prisma.InvitationCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.InvitationCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>[];
+        };
+        delete: {
+          args: Prisma.InvitationDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
+        };
+        update: {
+          args: Prisma.InvitationUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
+        };
+        deleteMany: {
+          args: Prisma.InvitationDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.InvitationUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.InvitationUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>[];
+        };
+        upsert: {
+          args: Prisma.InvitationUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvitationPayload>;
+        };
+        aggregate: {
+          args: Prisma.InvitationAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvitation>;
+        };
+        groupBy: {
+          args: Prisma.InvitationGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.InvitationGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.InvitationCountArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.InvitationCountAggregateOutputType> | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -1068,6 +1296,8 @@ export const UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   passwordHash: 'passwordHash',
+  provider: 'provider',
+  providerId: 'providerId',
   avatar: 'avatar',
   language: 'language',
   privacyLevel: 'privacyLevel',
@@ -1087,6 +1317,11 @@ export const RecipeScalarFieldEnum = {
   image: 'image',
   description: 'description',
   instructions: 'instructions',
+  cuisine: 'cuisine',
+  prepTime: 'prepTime',
+  cookTime: 'cookTime',
+  servings: 'servings',
+  difficulty: 'difficulty',
   visibility: 'visibility',
   lastUpdated: 'lastUpdated',
   createdAt: 'createdAt',
@@ -1115,6 +1350,17 @@ export const SavedRecipeScalarFieldEnum = {
 export type SavedRecipeScalarFieldEnum =
   (typeof SavedRecipeScalarFieldEnum)[keyof typeof SavedRecipeScalarFieldEnum];
 
+export const PantryItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type PantryItemScalarFieldEnum =
+  (typeof PantryItemScalarFieldEnum)[keyof typeof PantryItemScalarFieldEnum];
+
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',
   token: 'token',
@@ -1132,7 +1378,6 @@ export const GroupScalarFieldEnum = {
   description: 'description',
   lastUpdated: 'lastUpdated',
   icon: 'icon',
-  ownerId: 'ownerId',
 } as const;
 
 export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum];
@@ -1145,6 +1390,14 @@ export const GroupMemberScalarFieldEnum = {
 export type GroupMemberScalarFieldEnum =
   (typeof GroupMemberScalarFieldEnum)[keyof typeof GroupMemberScalarFieldEnum];
 
+export const GroupAdminScalarFieldEnum = {
+  groupId: 'groupId',
+  userId: 'userId',
+} as const;
+
+export type GroupAdminScalarFieldEnum =
+  (typeof GroupAdminScalarFieldEnum)[keyof typeof GroupAdminScalarFieldEnum];
+
 export const RecipeGroupScalarFieldEnum = {
   recipeId: 'recipeId',
   groupId: 'groupId',
@@ -1152,6 +1405,21 @@ export const RecipeGroupScalarFieldEnum = {
 
 export type RecipeGroupScalarFieldEnum =
   (typeof RecipeGroupScalarFieldEnum)[keyof typeof RecipeGroupScalarFieldEnum];
+
+export const InvitationScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  groupId: 'groupId',
+  inviterId: 'inviterId',
+  inviteeUserId: 'inviteeUserId',
+  status: 'status',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type InvitationScalarFieldEnum =
+  (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum];
 
 export const SortOrder = {
   asc: 'asc',
@@ -1212,6 +1480,32 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>;
+
+/**
+ * Reference to a field of type 'InvitationStatus'
+ */
+export type EnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'InvitationStatus'
+>;
+
+/**
+ * Reference to a field of type 'InvitationStatus[]'
+ */
+export type ListEnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'InvitationStatus[]'
+>;
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>;
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>;
 
 /**
  * Batch Payload for updateMany & deleteMany & createMany
@@ -1375,10 +1669,13 @@ export type GlobalOmitConfig = {
   recipe?: Prisma.RecipeOmit;
   ingredient?: Prisma.IngredientOmit;
   savedRecipe?: Prisma.SavedRecipeOmit;
+  pantryItem?: Prisma.PantryItemOmit;
   refreshToken?: Prisma.RefreshTokenOmit;
   group?: Prisma.GroupOmit;
   groupMember?: Prisma.GroupMemberOmit;
+  groupAdmin?: Prisma.GroupAdminOmit;
   recipeGroup?: Prisma.RecipeGroupOmit;
+  invitation?: Prisma.InvitationOmit;
 };
 
 /* Types for Logging */

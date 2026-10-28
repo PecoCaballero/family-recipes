@@ -7,7 +7,7 @@ export const mockGroups: Group[] = [
     description: 'Our favorite family recipes passed down through generations',
     lastUpdated: new Date('2025-05-20').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['1'],
   },
   {
@@ -16,7 +16,7 @@ export const mockGroups: Group[] = [
     description: 'Recipes for special occasions and holidays',
     lastUpdated: new Date('2025-05-15').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['1', '3'],
   },
   {
@@ -25,7 +25,7 @@ export const mockGroups: Group[] = [
     description: 'Quick and easy recipes for busy weeknights',
     lastUpdated: new Date('2025-05-22').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['2'],
   },
   {
@@ -34,7 +34,7 @@ export const mockGroups: Group[] = [
     description: 'Delicious breakfast recipes to start your day',
     lastUpdated: new Date('2025-05-18').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: [],
   },
   {
@@ -43,7 +43,7 @@ export const mockGroups: Group[] = [
     description: 'Our favorite family recipes passed down through generations',
     lastUpdated: new Date('2025-05-20').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['1'],
   },
   {
@@ -52,7 +52,7 @@ export const mockGroups: Group[] = [
     description: 'Recipes for special occasions and holidays',
     lastUpdated: new Date('2025-05-15').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['1', '3'],
   },
   {
@@ -61,7 +61,7 @@ export const mockGroups: Group[] = [
     description: 'Quick and easy recipes for busy weeknights',
     lastUpdated: new Date('2025-05-22').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['2'],
   },
   {
@@ -70,7 +70,7 @@ export const mockGroups: Group[] = [
     description: 'Delicious breakfast recipes to start your day',
     lastUpdated: new Date('2025-05-18').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: [],
   },
   {
@@ -79,7 +79,7 @@ export const mockGroups: Group[] = [
     description: 'Our favorite family recipes passed down through generations',
     lastUpdated: new Date('2025-05-20').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['1'],
   },
   {
@@ -88,7 +88,7 @@ export const mockGroups: Group[] = [
     description: 'Recipes for special occasions and holidays',
     lastUpdated: new Date('2025-05-15').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['1', '3'],
   },
   {
@@ -97,7 +97,7 @@ export const mockGroups: Group[] = [
     description: 'Quick and easy recipes for busy weeknights',
     lastUpdated: new Date('2025-05-22').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: ['2'],
   },
   {
@@ -106,7 +106,7 @@ export const mockGroups: Group[] = [
     description: 'Delicious breakfast recipes to start your day',
     lastUpdated: new Date('2025-05-18').toISOString(),
     icon: 'https://cf.ltkcdn.net/family/images/std/200821-800x533r1-family.jpg',
-    ownerId: 'user-1',
+    adminIds: ['user-1'],
     recipeIds: [],
   },
 ];

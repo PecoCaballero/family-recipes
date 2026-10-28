@@ -2,6 +2,7 @@
   "name": "api",
   "projectType": "application",
   "sourceRoot": "apps/api/src",
+  "tags": ["scope:api", "type:app"],
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
@@ -25,6 +26,31 @@
       "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": ["apps/api/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p apps/api/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest --config apps/api/jest.config.cjs"
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bash apps/api/test/e2e.sh"
+      }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx prisma db seed",
+        "cwd": "apps/api"
       }
     }
   }

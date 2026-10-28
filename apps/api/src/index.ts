@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'node:path';
 import cors from 'cors';
 import { authRouter } from './routes/auth';
 import { apiRouter } from './routes';
@@ -10,13 +11,16 @@ const app = express();
 app.use(express.json());
 
 // In dev, allow the frontend to talk to this API.
-// For production, prefer restricting `origin` via an env var.
+// In production, restrict `origin` via the CORS_ORIGIN env var.
 app.use(
   cors({
-    origin: true,
+    origin: process.env.CORS_ORIGIN ?? true,
     credentials: false,
   }),
 );
+
+// Serve uploaded avatar files
+app.use('/uploads/avatars', express.static(path.resolve(process.cwd(), 'uploads/avatars')));
 
 // Public routes (no auth required)
 app.get('/health', (_req, res) => {

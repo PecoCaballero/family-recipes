@@ -2,6 +2,7 @@
   "name": "web",
   "projectType": "application",
   "sourceRoot": "apps/web/src",
+  "tags": ["scope:web", "type:app"],
   "targets": {
     "build": {
       "executor": "@nx/next:build",
@@ -21,6 +22,18 @@
       "executor": "@nx/eslint:lint",
       "options": {
         "lintFilePatterns": ["apps/web/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p apps/web/tsconfig.json"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest --config apps/web/jest.config.cjs"
       }
     }
   }

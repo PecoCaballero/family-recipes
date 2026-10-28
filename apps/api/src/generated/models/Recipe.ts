@@ -19,8 +19,22 @@ export type RecipeModel = runtime.Types.Result.DefaultSelection<Prisma.$RecipePa
 
 export type AggregateRecipe = {
   _count: RecipeCountAggregateOutputType | null;
+  _avg: RecipeAvgAggregateOutputType | null;
+  _sum: RecipeSumAggregateOutputType | null;
   _min: RecipeMinAggregateOutputType | null;
   _max: RecipeMaxAggregateOutputType | null;
+};
+
+export type RecipeAvgAggregateOutputType = {
+  prepTime: number | null;
+  cookTime: number | null;
+  servings: number | null;
+};
+
+export type RecipeSumAggregateOutputType = {
+  prepTime: number | null;
+  cookTime: number | null;
+  servings: number | null;
 };
 
 export type RecipeMinAggregateOutputType = {
@@ -31,6 +45,11 @@ export type RecipeMinAggregateOutputType = {
   image: string | null;
   description: string | null;
   instructions: string | null;
+  cuisine: string | null;
+  prepTime: number | null;
+  cookTime: number | null;
+  servings: number | null;
+  difficulty: string | null;
   visibility: string | null;
   lastUpdated: Date | null;
   createdAt: Date | null;
@@ -45,6 +64,11 @@ export type RecipeMaxAggregateOutputType = {
   image: string | null;
   description: string | null;
   instructions: string | null;
+  cuisine: string | null;
+  prepTime: number | null;
+  cookTime: number | null;
+  servings: number | null;
+  difficulty: string | null;
   visibility: string | null;
   lastUpdated: Date | null;
   createdAt: Date | null;
@@ -59,11 +83,28 @@ export type RecipeCountAggregateOutputType = {
   image: number;
   description: number;
   instructions: number;
+  cuisine: number;
+  prepTime: number;
+  cookTime: number;
+  servings: number;
+  difficulty: number;
   visibility: number;
   lastUpdated: number;
   createdAt: number;
   parentRecipeId: number;
   _all: number;
+};
+
+export type RecipeAvgAggregateInputType = {
+  prepTime?: true;
+  cookTime?: true;
+  servings?: true;
+};
+
+export type RecipeSumAggregateInputType = {
+  prepTime?: true;
+  cookTime?: true;
+  servings?: true;
 };
 
 export type RecipeMinAggregateInputType = {
@@ -74,6 +115,11 @@ export type RecipeMinAggregateInputType = {
   image?: true;
   description?: true;
   instructions?: true;
+  cuisine?: true;
+  prepTime?: true;
+  cookTime?: true;
+  servings?: true;
+  difficulty?: true;
   visibility?: true;
   lastUpdated?: true;
   createdAt?: true;
@@ -88,6 +134,11 @@ export type RecipeMaxAggregateInputType = {
   image?: true;
   description?: true;
   instructions?: true;
+  cuisine?: true;
+  prepTime?: true;
+  cookTime?: true;
+  servings?: true;
+  difficulty?: true;
   visibility?: true;
   lastUpdated?: true;
   createdAt?: true;
@@ -102,6 +153,11 @@ export type RecipeCountAggregateInputType = {
   image?: true;
   description?: true;
   instructions?: true;
+  cuisine?: true;
+  prepTime?: true;
+  cookTime?: true;
+  servings?: true;
+  difficulty?: true;
   visibility?: true;
   lastUpdated?: true;
   createdAt?: true;
@@ -149,6 +205,18 @@ export type RecipeAggregateArgs<
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    *
+   * Select which fields to average
+   **/
+  _avg?: RecipeAvgAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
+   * Select which fields to sum
+   **/
+  _sum?: RecipeSumAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
    * Select which fields to find the minimum value
    **/
   _min?: RecipeMinAggregateInputType;
@@ -178,6 +246,8 @@ export type RecipeGroupByArgs<
   take?: number;
   skip?: number;
   _count?: RecipeCountAggregateInputType | true;
+  _avg?: RecipeAvgAggregateInputType;
+  _sum?: RecipeSumAggregateInputType;
   _min?: RecipeMinAggregateInputType;
   _max?: RecipeMaxAggregateInputType;
 };
@@ -190,11 +260,18 @@ export type RecipeGroupByOutputType = {
   image: string | null;
   description: string;
   instructions: string;
+  cuisine: string | null;
+  prepTime: number | null;
+  cookTime: number | null;
+  servings: number | null;
+  difficulty: string | null;
   visibility: string;
   lastUpdated: Date;
   createdAt: Date;
   parentRecipeId: string | null;
   _count: RecipeCountAggregateOutputType | null;
+  _avg: RecipeAvgAggregateOutputType | null;
+  _sum: RecipeSumAggregateOutputType | null;
   _min: RecipeMinAggregateOutputType | null;
   _max: RecipeMaxAggregateOutputType | null;
 };
@@ -222,6 +299,11 @@ export type RecipeWhereInput = {
   image?: Prisma.StringNullableFilter<'Recipe'> | string | null;
   description?: Prisma.StringFilter<'Recipe'> | string;
   instructions?: Prisma.StringFilter<'Recipe'> | string;
+  cuisine?: Prisma.StringNullableFilter<'Recipe'> | string | null;
+  prepTime?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+  cookTime?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+  servings?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+  difficulty?: Prisma.StringNullableFilter<'Recipe'> | string | null;
   visibility?: Prisma.StringFilter<'Recipe'> | string;
   lastUpdated?: Prisma.DateTimeFilter<'Recipe'> | Date | string;
   createdAt?: Prisma.DateTimeFilter<'Recipe'> | Date | string;
@@ -245,6 +327,11 @@ export type RecipeOrderByWithRelationInput = {
   image?: Prisma.SortOrderInput | Prisma.SortOrder;
   description?: Prisma.SortOrder;
   instructions?: Prisma.SortOrder;
+  cuisine?: Prisma.SortOrderInput | Prisma.SortOrder;
+  prepTime?: Prisma.SortOrderInput | Prisma.SortOrder;
+  cookTime?: Prisma.SortOrderInput | Prisma.SortOrder;
+  servings?: Prisma.SortOrderInput | Prisma.SortOrder;
+  difficulty?: Prisma.SortOrderInput | Prisma.SortOrder;
   visibility?: Prisma.SortOrder;
   lastUpdated?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
@@ -269,6 +356,11 @@ export type RecipeWhereUniqueInput = Prisma.AtLeast<
     image?: Prisma.StringNullableFilter<'Recipe'> | string | null;
     description?: Prisma.StringFilter<'Recipe'> | string;
     instructions?: Prisma.StringFilter<'Recipe'> | string;
+    cuisine?: Prisma.StringNullableFilter<'Recipe'> | string | null;
+    prepTime?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+    cookTime?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+    servings?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+    difficulty?: Prisma.StringNullableFilter<'Recipe'> | string | null;
     visibility?: Prisma.StringFilter<'Recipe'> | string;
     lastUpdated?: Prisma.DateTimeFilter<'Recipe'> | Date | string;
     createdAt?: Prisma.DateTimeFilter<'Recipe'> | Date | string;
@@ -294,13 +386,20 @@ export type RecipeOrderByWithAggregationInput = {
   image?: Prisma.SortOrderInput | Prisma.SortOrder;
   description?: Prisma.SortOrder;
   instructions?: Prisma.SortOrder;
+  cuisine?: Prisma.SortOrderInput | Prisma.SortOrder;
+  prepTime?: Prisma.SortOrderInput | Prisma.SortOrder;
+  cookTime?: Prisma.SortOrderInput | Prisma.SortOrder;
+  servings?: Prisma.SortOrderInput | Prisma.SortOrder;
+  difficulty?: Prisma.SortOrderInput | Prisma.SortOrder;
   visibility?: Prisma.SortOrder;
   lastUpdated?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   parentRecipeId?: Prisma.SortOrderInput | Prisma.SortOrder;
   _count?: Prisma.RecipeCountOrderByAggregateInput;
+  _avg?: Prisma.RecipeAvgOrderByAggregateInput;
   _max?: Prisma.RecipeMaxOrderByAggregateInput;
   _min?: Prisma.RecipeMinOrderByAggregateInput;
+  _sum?: Prisma.RecipeSumOrderByAggregateInput;
 };
 
 export type RecipeScalarWhereWithAggregatesInput = {
@@ -314,6 +413,11 @@ export type RecipeScalarWhereWithAggregatesInput = {
   image?: Prisma.StringNullableWithAggregatesFilter<'Recipe'> | string | null;
   description?: Prisma.StringWithAggregatesFilter<'Recipe'> | string;
   instructions?: Prisma.StringWithAggregatesFilter<'Recipe'> | string;
+  cuisine?: Prisma.StringNullableWithAggregatesFilter<'Recipe'> | string | null;
+  prepTime?: Prisma.IntNullableWithAggregatesFilter<'Recipe'> | number | null;
+  cookTime?: Prisma.IntNullableWithAggregatesFilter<'Recipe'> | number | null;
+  servings?: Prisma.IntNullableWithAggregatesFilter<'Recipe'> | number | null;
+  difficulty?: Prisma.StringNullableWithAggregatesFilter<'Recipe'> | string | null;
   visibility?: Prisma.StringWithAggregatesFilter<'Recipe'> | string;
   lastUpdated?: Prisma.DateTimeWithAggregatesFilter<'Recipe'> | Date | string;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<'Recipe'> | Date | string;
@@ -327,6 +431,11 @@ export type RecipeCreateInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -346,6 +455,11 @@ export type RecipeUncheckedCreateInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -363,6 +477,11 @@ export type RecipeUpdateInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -382,6 +501,11 @@ export type RecipeUncheckedUpdateInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -400,6 +524,11 @@ export type RecipeCreateManyInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -413,6 +542,11 @@ export type RecipeUpdateManyMutationInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -426,6 +560,11 @@ export type RecipeUncheckedUpdateManyInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -455,10 +594,21 @@ export type RecipeCountOrderByAggregateInput = {
   image?: Prisma.SortOrder;
   description?: Prisma.SortOrder;
   instructions?: Prisma.SortOrder;
+  cuisine?: Prisma.SortOrder;
+  prepTime?: Prisma.SortOrder;
+  cookTime?: Prisma.SortOrder;
+  servings?: Prisma.SortOrder;
+  difficulty?: Prisma.SortOrder;
   visibility?: Prisma.SortOrder;
   lastUpdated?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   parentRecipeId?: Prisma.SortOrder;
+};
+
+export type RecipeAvgOrderByAggregateInput = {
+  prepTime?: Prisma.SortOrder;
+  cookTime?: Prisma.SortOrder;
+  servings?: Prisma.SortOrder;
 };
 
 export type RecipeMaxOrderByAggregateInput = {
@@ -469,6 +619,11 @@ export type RecipeMaxOrderByAggregateInput = {
   image?: Prisma.SortOrder;
   description?: Prisma.SortOrder;
   instructions?: Prisma.SortOrder;
+  cuisine?: Prisma.SortOrder;
+  prepTime?: Prisma.SortOrder;
+  cookTime?: Prisma.SortOrder;
+  servings?: Prisma.SortOrder;
+  difficulty?: Prisma.SortOrder;
   visibility?: Prisma.SortOrder;
   lastUpdated?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
@@ -483,10 +638,21 @@ export type RecipeMinOrderByAggregateInput = {
   image?: Prisma.SortOrder;
   description?: Prisma.SortOrder;
   instructions?: Prisma.SortOrder;
+  cuisine?: Prisma.SortOrder;
+  prepTime?: Prisma.SortOrder;
+  cookTime?: Prisma.SortOrder;
+  servings?: Prisma.SortOrder;
+  difficulty?: Prisma.SortOrder;
   visibility?: Prisma.SortOrder;
   lastUpdated?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   parentRecipeId?: Prisma.SortOrder;
+};
+
+export type RecipeSumOrderByAggregateInput = {
+  prepTime?: Prisma.SortOrder;
+  cookTime?: Prisma.SortOrder;
+  servings?: Prisma.SortOrder;
 };
 
 export type RecipeScalarRelationFilter = {
@@ -617,6 +783,14 @@ export type RecipeUncheckedCreateNestedManyWithoutParentRecipeInput = {
     | Prisma.RecipeCreateOrConnectWithoutParentRecipeInput[];
   createMany?: Prisma.RecipeCreateManyParentRecipeInputEnvelope;
   connect?: Prisma.RecipeWhereUniqueInput | Prisma.RecipeWhereUniqueInput[];
+};
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null;
+  increment?: number;
+  decrement?: number;
+  multiply?: number;
+  divide?: number;
 };
 
 export type RecipeUpdateOneWithoutChildRecipesNestedInput = {
@@ -779,6 +953,11 @@ export type RecipeCreateWithoutAuthorUserInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -796,6 +975,11 @@ export type RecipeUncheckedCreateWithoutAuthorUserInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -858,6 +1042,11 @@ export type RecipeScalarWhereInput = {
   image?: Prisma.StringNullableFilter<'Recipe'> | string | null;
   description?: Prisma.StringFilter<'Recipe'> | string;
   instructions?: Prisma.StringFilter<'Recipe'> | string;
+  cuisine?: Prisma.StringNullableFilter<'Recipe'> | string | null;
+  prepTime?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+  cookTime?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+  servings?: Prisma.IntNullableFilter<'Recipe'> | number | null;
+  difficulty?: Prisma.StringNullableFilter<'Recipe'> | string | null;
   visibility?: Prisma.StringFilter<'Recipe'> | string;
   lastUpdated?: Prisma.DateTimeFilter<'Recipe'> | Date | string;
   createdAt?: Prisma.DateTimeFilter<'Recipe'> | Date | string;
@@ -871,6 +1060,11 @@ export type RecipeCreateWithoutChildRecipesInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -889,6 +1083,11 @@ export type RecipeUncheckedCreateWithoutChildRecipesInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -913,6 +1112,11 @@ export type RecipeCreateWithoutParentRecipeInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -931,6 +1135,11 @@ export type RecipeUncheckedCreateWithoutParentRecipeInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -980,6 +1189,11 @@ export type RecipeUpdateWithoutChildRecipesInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -998,6 +1212,11 @@ export type RecipeUncheckedUpdateWithoutChildRecipesInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1042,6 +1261,11 @@ export type RecipeCreateWithoutIngredientsInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -1060,6 +1284,11 @@ export type RecipeUncheckedCreateWithoutIngredientsInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -1104,6 +1333,11 @@ export type RecipeUpdateWithoutIngredientsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1122,6 +1356,11 @@ export type RecipeUncheckedUpdateWithoutIngredientsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1138,6 +1377,11 @@ export type RecipeCreateWithoutSavedByInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -1156,6 +1400,11 @@ export type RecipeUncheckedCreateWithoutSavedByInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -1200,6 +1449,11 @@ export type RecipeUpdateWithoutSavedByInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1218,6 +1472,11 @@ export type RecipeUncheckedUpdateWithoutSavedByInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1234,6 +1493,11 @@ export type RecipeCreateWithoutRecipeGroupsInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -1252,6 +1516,11 @@ export type RecipeUncheckedCreateWithoutRecipeGroupsInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -1296,6 +1565,11 @@ export type RecipeUpdateWithoutRecipeGroupsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1314,6 +1588,11 @@ export type RecipeUncheckedUpdateWithoutRecipeGroupsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1330,6 +1609,11 @@ export type RecipeCreateManyAuthorUserInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -1343,6 +1627,11 @@ export type RecipeUpdateWithoutAuthorUserInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1360,6 +1649,11 @@ export type RecipeUncheckedUpdateWithoutAuthorUserInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1377,6 +1671,11 @@ export type RecipeUncheckedUpdateManyWithoutAuthorUserInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1391,6 +1690,11 @@ export type RecipeCreateManyParentRecipeInput = {
   image?: string | null;
   description: string;
   instructions: string;
+  cuisine?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  servings?: number | null;
+  difficulty?: string | null;
   visibility?: string;
   lastUpdated?: Date | string;
   createdAt?: Date | string;
@@ -1403,6 +1707,11 @@ export type RecipeUpdateWithoutParentRecipeInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1421,6 +1730,11 @@ export type RecipeUncheckedUpdateWithoutParentRecipeInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1438,6 +1752,11 @@ export type RecipeUncheckedUpdateManyWithoutParentRecipeInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   description?: Prisma.StringFieldUpdateOperationsInput | string;
   instructions?: Prisma.StringFieldUpdateOperationsInput | string;
+  cuisine?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  prepTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  cookTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  servings?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+  difficulty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   visibility?: Prisma.StringFieldUpdateOperationsInput | string;
   lastUpdated?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1522,6 +1841,11 @@ export type RecipeSelect<
     image?: boolean;
     description?: boolean;
     instructions?: boolean;
+    cuisine?: boolean;
+    prepTime?: boolean;
+    cookTime?: boolean;
+    servings?: boolean;
+    difficulty?: boolean;
     visibility?: boolean;
     lastUpdated?: boolean;
     createdAt?: boolean;
@@ -1548,6 +1872,11 @@ export type RecipeSelectCreateManyAndReturn<
     image?: boolean;
     description?: boolean;
     instructions?: boolean;
+    cuisine?: boolean;
+    prepTime?: boolean;
+    cookTime?: boolean;
+    servings?: boolean;
+    difficulty?: boolean;
     visibility?: boolean;
     lastUpdated?: boolean;
     createdAt?: boolean;
@@ -1569,6 +1898,11 @@ export type RecipeSelectUpdateManyAndReturn<
     image?: boolean;
     description?: boolean;
     instructions?: boolean;
+    cuisine?: boolean;
+    prepTime?: boolean;
+    cookTime?: boolean;
+    servings?: boolean;
+    difficulty?: boolean;
     visibility?: boolean;
     lastUpdated?: boolean;
     createdAt?: boolean;
@@ -1587,6 +1921,11 @@ export type RecipeSelectScalar = {
   image?: boolean;
   description?: boolean;
   instructions?: boolean;
+  cuisine?: boolean;
+  prepTime?: boolean;
+  cookTime?: boolean;
+  servings?: boolean;
+  difficulty?: boolean;
   visibility?: boolean;
   lastUpdated?: boolean;
   createdAt?: boolean;
@@ -1603,6 +1942,11 @@ export type RecipeOmit<
   | 'image'
   | 'description'
   | 'instructions'
+  | 'cuisine'
+  | 'prepTime'
+  | 'cookTime'
+  | 'servings'
+  | 'difficulty'
   | 'visibility'
   | 'lastUpdated'
   | 'createdAt'
@@ -1654,6 +1998,11 @@ export type $RecipePayload<
       image: string | null;
       description: string;
       instructions: string;
+      cuisine: string | null;
+      prepTime: number | null;
+      cookTime: number | null;
+      servings: number | null;
+      difficulty: string | null;
       visibility: string;
       lastUpdated: Date;
       createdAt: Date;
@@ -2277,6 +2626,11 @@ export interface RecipeFieldRefs {
   readonly image: Prisma.FieldRef<'Recipe', 'String'>;
   readonly description: Prisma.FieldRef<'Recipe', 'String'>;
   readonly instructions: Prisma.FieldRef<'Recipe', 'String'>;
+  readonly cuisine: Prisma.FieldRef<'Recipe', 'String'>;
+  readonly prepTime: Prisma.FieldRef<'Recipe', 'Int'>;
+  readonly cookTime: Prisma.FieldRef<'Recipe', 'Int'>;
+  readonly servings: Prisma.FieldRef<'Recipe', 'Int'>;
+  readonly difficulty: Prisma.FieldRef<'Recipe', 'String'>;
   readonly visibility: Prisma.FieldRef<'Recipe', 'String'>;
   readonly lastUpdated: Prisma.FieldRef<'Recipe', 'DateTime'>;
   readonly createdAt: Prisma.FieldRef<'Recipe', 'DateTime'>;

@@ -1,24 +1,77 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma';
-import { createGroupInputSchema, updateGroupInputSchema } from '@family-recipe/shared';
+import { canViewRecipe } from '../lib/recipeAccess';
+import {
+  createGroupInputSchema,
+  updateGroupInputSchema,
+  addAdminSchema,
+  batchAddRecipesSchema,
+} from '@family-recipe/shared';
 
 export const groupRouter = Router();
+
+async function isGroupAdmin(groupId: string, userId: string): Promise<boolean> {
+  const admin = await prisma.groupAdmin.findUnique({
+    where: { groupId_userId: { groupId, userId } },
+  });
+  return admin !== null;
+}
 
 groupRouter.get('/', async (req, res) => {
   try {
     const query = String(req.query.search || '').trim();
 
-    const where: Record<string, unknown> = {};
+    const where: Record<string, unknown> = {
+      members: {
+        some: { userId: req.userId },
+      },
+    };
     if (query) {
       where['name'] = { contains: query, mode: 'insensitive' };
     }
 
     const groups = await prisma.group.findMany({
       where,
+      include: {
+        recipes: {
+          select: { recipeId: true },
+        },
+        admins: {
+          select: { userId: true },
+        },
+      },
       orderBy: { lastUpdated: 'desc' },
     });
 
-    return res.status(200).json({ groups });
+    const result = groups.map((group) => ({
+      ...group,
+      recipeIds: group.recipes.map((rg) => rg.recipeId),
+      adminIds: group.admins.map((a) => a.userId),
+      recipes: undefined,
+      admins: undefined,
+    }));
+
+    const pendingInvitations = await prisma.invitation.findMany({
+      where: {
+        inviteeUserId: req.userId,
+        status: 'pending',
+        expiresAt: { gt: new Date() },
+      },
+      include: {
+        group: { select: { name: true } },
+        inviter: { select: { name: true } },
+      },
+    });
+
+    const pendingInvitationsResult = pendingInvitations.map((inv) => ({
+      id: inv.id,
+      groupId: inv.groupId,
+      groupName: inv.group.name,
+      inviterName: inv.inviter.name,
+      expiresAt: inv.expiresAt.toISOString(),
+    }));
+
+    return res.status(200).json({ groups: result, pendingInvitations: pendingInvitationsResult });
   } catch (error) {
     console.error('List groups error:', error);
     return res.status(500).json({ error: 'internal_error' });
@@ -30,6 +83,16 @@ groupRouter.get('/:id', async (req, res) => {
     const group = await prisma.group.findUnique({
       where: { id: req.params.id },
       include: {
+        members: {
+          include: {
+            user: {
+              select: { id: true, name: true, email: true, avatar: true },
+            },
+          },
+        },
+        admins: {
+          select: { userId: true },
+        },
         recipes: {
           include: {
             recipe: {
@@ -40,14 +103,39 @@ groupRouter.get('/:id', async (req, res) => {
       },
     });
 
-    if (!group) {
+    if (!group || !group.members?.some((m: { userId: string }) => m.userId === req.userId)) {
       return res.status(404).json({ error: 'group_not_found' });
     }
 
     const recipes = group.recipes.map((rg: { recipe: Record<string, unknown> }) => rg.recipe);
-    const isOwner = group.ownerId === req.userId;
+    const isAdmin = group.admins.some((a: { userId: string }) => a.userId === req.userId);
+    const recipeIds = group.recipes.map((rg: { recipeId: string }) => rg.recipeId);
+    const adminIds = group.admins.map((a: { userId: string }) => a.userId);
 
-    return res.status(200).json({ group, recipes, isOwner });
+    const members = group.members.map(
+      (m: {
+        userId: string;
+        user: { id: string; name: string; email: string; avatar: string | null };
+      }) => {
+        const recipeCount = recipes.filter(
+          (r: Record<string, unknown>) => r.authorId === m.userId,
+        ).length;
+        return {
+          id: m.user.id,
+          name: m.user.name,
+          email: m.user.email,
+          avatar: m.user.avatar,
+          recipeCount,
+        };
+      },
+    );
+
+    return res.status(200).json({
+      group: { ...group, recipeIds, adminIds },
+      recipes,
+      isAdmin,
+      members,
+    });
   } catch (error) {
     console.error('Get group error:', error);
     return res.status(500).json({ error: 'internal_error' });
@@ -70,8 +158,12 @@ groupRouter.post('/', async (req, res) => {
         name,
         description,
         icon: icon ?? '',
-        ownerId: req.userId!,
         lastUpdated: new Date(),
+        admins: {
+          create: {
+            userId: req.userId!,
+          },
+        },
         members: {
           create: {
             userId: req.userId!,
@@ -92,6 +184,10 @@ groupRouter.patch('/:id', async (req, res) => {
     const existing = await prisma.group.findUnique({ where: { id: req.params.id } });
     if (!existing) {
       return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
+      return res.status(403).json({ error: 'forbidden' });
     }
 
     const parsed = updateGroupInputSchema.safeParse(req.body);
@@ -120,6 +216,32 @@ groupRouter.patch('/:id', async (req, res) => {
   }
 });
 
+groupRouter.delete('/:id', async (req, res) => {
+  try {
+    const group = await prisma.group.findUnique({
+      where: { id: req.params.id },
+      include: { members: true, admins: true },
+    });
+    if (!group) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    if (!group.admins.some((a: { userId: string }) => a.userId === req.userId)) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    if (group.members.length > 1) {
+      return res.status(400).json({ error: 'group_has_other_members' });
+    }
+
+    await prisma.group.delete({ where: { id: req.params.id } });
+    return res.status(204).send();
+  } catch (error) {
+    console.error('Delete group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
 groupRouter.post('/:id/recipes', async (req, res) => {
   try {
     const { recipeId } = req.body;
@@ -127,15 +249,20 @@ groupRouter.post('/:id/recipes', async (req, res) => {
       return res.status(400).json({ error: 'recipe_id_required' });
     }
 
-    const group = await prisma.group.findUnique({ where: { id: req.params.id } });
-    if (!group) {
-      return res.status(404).json({ error: 'group_not_found' });
+    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
+      return res.status(403).json({ error: 'forbidden' });
     }
 
     const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } });
     if (!recipe) {
       return res.status(404).json({ error: 'recipe_not_found' });
     }
+
+    if (!(await canViewRecipe(req.userId!, recipeId))) {
+      return res.status(404).json({ error: 'recipe_not_found' });
+    }
+
+    const group = await prisma.group.findUnique({ where: { id: req.params.id } });
 
     await prisma.recipeGroup.upsert({
       where: {
@@ -154,6 +281,270 @@ groupRouter.post('/:id/recipes', async (req, res) => {
     return res.status(200).json({ group, recipe });
   } catch (error) {
     console.error('Add recipe to group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+groupRouter.post('/:id/recipes/batch', async (req, res) => {
+  try {
+    const parsed = batchAddRecipesSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { recipeIds } = parsed.data;
+
+    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    const group = await prisma.group.findUnique({ where: { id: req.params.id } });
+    if (!group) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const uniqueIds = [...new Set(recipeIds)];
+    const visible = await prisma.recipe.findMany({
+      where: {
+        id: { in: uniqueIds },
+        OR: [
+          { authorId: req.userId },
+          { visibility: 'public' },
+          { recipeGroups: { some: { group: { members: { some: { userId: req.userId! } } } } } },
+        ],
+      },
+      select: { id: true },
+    });
+    if (visible.length !== uniqueIds.length) {
+      return res.status(404).json({ error: 'recipe_not_found' });
+    }
+
+    const existing = await prisma.recipeGroup.findMany({
+      where: { groupId: req.params.id, recipeId: { in: recipeIds } },
+      select: { recipeId: true },
+    });
+    const existingIds = new Set(existing.map((r) => r.recipeId));
+
+    await prisma.$transaction(
+      recipeIds.map((recipeId) =>
+        prisma.recipeGroup.upsert({
+          where: {
+            recipeId_groupId: { recipeId, groupId: req.params.id },
+          },
+          create: { recipeId, groupId: req.params.id },
+          update: {},
+        }),
+      ),
+    );
+
+    const added = recipeIds.filter((id) => !existingIds.has(id));
+    const skipped = recipeIds.filter((id) => existingIds.has(id));
+
+    return res.status(200).json({ added, skipped });
+  } catch (error) {
+    console.error('Batch add recipes error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+groupRouter.post('/:id/remove-recipe', async (req, res) => {
+  try {
+    const { recipeId } = req.body;
+    if (!recipeId) {
+      return res.status(400).json({ error: 'recipe_id_required' });
+    }
+
+    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    await prisma.recipeGroup.deleteMany({
+      where: {
+        recipeId,
+        groupId: req.params.id,
+      },
+    });
+
+    return res.status(200).json({ status: 'removed' });
+  } catch (error) {
+    console.error('Remove recipe from group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+groupRouter.post('/:id/members/:userId', async (req, res) => {
+  try {
+    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    await prisma.groupMember.upsert({
+      where: {
+        groupId_userId: {
+          groupId: req.params.id,
+          userId: req.params.userId,
+        },
+      },
+      create: {
+        groupId: req.params.id,
+        userId: req.params.userId,
+      },
+      update: {},
+    });
+
+    return res.status(200).json({ status: 'added' });
+  } catch (error) {
+    console.error('Add member error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+groupRouter.delete('/:id/members/:userId', async (req, res) => {
+  try {
+    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    const group = await prisma.group.findUnique({
+      where: { id: req.params.id },
+      include: { members: true, admins: true },
+    });
+    if (!group) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const targetIsAdmin = group.admins.some((a) => a.userId === req.params.userId);
+    const isSoleAdmin = group.admins.length === 1 && targetIsAdmin;
+    const hasOtherMembers = group.members.length > 1;
+
+    if (isSoleAdmin && hasOtherMembers) {
+      return res.status(400).json({
+        error: 'cannot_remove_sole_admin',
+        detail: 'Group must have at least one admin while members exist',
+      });
+    }
+
+    await prisma.$transaction([
+      prisma.groupMember.deleteMany({
+        where: {
+          groupId: req.params.id,
+          userId: req.params.userId,
+        },
+      }),
+      prisma.groupAdmin.deleteMany({
+        where: {
+          groupId: req.params.id,
+          userId: req.params.userId,
+        },
+      }),
+    ]);
+
+    return res.status(200).json({ status: 'removed' });
+  } catch (error) {
+    console.error('Remove member error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+groupRouter.post('/:id/quit', async (req, res) => {
+  try {
+    const group = await prisma.group.findUnique({
+      where: { id: req.params.id },
+      include: { members: true, admins: true },
+    });
+    if (!group) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const isMember = group.members.some((m: { userId: string }) => m.userId === req.userId);
+    if (!isMember) {
+      return res.status(404).json({ error: 'group_not_found' });
+    }
+
+    const memberCount = group.members.length;
+    const isAdmin = group.admins.some((a) => a.userId === req.userId);
+    const isSoleAdmin = isAdmin && group.admins.length === 1;
+
+    if (isSoleAdmin && memberCount > 1) {
+      return res.status(400).json({ error: 'sole_admin_must_promote_or_delete' });
+    }
+
+    await prisma.$transaction([
+      prisma.groupMember.deleteMany({
+        where: {
+          groupId: req.params.id,
+          userId: req.userId!,
+        },
+      }),
+      prisma.groupAdmin.deleteMany({
+        where: {
+          groupId: req.params.id,
+          userId: req.userId!,
+        },
+      }),
+    ]);
+
+    const groupDeleted = memberCount === 1;
+    if (groupDeleted) {
+      await prisma.group.delete({ where: { id: req.params.id } });
+    }
+
+    return res.status(200).json({ status: 'left', groupDeleted });
+  } catch (error) {
+    console.error('Quit group error:', error);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+// Admin management endpoints
+
+groupRouter.post('/:id/admins', async (req, res) => {
+  try {
+    if (!(await isGroupAdmin(req.params.id, req.userId!))) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    const parsed = addAdminSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'validation_error',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      });
+    }
+    const { userId } = parsed.data;
+
+    // Verify target is a group member
+    const isMember = await prisma.groupMember.findUnique({
+      where: {
+        groupId_userId: {
+          groupId: req.params.id,
+          userId,
+        },
+      },
+    });
+    if (!isMember) {
+      return res.status(400).json({ error: 'user_not_member' });
+    }
+
+    await prisma.groupAdmin.upsert({
+      where: {
+        groupId_userId: {
+          groupId: req.params.id,
+          userId,
+        },
+      },
+      create: {
+        groupId: req.params.id,
+        userId,
+      },
+      update: {},
+    });
+
+    return res.status(200).json({ status: 'added' });
+  } catch (error) {
+    console.error('Add admin error:', error);
     return res.status(500).json({ error: 'internal_error' });
   }
 });

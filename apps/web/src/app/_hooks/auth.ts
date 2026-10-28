@@ -22,6 +22,15 @@ export function useRegisterMutation() {
   });
 }
 
+export function useGoogleLoginMutation() {
+  return useMutation({
+    mutationFn: async (input: { idToken: string }) => {
+      const res = await apiClient.post<AuthResponse>('/v1/auth/google', input);
+      return res.data;
+    },
+  });
+}
+
 export function useLogoutMutation() {
   return useMutation({
     mutationFn: async (input: { refreshToken: string }) => {
